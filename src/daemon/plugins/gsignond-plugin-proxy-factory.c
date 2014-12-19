@@ -251,6 +251,10 @@ gsignond_plugin_proxy_factory_finalize (GObject *gobject)
         g_free (self->methods);
         self->methods = NULL;
     }
+    if (self->loader_watchers) {
+        g_hash_table_destroy (self->loader_watchers);
+        self->loader_watchers = NULL;
+    }
 
     /* Chain up to the parent class */
     G_OBJECT_CLASS (gsignond_plugin_proxy_factory_parent_class)->finalize (gobject);
@@ -300,6 +304,10 @@ gsignond_plugin_proxy_factory_init (GSignondPluginProxyFactory *self)
                                            (GDestroyNotify)g_free,
                                            (GDestroyNotify)g_object_unref);
 
+    self->loader_watchers = g_hash_table_new_full ((GHashFunc)g_str_hash,
+                                           (GEqualFunc)g_str_equal,
+                                           (GDestroyNotify)g_free,
+                                           (GDestroyNotify)g_object_unref);
     self->methods = NULL;
 }
 

@@ -52,6 +52,8 @@ struct _GSignondPluginProxyFactory
     gchar** methods;
     GHashTable* methods_to_mechanisms;
     GHashTable* methods_to_loader_paths;
+
+    GHashTable* loader_watchers;
 };
 
 struct _GSignondPluginProxyFactoryClass
