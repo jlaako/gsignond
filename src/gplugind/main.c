@@ -91,16 +91,20 @@ _install_sighandlers (GMainLoop *main_loop)
         WARN ("failed to set parent death signal");
 }
 
-static void _list_plugins()
+static const gchar* _plugin_path()
 {
     const gchar *plugin_path = GSIGNOND_GPLUGINS_DIR;
-
 #   ifdef ENABLE_DEBUG
     const gchar *env_val = g_getenv("SSO_GPLUGINS_DIR");
     if (env_val)
         plugin_path = env_val;
 #   endif
-    GDir* plugin_dir = g_dir_open(plugin_path, 0, NULL);
+    return plugin_path;
+}
+
+static void _list_plugins()
+{
+    GDir* plugin_dir = g_dir_open(_plugin_path(), 0, NULL);
     if (plugin_dir == NULL) {
         return;
     }
@@ -120,6 +124,11 @@ static void _list_plugins()
     g_dir_close(plugin_dir);
 }
 
+static void _list_watch_path()
+{
+    g_print(_plugin_path());
+}
+
 int main (int argc, char **argv)
 {
     GError *error = NULL;
@@ -128,10 +137,12 @@ int main (int argc, char **argv)
     gint in_fd = 0, out_fd = 1;
 
     gboolean list_plugins = FALSE;
+    gboolean watch_plugins = FALSE;
     gchar* plugin_name = NULL;
     GOptionEntry main_entries[] =
     {
         { "list-plugins", 0, 0, G_OPTION_ARG_NONE, &list_plugins, "List available plugins", NULL},
+        { "plugins-watch-path", 0, 0, G_OPTION_ARG_NONE, &watch_plugins, "List the path to watch for plugin changes", NULL},
         { "load-plugin", 0, 0, G_OPTION_ARG_STRING, &plugin_name, "Load a plugin and start a d-bus connection with it on stdio channel", "name"},
         { NULL }
     };
@@ -149,6 +160,11 @@ int main (int argc, char **argv)
 
     if (list_plugins) {
         _list_plugins();
+        return 0;
+    }
+
+    if (watch_plugins) {
+        _list_watch_path();
         return 0;
     }
 
@@ -184,13 +200,7 @@ int main (int argc, char **argv)
     g_type_init ();
 #endif
 
-    const gchar *plugin_path = GSIGNOND_GPLUGINS_DIR;
-#   ifdef ENABLE_DEBUG
-    const gchar *env_val = g_getenv("SSO_GPLUGINS_DIR");
-    if (env_val)
-        plugin_path = env_val;
-#   endif
-    gchar* filename = g_module_build_path (plugin_path, plugin_name);
+    gchar* filename = g_module_build_path (_plugin_path(), plugin_name);
 
     _daemon = gsignond_plugin_daemon_new (filename, plugin_name, in_fd,
             out_fd);
