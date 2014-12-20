@@ -68,6 +68,8 @@ static gchar** _get_plugin_names_from_loader(const gchar* loader_path)
             exit_status, error->message);
         g_error_free(error);
         g_free(command_line);
+        g_free(standard_output);
+        g_free(standard_error);
         return NULL;
     }
 }
