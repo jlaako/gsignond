@@ -122,6 +122,126 @@ static void _insert_method(gchar* method, gchar*** method_iter_p)
     (*method_iter_p)++;
 }
 
+static gchar* _get_watch_path_from_loader(const gchar* loader_path)
+{
+    gchar* command_line = g_strdup_printf("%s --plugins-watch-path", loader_path);
+    gchar* standard_output = NULL;
+    gchar* standard_error = NULL;
+    gint exit_status;
+    GError* error = NULL;
+
+    if (g_spawn_command_line_sync(command_line, &standard_output, &standard_error,
+        &exit_status, &error)) {
+        DBG("Loader %s returned watch path %s", loader_path, standard_output);
+        gchar* watch_path = g_strdup(standard_output);
+        g_free(command_line);
+        g_free(standard_output);
+        g_free(standard_error);
+        return watch_path;
+    } else {
+        DBG("Loader %s returned exit status %d, error %s", loader_path,
+            exit_status, error->message);
+        g_error_free(error);
+        g_free(command_line);
+        g_free(standard_output);
+        g_free(standard_error);
+        return NULL;
+    }
+}
+
+static void
+_proxy_toggle_ref_cb (gpointer userdata, GObject *proxy, gboolean is_last_ref);
+
+static void
+_remove_dead_proxy (gpointer data, GObject *dead_proxy);
+
+gboolean
+_remove_loader_data (gpointer key,
+            gpointer value,
+            gpointer     user_data)
+{
+    GFileMonitor* monitor = G_FILE_MONITOR(user_data);
+    gchar* loader_path = g_object_get_data(G_OBJECT(monitor), "loader_path");
+    GSignondPluginProxyFactory* self = g_object_get_data(G_OBJECT(monitor), "proxy_factory");
+
+    if (g_strcmp0(value, loader_path) == 0) {
+        // first remove active sessions from cache
+        GSignondPluginProxy* proxy = g_hash_table_lookup(self->plugins, key);
+        if (proxy != NULL) {
+            g_object_remove_toggle_ref(G_OBJECT(proxy), _proxy_toggle_ref_cb, self);
+            _remove_dead_proxy(self, G_OBJECT(proxy));
+        }
+        // then remove methods to mechanisms mapping
+        g_hash_table_remove(self->methods_to_mechanisms, key);
+        // then remove methods to loader path mapping
+        return TRUE;
+    }
+    return FALSE;
+}
+
+static void _make_plugin_list(GSignondPluginProxyFactory* self)
+{
+    if (self->methods) {
+        g_free (self->methods);
+    }
+
+    int n_plugins = g_hash_table_size(self->methods_to_mechanisms);
+    self->methods = g_new0(gchar*, n_plugins + 1);
+    gchar **method_iter = self->methods;
+
+    GList* keys = g_hash_table_get_keys(self->methods_to_mechanisms);
+    g_list_foreach(keys, (GFunc)_insert_method, &method_iter);
+
+    g_list_free(keys);
+}
+
+static void
+_watched_path_changed_callback (GFileMonitor     *monitor,
+               GFile            *file,
+               GFile            *other_file,
+               GFileMonitorEvent event_type,
+               GSignondPluginProxyFactory* self)
+{
+    gchar* loader_path = g_object_get_data(G_OBJECT(monitor), "loader_path");
+    DBG("Plugin loader %s indicated need to re-enumerate its plugins", loader_path);
+
+    // remove everything associated with the plugin loader
+    g_hash_table_foreach_remove(self->methods_to_loader_paths, _remove_loader_data, monitor);
+
+    // re-enumerate plugins provided by plugin loader
+    gchar** plugins = _get_plugin_names_from_loader(loader_path);
+    if (plugins != NULL) {
+        _add_plugins(self, loader_path, plugins);
+        g_strfreev(plugins);
+    }
+
+    // re-initialize the flat list of plugins from all loaders
+    _make_plugin_list(self);
+}
+
+static void _set_up_loader_watcher(GSignondPluginProxyFactory* self, gchar* loader_path)
+{
+    gchar* watch_path = _get_watch_path_from_loader(loader_path);
+    if (watch_path == NULL || strlen(watch_path) == 0)
+        return;
+
+    GFile* file = g_file_new_for_path(watch_path);
+    GFileMonitor* monitor = g_file_monitor(file, G_FILE_MONITOR_NONE, NULL, NULL);
+    g_object_unref(file);
+    g_free(watch_path);
+
+    if (monitor == NULL) {
+        return;
+    }
+
+    g_signal_connect(monitor, "changed", G_CALLBACK(
+        _watched_path_changed_callback), self);
+
+    g_hash_table_insert(self->loader_watchers, g_strdup(loader_path), monitor);
+    g_object_set_data_full(G_OBJECT(monitor), "loader_path", g_strdup(loader_path), g_free);
+    g_object_set_data(G_OBJECT(monitor), "proxy_factory", self);
+}
+
 
 static void _enumerate_plugins(GSignondPluginProxyFactory* self)
 {
@@ -149,19 +269,13 @@ static void _enumerate_plugins(GSignondPluginProxyFactory* self)
             _add_plugins(self, loader_path, plugins);
             g_strfreev(plugins);
         }
+        _set_up_loader_watcher(self, loader_path);
         g_free(loader_path);
     }
     g_dir_close(loaders_dir);
 
-    // make a flat list of available plugin types
-    int n_plugins = g_hash_table_size(self->methods_to_mechanisms);
-    self->methods = g_new0(gchar*, n_plugins + 1);
-    gchar **method_iter = self->methods;
-
-    GList* keys = g_hash_table_get_keys(self->methods_to_mechanisms);
-    g_list_foreach(keys, (GFunc)_insert_method, &method_iter);
-
-    g_list_free(keys);
+    // make a flat list of available plugin types from all loaders
+    _make_plugin_list(self);
 }
 
 static GObject *
