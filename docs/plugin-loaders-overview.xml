@@ -52,11 +52,11 @@
     <refsect1>
         <title>Plugin loaders' command line options</title>
         <para>
-            The plugin loader binary should implement the following command line options:
+            The plugin loader binary must implement the following command line options:
             <itemizedlist>
                 <listitem>
-                    <systemitem>--list-plugins</systemitem> command line option
-                    must be supported. The plugin loader binary should then list
+                    <systemitem>--list-plugins</systemitem>.
+                    When called with this option the plugin loader binary should list
                     available plugin names, one name per line. Plugin names must
                     contain only ASCII alphanumeric characters or one of '.', '_' or '-'
                     (dot, underscore or dash). This set is known as POSIX portable
@@ -73,13 +73,23 @@
                     loading the plugins' code and calling into each plugin.
                 </listitem>
                 <listitem>
-                    <systemitem>--load-plugin=name</systemitem> command line option
-                    must also be supported. The plugin loader binary should then
+                    <systemitem>--load-plugin=name</systemitem>. When called with
+                    this option, the plugin loader binary should
                     load and prepare the plugin with the corresponding name (or
                     simply prepare the plugin that is provided within the plugin
                     loader itself), and export a d-bus object on standard input and
                     output streams that gsso daemon will communicate with. The next
                     session describes this in more detail.
+                </listitem>
+                <listitem>
+                    <systemitem>--plugins-watch-path</systemitem>. This option is used to (optionally) support
+                    dynamic update of plugin lists without having to restart the daemon. When
+                    called with this option, the plugin loader should print on the standard output
+                    a path in the filesystem. The daemon will watch this path for changes using inotify,
+                    and when a change is detected, it will ask the plugin loader to list the plugins again
+                    and will update its internal structures accordingly. The plugin loader can also
+                    print nothing, in which case there will be no dynamic update of available
+                    plugins provided by this loader.
                 </listitem>
             </itemizedlist>
         </para>
