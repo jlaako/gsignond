@@ -57,7 +57,10 @@
                 <listitem>
                     <systemitem>--list-plugins</systemitem> command line option
                     must be supported. The plugin loader binary should then list
-                    available plugin names, one name per line, for example:
+                    available plugin names, one name per line. Plugin names must
+                    contain only ASCII alphanumeric characters or one of '.', '_' or '-'
+                    (dot, underscore or dash). This set is known as POSIX portable
+                    filename character set. For example:
                     <literallayout>
                     <userinput>> gsignond-plugind --list-plugins</userinput>
                     password

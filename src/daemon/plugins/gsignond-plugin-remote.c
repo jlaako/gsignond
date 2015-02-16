@@ -479,6 +479,25 @@ _status_changed_cb (
             (GSignondPluginState)status, message);
 }
 
+// plugin types must contain only Portable Filename Character Set characters
+// http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_278
+static gboolean
+_check_plugin_type(const gchar *plugin_type)
+{
+    const gchar *character = plugin_type;
+
+    while (*character != 0) {
+        if (!g_ascii_isalnum(*character) &&
+            (*character) != '.' &&
+            (*character) != '_' &&
+            (*character) != '-') {
+            return FALSE;
+        }
+        character++;
+    }
+    return TRUE;
+}
+
 GSignondPluginRemote *
 gsignond_plugin_remote_new (
         const gchar *loader_path,
@@ -491,6 +510,16 @@ gsignond_plugin_remote_new (
     GSignondPluginRemote *plugin = NULL;
     GSignondPipeStream *stream = NULL;
     gboolean ret = FALSE;
+
+    if (!loader_path || strlen(loader_path) == 0) {
+        DBG ("Invalid loader path: %s", loader_path);
+        return NULL;
+    }
+
+    if (!plugin_type || strlen(plugin_type) == 0 || !_check_plugin_type(plugin_type)) {
+        DBG ("Invalid plugin type: %s", plugin_type);
+        return NULL;
+    }
 
     /* This guarantees that writes to a pipe will never cause
      * a process terminanation via SIGPIPE, and instead a proper
