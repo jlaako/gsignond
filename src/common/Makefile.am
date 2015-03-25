@@ -136,3 +136,21 @@ typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
 CLEANFILES += $(gir_DATA) $(typelib_DATA)
 endif
+
+# Vala bindings
+if ENABLE_VAPIGEN
+-include $(VAPIGEN_MAKEFILE)
+gsignond.vapi: gSignond-1.0.gir gsignond.deps gSignond-1.0-custom.vala
+
+VAPIGEN_VAPIS = gsignond.vapi
+
+gsignond_vapi_DEPS = gio-2.0 glib-2.0
+gsignond_vapi_METADATADIRS = $(srcdir)
+gsignond_vapi_FILES = gSignond-1.0.gir $(srcdir)/gSignond-1.0-custom.vala
+
+vapidir = $(datadir)/vala/vapi
+vapi_DATA = $(VAPIGEN_VAPIS) $(VAPIGEN_VAPIS:.vapi=.deps)
+
+CLEANFILES += $(VAPIGEN_VAPIS)
+EXTRA_DIST = gsignond.deps gSignond-1.0-custom.vala
+endif

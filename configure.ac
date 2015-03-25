@@ -24,6 +24,7 @@ LT_INIT([disable-static])
 
 # Gobject Introspection
 GOBJECT_INTROSPECTION_CHECK([1.30.0])
+VAPIGEN_CHECK()
 
 # Checks for libraries.
 PKG_CHECK_MODULES([GSIGNOND], 
