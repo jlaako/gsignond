@@ -22,6 +22,9 @@ fi
 LT_PREREQ([2.2])
 LT_INIT([disable-static])
 
+# Gobject Introspection
+GOBJECT_INTROSPECTION_CHECK([1.30.0])
+
 # Checks for libraries.
 PKG_CHECK_MODULES([GSIGNOND], 
                   [glib-2.0 >= 2.30

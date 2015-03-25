@@ -77,3 +77,62 @@ CLEANFILES = \
     gsignond-plugin-enum-types.h \
     gsignond-plugin-enum-types.c \
     $(NULL)
+
+-include $(INTROSPECTION_MAKEFILE)
+INTROSPECTION_GIRS =
+INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --add-include-path=$(GSIGNOND_INCLUDE_DIR)
+INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir) --includedir=$(GSIGNOND_INCLUDE_DIR)
+
+if HAVE_INTROSPECTION
+introspection_sources = \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-signonui-data.h \
+    gsignond-signonui-data.c \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-security-context.h \
+    gsignond-security-context.c \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-access-control-manager.h \
+    gsignond-access-control-manager.c \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-extension-interface.h \
+    gsignond-extension-interface.c \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-storage-manager.h \
+    gsignond-storage-manager.c \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-secret-storage.h \
+    db/gsignond-secret-storage.c \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-credentials.h \
+    gsignond-credentials.c \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-config.h \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-config-dbus.h \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-config-general.h \
+    gsignond-config.c \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-error.h \
+    gsignond-error.c \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-plugin-interface.h \
+    gsignond-plugin-interface.c \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-dictionary.h \
+    gsignond-dictionary.c \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-session-data.h \
+    gsignond-session-data.c \
+    $(GSIGNOND_INCLUDE_DIR)/gsignond-utils.h \
+    gsignond-utils.c \
+    $(BUILT_SOURCES) \
+    $(NULL)
+
+gSignond-1.0.gir: $(lib_LTLIBRARIES)
+gSignond_1_0_gir_INCLUDES = GObject-2.0 Gio-2.0
+gSignond_1_0_gir_SCANNERFLAGS = \
+    --identifier-prefix=GSignond \
+    --symbol-prefix=gsignond \
+    --c-include="gsignond/gsignond.h" \
+    --warn-all
+gSignond_1_0_gir_CFLAGS = $(libgsignond_common_la_CPPFLAGS)
+gSignond_1_0_gir_LIBS = $(lib_LTLIBRARIES)
+gSignond_1_0_gir_FILES = $(introspection_sources)
+INTROSPECTION_GIRS += gSignond-1.0.gir
+
+girdir = $(datadir)/gir-1.0
+gir_DATA = $(INTROSPECTION_GIRS)
+
+typelibdir = $(libdir)/girepository-1.0
+typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
+
+CLEANFILES += $(gir_DATA) $(typelib_DATA)
+endif
