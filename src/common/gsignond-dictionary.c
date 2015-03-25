@@ -167,7 +167,7 @@ gsignond_dictionary_new (void)
  *
  * Increments the reference count of the dictionary structure.
  * 
- * Returns: the pointer to the passed in #GSignondDictionary
+ * Returns: (transfer none): the pointer to the passed in #GSignondDictionary
  */
 GSignondDictionary*
 gsignond_dictionary_ref (GSignondDictionary *dict)

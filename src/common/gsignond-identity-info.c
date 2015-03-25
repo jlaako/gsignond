@@ -277,7 +277,7 @@ gsignond_identity_info_new (void)
  *
  * Creates new instance of GSignondIdentityInfo.
  *
- * Returns: (transfer full) #GSignondIdentityInfo object if successful,
+ * Returns: (transfer full): #GSignondIdentityInfo object if successful,
  * NULL otherwise.
  */
 GSignondIdentityInfo *
@@ -385,7 +385,7 @@ gsignond_identity_info_copy (GSignondIdentityInfo *info)
  *
  * Increment reference count of the info structure.
  * 
- * Returns: (transfer none) returns the same  copy of the info.
+ * Returns: (transfer none): returns the same  copy of the info.
  */
 GSignondIdentityInfo *
 gsignond_identity_info_ref (GSignondIdentityInfo *info)
@@ -440,7 +440,6 @@ gsignond_identity_info_get_id (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_id:
  * @info: instance of #GSignondIdentityInfo
- *
  * @id: id to be set
  *
  * Sets the id of the info.
@@ -520,7 +519,6 @@ gsignond_identity_info_get_username (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_username:
  * @info: instance of #GSignondIdentityInfo
- *
  * @username: username to be set
  *
  * Sets the username of the info.
@@ -565,7 +563,6 @@ gsignond_identity_info_get_is_username_secret (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_username_secret:
  * @info: instance of #GSignondIdentityInfo
- *
  * @store_secret: store_secret to be set
  *
  * Sets the store_secret of the info.
@@ -611,7 +608,6 @@ gsignond_identity_info_get_secret (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_secret:
  * @info: instance of #GSignondIdentityInfo
- *
  * @secret: secret to be set
  *
  * Sets the secret of the info.
@@ -659,7 +655,6 @@ gsignond_identity_info_get_store_secret (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_store_secret:
  * @info: instance of #GSignondIdentityInfo
- *
  * @store_secret: store_secret to be set
  *
  * Sets the store_secret of the info.
@@ -704,7 +699,6 @@ gsignond_identity_info_get_caption (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_caption:
  * @info: instance of #GSignondIdentityInfo
- *
  * @caption: caption to be set
  *
  * Sets the caption of the info.
@@ -758,7 +752,6 @@ gsignond_identity_info_get_realms (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_realms:
  * @info: instance of #GSignondIdentityInfo
- *
  * @realms: (transfer none): realms to be set
  *
  * Sets the realms of the info.
@@ -833,7 +826,6 @@ gsignond_identity_info_get_methods (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_methods:
  * @info: instance of #GSignondIdentityInfo
- *
  * @methods: (transfer none): methods to be set whereas #GHashTable consists of
  * (gchar*,#GSequence*) and #GSequence is a sequence of gchar *.
  *
@@ -890,7 +882,6 @@ gsignond_identity_info_set_methods (
 /**
  * gsignond_identity_info_get_mechanisms:
  * @info: instance of #GSignondIdentityInfo
- *
  * @method: the method for which mechanisms are sought
  *
  * Retrieves the mechanisms from the info.
@@ -985,7 +976,6 @@ gsignond_identity_info_get_access_control_list (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_access_control_list:
  * @info: instance of #GSignondIdentityInfo
- *
  * @acl: (transfer none): access control list to be set
  *
  * Sets the access control list of the info.
@@ -1042,7 +1032,6 @@ gsignond_identity_info_get_owner (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_owner:
  * @info: instance of #GSignondIdentityInfo
- *
  * @owner: (transfer none): owner to be set
  *
  * Sets the owner of the info.
@@ -1092,7 +1081,6 @@ gsignond_identity_info_get_validated (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_validated:
  * @info: instance of #GSignondIdentityInfo
- *
  * @validated: validated flag to be set
  *
  * Sets the validated flag of the info.
@@ -1137,7 +1125,6 @@ gsignond_identity_info_get_identity_type (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_identity_type:
  * @info: instance of #GSignondIdentityInfo
- *
  * @type: type to be set
  *
  * Sets the type of the info.
@@ -1164,7 +1151,6 @@ gsignond_identity_info_set_identity_type (
 /**
  * gsignond_identity_info_compare:
  * @info: instance1 of #GSignondIdentityInfo
- *
  * @other: instance2 of #GSignondIdentityInfo
  *
  * Compares two instances of #GSignondIdentityInfo for equality.
