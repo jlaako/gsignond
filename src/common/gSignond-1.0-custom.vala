@@ -24,7 +24,7 @@ namespace GSignond {
         public bool contains (string key);
     }
 
-    [CCode (cheader_filename = "gsignond/gsignond.h", free_function = "gsignond_security_context_list_free")]
+    [CCode (cheader_filename = "gsignond/gsignond.h", copy_function = "gsignond_security_context_list_copy", free_function = "gsignond_security_context_list_free", type_id = "gsignond_security_context_list_get_type ()")]
     public class SecurityContextList : GLib.List<GSignond.SecurityContext> {
         public SecurityContextList.from_variant (GLib.Variant variant);
         public GLib.Variant to_variant ();
