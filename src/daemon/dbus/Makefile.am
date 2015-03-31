@@ -100,8 +100,6 @@ nodist_libgsignond_dbus_la_SOURCES = \
    $(NULL)
 
 dbusservicedir = $(DBUS_SERVICES_DIR)
-dbusservice_DATA = \
-    $(SERVICES_DIR)/com.google.code.AccountsSSO.gSingleSignOn.service
 nodist_dbusservice_DATA = \
     $(SERVICES_DIR)/com.google.code.AccountsSSO.gSingleSignOn.service
 
