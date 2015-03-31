@@ -151,6 +151,8 @@ gsignond_security_context_free (GSignondSecurityContext *ctx)
     g_slice_free (GSignondSecurityContext, ctx);
 }
 
+G_DEFINE_BOXED_TYPE (GSignondSecurityContext, gsignond_security_context, gsignond_security_context_copy, gsignond_security_context_free)
+
 /**
  * gsignond_security_context_set_system_context:
  * @ctx: #GSignondSecurityContext item.
@@ -455,3 +457,5 @@ gsignond_security_context_list_free (GSignondSecurityContextList *seclist)
     g_list_free_full (seclist, _security_context_free);
 }
 
+
+G_DEFINE_BOXED_TYPE (GSignondSecurityContextList, gsignond_security_context_list, gsignond_security_context_list_copy, gsignond_security_context_list_free)

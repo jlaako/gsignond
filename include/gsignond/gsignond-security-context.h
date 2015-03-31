@@ -27,16 +27,25 @@
 #define _GSIGNOND_SECURITY_CONTEXT_H_
 
 #include <glib.h>
+#include <glib-object.h>
 
 G_BEGIN_DECLS
+
+#define GSIGNOND_TYPE_SECURITY_CONTEXT (gsignond_security_context_get_type ())
+#define GSIGNOND_TYPE_SECURITY_CONTEXT_LIST (gsignond_security_context_list_get_type ())
 
 typedef struct _GSignondSecurityContext {
     gchar *sys_ctx;
     gchar *app_ctx;
 } GSignondSecurityContext;
 
-
 typedef GList GSignondSecurityContextList;
+
+GType
+gsignond_security_context_get_type (void);
+
+GType
+gsignond_security_context_list_get_type (void);
 
 GSignondSecurityContext *
 gsignond_security_context_new ();
