@@ -86,7 +86,7 @@ G_DEFINE_TYPE_WITH_CODE (GSignondDigestPlugin, gsignond_digest_plugin,
 
 #define DATA_SET_VALUE(data, key, value) \
     if (value) { \
-        gsignond_dictionary_set_string(data, key, value); \
+        gsignond_dictionary_set_string(GSIGNOND_DICTIONARY(data), key, value); \
     }
 #define TO_GUCHAR(data) ((const guchar*)data)
 
@@ -202,7 +202,7 @@ static void
 _gsignond_digest_plugin_return_digest (GSignondPlugin *plugin,
                                        const gchar *username,
                                        const gchar *secret,
-                                       GSignondDictionary *session_data)
+                                       GSignondSessionData *session_data)
 {
     g_return_if_fail (plugin != NULL);
     g_return_if_fail (GSIGNOND_IS_DIGEST_PLUGIN (plugin));
@@ -211,20 +211,21 @@ _gsignond_digest_plugin_return_digest (GSignondPlugin *plugin,
     GSequenceIter *iter;
     GSequence* allowed_realms =
         gsignond_session_data_get_allowed_realms (session_data);
+    GSignondDictionary *dict = GSIGNOND_DICTIONARY (session_data);
     const gchar* realm = gsignond_session_data_get_realm (session_data);
-    const gchar* algo = gsignond_dictionary_get_string (session_data,
+    const gchar* algo = gsignond_dictionary_get_string (dict,
                 "Algo");
-    const gchar* nonce = gsignond_dictionary_get_string (session_data,
+    const gchar* nonce = gsignond_dictionary_get_string (dict,
                 "Nonce");
-    const gchar* nonce_count = gsignond_dictionary_get_string (session_data,
+    const gchar* nonce_count = gsignond_dictionary_get_string (dict,
                 "NonceCount");
-    const gchar* qop = gsignond_dictionary_get_string (session_data,
+    const gchar* qop = gsignond_dictionary_get_string (dict,
                 "Qop");
-    const gchar* method = gsignond_dictionary_get_string (session_data,
+    const gchar* method = gsignond_dictionary_get_string (dict,
                 "Method");
-    const gchar* digest_uri = gsignond_dictionary_get_string (session_data,
+    const gchar* digest_uri = gsignond_dictionary_get_string (dict,
                 "DigestUri");
-    const gchar* hentity = gsignond_dictionary_get_string (session_data,
+    const gchar* hentity = gsignond_dictionary_get_string (dict,
                 "HEntity");
 
     if (!allowed_realms) {
@@ -272,15 +273,15 @@ _gsignond_digest_plugin_return_digest (GSignondPlugin *plugin,
             username, realm, secret, nonce, nonce_count, cnonce, qop, method,
             digest_uri, hentity);
 
-    response = gsignond_dictionary_new();
+    response = gsignond_session_data_new();
     gsignond_session_data_set_username(response, username);
-    gsignond_dictionary_set_string(response, "CNonce", cnonce);
+    gsignond_dictionary_set_string(GSIGNOND_DICTIONARY (response), "CNonce", cnonce);
     g_free (cnonce);
-    gsignond_dictionary_set_string(response, "Response", digest);
+    gsignond_dictionary_set_string(GSIGNOND_DICTIONARY (response), "Response", digest);
     g_free(digest);
 
     gsignond_plugin_response_final(plugin, response);
-    gsignond_dictionary_unref(response);
+    g_object_unref(response);
 }
 
 static void
@@ -307,21 +308,21 @@ gsignond_digest_plugin_request_initial (
     }
 
     if (priv->session_data) {
-        gsignond_dictionary_unref (priv->session_data);
+        g_object_unref (priv->session_data);
         priv->session_data = NULL;
     }
-    gsignond_dictionary_ref (session_data);
+    g_object_ref (session_data);
     priv->session_data = session_data;
 
-    GSignondSignonuiData *user_action_data = gsignond_dictionary_new ();
+    GSignondSignonuiData *user_action_data = gsignond_signonui_data_new ();
     DATA_SET_VALUE (user_action_data, "Realm", 
                     gsignond_session_data_get_realm (session_data));
     DATA_SET_VALUE (user_action_data, "DigestUri", 
-                    gsignond_dictionary_get_string (session_data, "DigestUri"));
+                    gsignond_dictionary_get_string (GSIGNOND_DICTIONARY (session_data), "DigestUri"));
     gsignond_signonui_data_set_query_username (user_action_data, TRUE);
     gsignond_signonui_data_set_query_password (user_action_data, TRUE);
     gsignond_plugin_user_action_required (plugin, user_action_data);
-    gsignond_dictionary_unref (user_action_data);
+    g_object_unref (user_action_data);
 }
 
 static void
@@ -372,7 +373,7 @@ gsignond_digest_plugin_user_action_finished (
 static void
 gsignond_digest_plugin_refresh (
     GSignondPlugin *self, 
-    GSignondSessionData *session_data)
+    GSignondSignonuiData *session_data)
 {
     gsignond_plugin_refreshed(self, session_data);
 }
@@ -453,7 +454,7 @@ gsignond_digest_plugin_dispose (GObject *gobject)
     g_return_if_fail (self->priv != NULL);
 
     if (self->priv->session_data) {
-        gsignond_dictionary_unref (self->priv->session_data);
+        g_object_unref (self->priv->session_data);
         self->priv->session_data = NULL;
     }
 

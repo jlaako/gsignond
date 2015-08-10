@@ -79,7 +79,7 @@ gsignond_process_data_new (
 {
     GSignondProcessData* data = g_slice_new0 (GSignondProcessData);
     data->auth_session = g_object_ref (auth_session);
-    data->session_data = gsignond_dictionary_copy (session_data);
+    data->session_data = gsignond_session_data_copy (session_data);
     if (identity_method_cache)
         data->identity_method_cache = gsignond_dictionary_copy (identity_method_cache);
     data->mechanism = g_strdup (mechanism);
@@ -92,9 +92,9 @@ gsignond_process_data_free (
         GSignondProcessData* data)
 {
     g_object_unref (data->auth_session);
-    gsignond_dictionary_unref (data->session_data);
+    g_object_unref (data->session_data);
     if (data->identity_method_cache)
-        gsignond_dictionary_unref (data->identity_method_cache);
+        g_object_unref (data->identity_method_cache);
     g_free (data->mechanism);
     g_slice_free (GSignondProcessData, data);
 }

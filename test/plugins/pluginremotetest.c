@@ -186,7 +186,7 @@ response_callback(
 {
     DBG ("");
     GSignondSessionData** user_data_p = user_data;
-    *user_data_p = gsignond_dictionary_copy(result);
+    *user_data_p = gsignond_session_data_copy(result);
     _stop_mainloop ();
 }
 
@@ -359,7 +359,7 @@ START_TEST (test_pluginremote_request)
     fail_if(gsignond_session_data_get_username(result) != NULL);
     fail_if(g_strcmp0(
         gsignond_session_data_get_secret(result), "megapassword") != 0);
-    gsignond_dictionary_unref(result);
+    g_object_unref(result);
     result = NULL;
     
     // username and password not empty
@@ -374,11 +374,11 @@ START_TEST (test_pluginremote_request)
         gsignond_session_data_get_username(result), "megauser") != 0);
     fail_if(g_strcmp0(
         gsignond_session_data_get_secret(result), "megapassword") != 0);
-    gsignond_dictionary_unref(result);
+    g_object_unref(result);
     result = NULL;
     
     //username and password empty
-    gsignond_dictionary_unref(data);
+    g_object_unref(data);
     data = gsignond_dictionary_new();
     gsignond_plugin_request_initial(plugin, data, NULL, "password");
     _run_mainloop ();
@@ -392,7 +392,7 @@ START_TEST (test_pluginremote_request)
     fail_if(gsignond_signonui_data_get_query_password(ui_action, &bool_res)
             == FALSE);
     fail_if(bool_res == FALSE);    
-    gsignond_dictionary_unref(ui_action);
+    g_object_unref(ui_action);
     ui_action = NULL;
     
     //username not empty, password empty
@@ -409,10 +409,10 @@ START_TEST (test_pluginremote_request)
     fail_if(gsignond_signonui_data_get_query_password(ui_action, &bool_res)
             == FALSE);
     fail_if(bool_res == FALSE);    
-    gsignond_dictionary_unref(ui_action);
+    g_object_unref(ui_action);
     ui_action = NULL;
     
-    gsignond_dictionary_unref(data);
+    g_object_unref(data);
 
     g_object_unref(config);
     g_object_unref(plugin);
@@ -470,7 +470,7 @@ START_TEST (test_pluginremote_user_action_finished)
         gsignond_session_data_get_username(result), "megauser") != 0);
     fail_if(g_strcmp0(
         gsignond_session_data_get_secret(result), "megapassword") != 0);
-    gsignond_dictionary_unref(result);
+    g_object_unref(result);
     result = NULL;
 
     // user canceled
@@ -497,7 +497,7 @@ START_TEST (test_pluginremote_user_action_finished)
     g_error_free(error);
     error = NULL;
     
-    gsignond_dictionary_unref(data);
+    g_object_unref(data);
 
     g_object_unref(config);
     g_object_unref(plugin);
@@ -531,10 +531,10 @@ START_TEST (test_pluginremote_refresh)
 
     fail_if(result == NULL);    
     fail_if(error != NULL);
-    gsignond_dictionary_unref(result);
+    g_object_unref(result);
     result = NULL;
     
-    gsignond_dictionary_unref(data);
+    g_object_unref(data);
 
     g_object_unref(config);
     g_object_unref(plugin);

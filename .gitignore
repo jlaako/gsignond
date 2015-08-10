@@ -34,6 +34,7 @@ test/plugins/pluginremotetest
 test/plugins/pluginproxytest
 stamp-h1
 *service
+src/common/gsignond.vapi
 src/common/gsignond-plugin-enum-types.c
 src/common/gsignond-plugin-enum-types.h
 src/daemon/gsignond-identity-enum-types.c

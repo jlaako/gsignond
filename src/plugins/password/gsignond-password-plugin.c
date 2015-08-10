@@ -88,16 +88,16 @@ static void gsignond_password_plugin_request_initial (
     const gchar* secret = gsignond_session_data_get_secret(session_data);
     
     if (secret && secret[0]) {
-        GSignondSessionData *response = gsignond_dictionary_new();
+        GSignondSessionData *response = gsignond_session_data_new();
         if (username && username[0])
             gsignond_session_data_set_username(response, username);
         gsignond_session_data_set_secret(response, secret);
         gsignond_plugin_response_final(self, response);
-        gsignond_dictionary_unref(response);
+        g_object_unref(response);
         return;
     }
     
-    GSignondSignonuiData *user_action_data = gsignond_dictionary_new();
+    GSignondSignonuiData *user_action_data = gsignond_signonui_data_new();
     if (!username || !username[0])
         gsignond_signonui_data_set_query_username(user_action_data, TRUE);
     else {
@@ -106,7 +106,7 @@ static void gsignond_password_plugin_request_initial (
     }
     gsignond_signonui_data_set_query_password(user_action_data, TRUE);
     gsignond_plugin_user_action_required(self, user_action_data);
-    gsignond_dictionary_unref(user_action_data);
+    g_object_unref(user_action_data);
 }
 
 static void gsignond_password_plugin_user_action_finished (
@@ -130,11 +130,11 @@ static void gsignond_password_plugin_user_action_finished (
     if (query_error == SIGNONUI_ERROR_NONE && 
         username != NULL && 
         secret != NULL) {
-        GSignondSessionData *response = gsignond_dictionary_new();
+        GSignondSessionData *response = gsignond_session_data_new();
         gsignond_session_data_set_username(response, username);
         gsignond_session_data_set_secret(response, secret);
         gsignond_plugin_response_final(self, response);
-        gsignond_dictionary_unref(response);
+        g_object_unref(response);
         return;
     } else if (query_error == SIGNONUI_ERROR_CANCELED) {
         GError* error = g_error_new(GSIGNOND_ERROR, 

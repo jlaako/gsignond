@@ -146,13 +146,13 @@ gsignond_identity_info_remove_method (
         GSignondIdentityInfo *info,
         const gchar *method);
 
-GSignondSecurityContextList *
+GList *
 gsignond_identity_info_get_access_control_list (GSignondIdentityInfo *info);
 
 gboolean
 gsignond_identity_info_set_access_control_list (
         GSignondIdentityInfo *info,
-        const GSignondSecurityContextList *acl);
+        const GList *acl);
 
 GSignondSecurityContext *
 gsignond_identity_info_get_owner (GSignondIdentityInfo *info);

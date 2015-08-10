@@ -85,7 +85,7 @@ _get_filled_identity_info_2 (
     const gchar *secret = "secret1";
     const gchar *caption = "caption1";
     GSignondIdentityInfo *identity = NULL;
-    GSignondSecurityContextList *ctx_list = NULL;
+    GList *ctx_list = NULL;
     GSignondSecurityContext *ctx1, *ctx2, *ctx3 ;
     GHashTable *methods = NULL;
     GSequence *seq1 = NULL, *seq_realms;
@@ -138,7 +138,7 @@ _get_filled_identity_info_2 (
     if (add_owner) {
         gsignond_identity_info_set_owner (identity, ctx1);
     }
-    gsignond_security_context_list_free (ctx_list);
+    g_list_free_full (ctx_list, gsignond_security_context_free)
 
     gsignond_identity_info_set_validated (identity, FALSE);
     gsignond_identity_info_set_identity_type (identity, type);
@@ -267,7 +267,7 @@ START_TEST (test_sql_database)
     g_hash_table_foreach (data2, (GHFunc)_compare_key_value, &input);
     fail_if (input.status != 1);
 
-    gsignond_dictionary_unref (data2);
+    g_object_unref (data2);
     g_hash_table_unref(data);
 
 
@@ -468,7 +468,7 @@ START_TEST (test_secret_storage)
     g_hash_table_foreach (data2, (GHFunc)_compare_key_value, &input);
     fail_if (input.status != 1);
 
-    gsignond_dictionary_unref(data2);
+    g_object_unref(data2);
     g_hash_table_unref(data);
 
     fail_unless (gsignond_secret_storage_remove_data (
@@ -489,7 +489,7 @@ START_TEST (test_metadata_database)
     GSignondIdentityInfoList *identities = NULL;
     GSignondSecurityContext *ctx1 = NULL;
     GList *methods = NULL, *reflist = NULL;
-    GSignondSecurityContextList *acl;
+    GList *acl;
     GSignondSecurityContext *owner = NULL;
 
     config = gsignond_config_new ();
@@ -622,7 +622,7 @@ START_TEST (test_metadata_database)
     acl = gsignond_db_metadata_database_get_accesscontrol_list (metadata_db,
             identity_id);
     fail_if (acl == NULL);
-    gsignond_security_context_list_free (acl);
+    g_list_free_full (acl, (GDestroyNotify)gsignond_security_context_free);
 
     /*owner*/
     owner = gsignond_db_metadata_database_get_owner (metadata_db,
@@ -655,7 +655,7 @@ START_TEST (test_credentials_database)
     GSignondIdentityInfoList *identities = NULL;
     GSignondSecurityContext *ctx1 = NULL;
     GList *methods = NULL, *reflist = NULL;
-    GSignondSecurityContextList *acl = NULL ;
+    GList *acl = NULL ;
     GSignondSecurityContext *owner = NULL;
     GSignondDbCredentialsDatabase *credentials_db = NULL;
     GSignondSecretStorage *storage =NULL;
@@ -757,7 +757,7 @@ START_TEST (test_credentials_database)
     input.status = 1;
     g_hash_table_foreach (data2, (GHFunc)_compare_key_value, &input);
     fail_if (input.status != 1);
-    gsignond_dictionary_unref(data2);
+    g_object_unref(data2);
     g_hash_table_unref(data);
 
     fail_unless (gsignond_db_credentials_database_remove_data (
@@ -786,7 +786,7 @@ START_TEST (test_credentials_database)
     acl = gsignond_db_credentials_database_get_accesscontrol_list (
             credentials_db, identity_id);
     fail_if (acl == NULL);
-    gsignond_security_context_list_free (acl);
+    g_list_free_full (acl, (GDestroyNotify)gsignond_security_context_free);
 
     owner = gsignond_db_credentials_database_get_owner (
             credentials_db, identity_id);
@@ -808,7 +808,7 @@ START_TEST (test_credentials_database)
     gsignond_security_context_free (ctx);
     identities = gsignond_db_credentials_database_load_identities (
             credentials_db, cap_filter);
-    gsignond_dictionary_unref (cap_filter);
+    g_object_unref (cap_filter);
 
     fail_if (identities == NULL);
     fail_unless (g_list_length (identities) == 1);
@@ -819,7 +819,7 @@ START_TEST (test_credentials_database)
     gsignond_dictionary_set_int32 (type_filter, "Type", 456);
     identities = gsignond_db_credentials_database_load_identities (
             credentials_db, type_filter);
-    gsignond_dictionary_unref (type_filter);
+    g_object_unref (type_filter);
 
     fail_if (identities == NULL);
     fail_unless (g_list_length (identities) == 1);
@@ -831,7 +831,7 @@ START_TEST (test_credentials_database)
     gsignond_dictionary_set_string (cap_type_filter, "Caption", "CAP");
     identities = gsignond_db_credentials_database_load_identities (
             credentials_db, cap_type_filter);
-    gsignond_dictionary_unref (cap_type_filter);
+    g_object_unref (cap_type_filter);
 
     fail_if (identities == NULL);
     fail_unless (g_list_length (identities) == 1);
@@ -843,7 +843,7 @@ START_TEST (test_credentials_database)
 
     identities = gsignond_db_credentials_database_load_identities (
             credentials_db, no_cap_filter);
-    gsignond_dictionary_unref (no_cap_filter);
+    g_object_unref (no_cap_filter);
     fail_unless (identities == NULL);
 
     fail_unless (gsignond_db_credentials_database_remove_identity (

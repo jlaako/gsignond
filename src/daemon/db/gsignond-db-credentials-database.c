@@ -505,7 +505,7 @@ gsignond_db_credentials_database_check_secret (
  * Returns: (transfer full) the data if successful, NULL otherwise.
  * When done data should be freed with g_hash_table_unref (data)
  */
-GHashTable*
+GSignondDictionary *
 gsignond_db_credentials_database_load_data (
         GSignondDbCredentialsDatabase *self,
         const guint32 identity_id,
@@ -552,7 +552,7 @@ gsignond_db_credentials_database_update_data (
         GSignondDbCredentialsDatabase *self,
         const guint32 identity_id,
         const gchar *method,
-        GHashTable *data)
+        GSignondDictionary *data)
 {
 	guint32 method_id = 0;
 
@@ -731,11 +731,11 @@ gsignond_db_credentials_database_get_references (
  *
  * Gets all the access control list from the database into a list.
  *
- * Returns: (transfer full) the list #GSignondSecurityContextList if successful,
+ * Returns: (transfer full) the list #GList if successful,
  * NULL otherwise. When done the list should be freed with
  * gsignond_identity_info_list_free
  */
-GSignondSecurityContextList *
+GList *
 gsignond_db_credentials_database_get_accesscontrol_list(
         GSignondDbCredentialsDatabase *self,
         const guint32 identity_id)

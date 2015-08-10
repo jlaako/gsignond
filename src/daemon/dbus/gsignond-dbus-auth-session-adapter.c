@@ -356,7 +356,7 @@ _handle_process (GSignondDbusAuthSessionAdapter *self,
 
     PREPARE_SECURITY_CONTEXT (self, invocation);
 
-    data = (GSignondSessionData *)gsignond_dictionary_new_from_variant ((GVariant *)session_data);
+    data = gsignond_session_data_new_from_variant ((GVariant *)session_data);
     info = _auth_session_dbus_info_new (self, invocation);
     self->priv->is_process_active = TRUE;
     if (!gsignond_auth_session_process (self->priv->session, data, mechanisms, 
@@ -372,7 +372,7 @@ _handle_process (GSignondDbusAuthSessionAdapter *self,
         gsignond_disposable_set_auto_dispose (GSIGNOND_DISPOSABLE (self), TRUE);
     }
 
-    gsignond_dictionary_unref (data);
+    g_object_unref (data);
 
     return TRUE;
 }

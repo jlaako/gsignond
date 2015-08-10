@@ -265,14 +265,14 @@ gsignond_plugin_remote_request_initial (
             GSIGNOND_IS_PLUGIN_REMOTE (plugin));
     GSignondPluginRemote *self = GSIGNOND_PLUGIN_REMOTE (plugin);
 
-    GVariant *data = gsignond_dictionary_to_variant (session_data);
+    GVariant *data = gsignond_dictionary_to_variant (GSIGNOND_DICTIONARY (session_data));
     GVariant *cache;
     if (identity_method_cache)
         cache = gsignond_dictionary_to_variant (identity_method_cache);
     else {
         GSignondDictionary* empty_cache = gsignond_dictionary_new();
         cache = gsignond_dictionary_to_variant (empty_cache);
-        gsignond_dictionary_unref(empty_cache);
+        g_object_unref(empty_cache);
     }
     gsignond_dbus_remote_plugin_v1_call_request_initial (
             self->priv->dbus_plugin_proxy, data, cache, mechanism, NULL,
@@ -305,7 +305,7 @@ gsignond_plugin_remote_request (
             GSIGNOND_IS_PLUGIN_REMOTE (plugin));
     GSignondPluginRemote *self = GSIGNOND_PLUGIN_REMOTE (plugin);
 
-    GVariant *data = gsignond_dictionary_to_variant (session_data);
+    GVariant *data = gsignond_dictionary_to_variant (GSIGNOND_DICTIONARY (session_data));
     gsignond_dbus_remote_plugin_v1_call_request (
             self->priv->dbus_plugin_proxy, data, NULL, _request_async_cb, self);
 }
@@ -337,7 +337,7 @@ gsignond_plugin_remote_user_action_finished (
             GSIGNOND_IS_PLUGIN_REMOTE (plugin));
     GSignondPluginRemote *self = GSIGNOND_PLUGIN_REMOTE (plugin);
 
-    GVariant *data = gsignond_dictionary_to_variant (signonui_data);
+    GVariant *data = gsignond_dictionary_to_variant (GSIGNOND_DICTIONARY(signonui_data));
     gsignond_dbus_remote_plugin_v1_call_user_action_finished (
             self->priv->dbus_plugin_proxy, data, NULL,
             _user_action_finished_async_cb, self);
@@ -369,7 +369,7 @@ gsignond_plugin_remote_refresh (
             GSIGNOND_IS_PLUGIN_REMOTE (plugin));
     GSignondPluginRemote *self = GSIGNOND_PLUGIN_REMOTE (plugin);
 
-    GVariant *data = gsignond_dictionary_to_variant (signonui_data);
+    GVariant *data = gsignond_dictionary_to_variant (GSIGNOND_DICTIONARY(signonui_data));
     gsignond_dbus_remote_plugin_v1_call_refresh (
             self->priv->dbus_plugin_proxy, data, NULL, _refresh_async_cb, self);
 }
@@ -392,10 +392,9 @@ _response_cb (
 {
     g_return_if_fail (self && GSIGNOND_IS_PLUGIN_REMOTE (self));
 
-    GSignondSessionData *data = (GSignondSessionData *)
-            gsignond_dictionary_new_from_variant (session_data);
+    GSignondSessionData *data = gsignond_session_data_new_from_variant (session_data);
     gsignond_plugin_response (GSIGNOND_PLUGIN(self), data);
-    gsignond_dictionary_unref (data);
+    g_object_unref (data);
 }
 
 static void
@@ -406,10 +405,9 @@ _response_final_cb (
 {
     g_return_if_fail (self && GSIGNOND_IS_PLUGIN_REMOTE (self));
 
-    GSignondSessionData *data = (GSignondSessionData *)
-            gsignond_dictionary_new_from_variant (session_data);
+    GSignondSessionData *data = gsignond_session_data_new_from_variant (session_data);
     gsignond_plugin_response_final (GSIGNOND_PLUGIN(self), data);
-    gsignond_dictionary_unref (data);
+    g_object_unref (data);
 }
 
 static void
@@ -420,10 +418,9 @@ _store_cb (
 {
     g_return_if_fail (self && GSIGNOND_IS_PLUGIN_REMOTE (self));
 
-    GSignondSessionData *data = (GSignondSessionData *)
-            gsignond_dictionary_new_from_variant (session_data);
-    gsignond_plugin_store (GSIGNOND_PLUGIN(self), data);
-    gsignond_dictionary_unref (data);
+    GSignondSessionData *data = gsignond_session_data_new_from_variant (session_data);
+    gsignond_plugin_store (GSIGNOND_PLUGIN(self), GSIGNOND_DICTIONARY(data));
+    g_object_unref (data);
 }
 
 static void
@@ -446,10 +443,9 @@ _user_action_required_cb (
 {
     g_return_if_fail (self && GSIGNOND_IS_PLUGIN_REMOTE (self));
 
-    GSignondSignonuiData *data = (GSignondSignonuiData *)
-            gsignond_dictionary_new_from_variant (ui_data);
+    GSignondSignonuiData *data = gsignond_signonui_data_new_from_variant (ui_data);
     gsignond_plugin_user_action_required (GSIGNOND_PLUGIN(self), data);
-    gsignond_dictionary_unref (data);
+    g_object_unref (data);
 }
 
 static void
@@ -460,10 +456,9 @@ _refreshed_cb(
 {
     g_return_if_fail (self && GSIGNOND_IS_PLUGIN_REMOTE (self));
 
-    GSignondSignonuiData *data = (GSignondSignonuiData *)
-            gsignond_dictionary_new_from_variant (ui_data);
+    GSignondSignonuiData *data = gsignond_signonui_data_new_from_variant (ui_data);
     gsignond_plugin_refreshed (GSIGNOND_PLUGIN(self), data);
-    gsignond_dictionary_unref (data);
+    g_object_unref (data);
 }
 
 static void

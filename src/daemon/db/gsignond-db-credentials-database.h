@@ -129,7 +129,7 @@ gsignond_db_credentials_database_check_secret (
         const gchar *username,
         const gchar *secret);
 
-GHashTable*
+GSignondDictionary*
 gsignond_db_credentials_database_load_data (
         GSignondDbCredentialsDatabase *self,
         const guint32 identity_id,
@@ -140,7 +140,7 @@ gsignond_db_credentials_database_update_data (
         GSignondDbCredentialsDatabase *self,
         const guint32 identity_id,
         const gchar *method,
-        GHashTable *data);
+        GSignondDictionary *data);
 
 gboolean
 gsignond_db_credentials_database_remove_data (
@@ -173,7 +173,7 @@ gsignond_db_credentials_database_get_references (
         const guint32 id,
         const GSignondSecurityContext *ref_owner);
 
-GSignondSecurityContextList *
+GList *
 gsignond_db_credentials_database_get_accesscontrol_list(
         GSignondDbCredentialsDatabase *self,
         const guint32 identity_id);

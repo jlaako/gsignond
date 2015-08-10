@@ -40,15 +40,18 @@
  * setters with explicit key string.
  */
 
-
 /**
  * GSignondSessionData:
- * 
- * #GSignondSessionData is simply a typedef for #GSignondDictionary, which 
- * means the developers may also freely use methods associated with that structure,
- * in particular for creating a #GSignondSessionData object with 
- * gsignond_dictionary_new().
+ *
+ * Opaque #GSignondSessionData data structure.
  */
+/**
+ * GSignondSessionDataClass:
+ *
+ * Opaque #GSignondSessionDataClass data structure.
+ */
+
+G_DEFINE_TYPE (GSignondSessionData, gsignond_session_data, GSIGNOND_TYPE_DICTIONARY);
 
 /**
  * GSignondUiPolicy:
@@ -62,6 +65,65 @@
  * Policy setting to define how plugins should handle interaction with the user.
  */
 
+static void
+gsignond_session_data_class_init (GSignondSessionDataClass *klass)
+{
+  
+}
+
+static void
+gsignond_session_data_init (GSignondSessionData *self)
+{
+  /* initialize the object */
+}
+
+/**
+ * gsignond_session_data_new_from_variant:
+ * @variant: instance of #GVariant
+ *
+ * Converts the #GVariant to #GSignondSessionData. This is useful for example if 
+ * the dictionary needs to be deserialized, or if it's contained in another 
+ * #GSignondSessionData and has been retrieved using gsignond_dictionary_get().
+ *
+ * Returns: (transfer full): #GSignondSessionData if successful, NULL otherwise.
+ */
+GSignondSessionData *
+gsignond_session_data_new_from_variant (GVariant *variant)
+{
+    GSignondSessionData *session_data = NULL;
+    GVariantIter iter;
+    gchar *key = NULL;
+    GVariant *value = NULL;
+    GHashTable * table = NULL;
+
+    g_return_val_if_fail (variant != NULL, NULL);
+
+    session_data = gsignond_session_data_new ();
+    table = gsignond_dictionary_get_table (GSIGNOND_DICTIONARY (session_data));
+    g_variant_iter_init (&iter, variant);
+    while (g_variant_iter_next (&iter, "{sv}", &key, &value))
+    {
+        g_hash_table_insert (table, key, value);
+    }
+
+    return session_data;
+}
+
+/**
+ * gsignond_session_data_new:
+ *
+ * Creates a new instance of #GSignondSessionData.
+ *
+ * Returns: (transfer full): #GSignondSessionData object if successful,
+ * NULL otherwise.
+ */
+GSignondSessionData *
+gsignond_session_data_new (void)
+{
+    return GSIGNOND_SESSION_DATA (
+            g_object_new (GSIGNOND_TYPE_SESSION_DATA, NULL));
+}
+
 /**
  * gsignond_session_data_get_username:
  * @data: a #GSignondDictionary structure
@@ -73,7 +135,7 @@
 const gchar *
 gsignond_session_data_get_username (GSignondSessionData *data)
 {
-    return gsignond_dictionary_get_string (data, "UserName");
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data), "UserName");
 }
 
 /**
@@ -87,7 +149,7 @@ void
 gsignond_session_data_set_username (GSignondSessionData *data, 
                                     const gchar *username)
 {
-    gsignond_dictionary_set_string (data, "UserName", username);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data), "UserName", username);
 }
 
 /**
@@ -101,7 +163,7 @@ gsignond_session_data_set_username (GSignondSessionData *data,
 const gchar *
 gsignond_session_data_get_secret (GSignondSessionData *data)
 {
-    return gsignond_dictionary_get_string (data, "Secret");
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data), "Secret");
 }
 
 /**
@@ -115,7 +177,7 @@ void
 gsignond_session_data_set_secret (GSignondSessionData *data, 
                                   const gchar *secret)
 {
-    gsignond_dictionary_set_string (data, "Secret", secret);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data), "Secret", secret);
 }
 
 /**
@@ -129,7 +191,7 @@ gsignond_session_data_set_secret (GSignondSessionData *data,
 const gchar *
 gsignond_session_data_get_realm (GSignondSessionData *data)
 {
-    return gsignond_dictionary_get_string (data, "Realm");
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data), "Realm");
 }
 
 /**
@@ -143,7 +205,7 @@ void
 gsignond_session_data_set_allowed_realms (GSignondSessionData *data,
                                           GSequence *realms)
 {
-    gsignond_dictionary_set (data, "AllowedRealms",
+    gsignond_dictionary_set (GSIGNOND_DICTIONARY(data), "AllowedRealms",
                              gsignond_sequence_to_variant (realms));
 }
 
@@ -158,7 +220,7 @@ gsignond_session_data_set_allowed_realms (GSignondSessionData *data,
 GSequence *
 gsignond_session_data_get_allowed_realms (GSignondSessionData *data)
 {
-    return gsignond_variant_to_sequence (gsignond_dictionary_get (data,
+    return gsignond_variant_to_sequence (gsignond_dictionary_get (GSIGNOND_DICTIONARY(data),
                                                                   "AllowedRealms"));
 }
 
@@ -173,7 +235,7 @@ void
 gsignond_session_data_set_realm (GSignondSessionData *data,
                                  const gchar *realm)
 {
-    gsignond_dictionary_set_string (data, "Realm", realm);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data), "Realm", realm);
 }
 
 /**
@@ -189,7 +251,7 @@ gsignond_session_data_set_realm (GSignondSessionData *data,
 const gchar *
 gsignond_session_data_get_caption (GSignondSessionData *data)
 {
-    return gsignond_dictionary_get_string (data, "Caption");
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data), "Caption");
 }
 
 /**
@@ -205,13 +267,13 @@ void
 gsignond_session_data_set_caption (GSignondSessionData *data,
                                    const gchar *caption)
 {
-    gsignond_dictionary_set_string (data, "Caption", caption);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data), "Caption", caption);
 }
 
 /**
  * gsignond_session_data_get_renew_token:
  * @data: a #GSignondDictionary structure
- * @renew_token: the value for the parameter is written here
+ * @renew_token: (out): the value for the parameter is written here
  * 
  * A getter for a renew token property associated with the authentication session.
  * This property tells the plugin to discard any cached tokens and start 
@@ -223,7 +285,7 @@ gboolean
 gsignond_session_data_get_renew_token (GSignondSessionData *data,
                                        gboolean *renew_token)
 {
-    return gsignond_dictionary_get_boolean (data, "RenewToken", renew_token);
+    return gsignond_dictionary_get_boolean (GSIGNOND_DICTIONARY(data), "RenewToken", renew_token);
 }
 
 /**
@@ -239,7 +301,7 @@ void
 gsignond_session_data_set_renew_token (GSignondSessionData *data,
                                        gboolean renew_token)
 {
-    gsignond_dictionary_set_boolean (data, "RenewToken", renew_token);
+    gsignond_dictionary_set_boolean (GSIGNOND_DICTIONARY(data), "RenewToken", renew_token);
 }
 
 /**
@@ -256,7 +318,7 @@ gboolean
 gsignond_session_data_get_ui_policy (GSignondSessionData *data,
                                      GSignondUiPolicy *ui_policy)
 {
-    return gsignond_dictionary_get_uint32 (data, "UiPolicy", ui_policy);
+    return gsignond_dictionary_get_uint32 (GSIGNOND_DICTIONARY(data), "UiPolicy", ui_policy);
 }
 
 /**
@@ -271,7 +333,7 @@ void
 gsignond_session_data_set_ui_policy (GSignondSessionData *data, 
                                      GSignondUiPolicy ui_policy)
 {
-    gsignond_dictionary_set_uint32 (data, "UiPolicy", ui_policy);
+    gsignond_dictionary_set_uint32 (GSIGNOND_DICTIONARY(data), "UiPolicy", ui_policy);
 }    
 
 /**
@@ -286,7 +348,7 @@ gsignond_session_data_set_ui_policy (GSignondSessionData *data,
 const gchar *
 gsignond_session_data_get_network_proxy (GSignondSessionData *data)
 {
-    return gsignond_dictionary_get_string (data, "NetworkProxy");
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data), "NetworkProxy");
 }
 
 /**
@@ -301,13 +363,13 @@ void
 gsignond_session_data_set_network_proxy (GSignondSessionData *data,
                                          const gchar *network_proxy)
 {
-    gsignond_dictionary_set_string (data, "NetworkProxy", network_proxy);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data), "NetworkProxy", network_proxy);
 }
 
 /**
  * gsignond_session_data_get_network_timeout:
  * @data: a #GSignondDictionary structure
- * @network_timeout: the value for the parameter is written here
+ * @network_timeout: (out): the value for the parameter is written here
  * 
  * A getter for a network timeout setting associated with the authentication session.
  * This can be used to change the default timeout in case of unresponsive servers.
@@ -318,7 +380,7 @@ gboolean
 gsignond_session_data_get_network_timeout (GSignondSessionData *data,
                                            guint32 *network_timeout)
 {
-    return gsignond_dictionary_get_uint32 (data, "NetworkTimeout",
+    return gsignond_dictionary_get_uint32 (GSIGNOND_DICTIONARY(data), "NetworkTimeout",
                                            network_timeout);
 }
 
@@ -334,14 +396,14 @@ void
 gsignond_session_data_set_network_timeout (GSignondSessionData *data,
                                            guint32 network_timeout)
 {
-    gsignond_dictionary_set_uint32 (data, "NetworkTimeout",
+    gsignond_dictionary_set_uint32 (GSIGNOND_DICTIONARY(data), "NetworkTimeout",
                                     network_timeout);
 }
 
 /**
  * gsignond_session_data_get_window_id:
  * @data: a #GSignondDictionary structure
- * @window_id: the value for the parameter is written here
+ * @window_id: (out): the value for the parameter is written here
  * 
  * A getter for a window id setting associated with the authentication session.
  * This can be used to embed the user interaction window produced by the authentication
@@ -353,7 +415,7 @@ gboolean
 gsignond_session_data_get_window_id (GSignondSessionData *data,
                                      guint32 *window_id)
 {
-    return gsignond_dictionary_get_uint32 (data, "WindowId", window_id);
+    return gsignond_dictionary_get_uint32 (GSIGNOND_DICTIONARY(data), "WindowId", window_id);
 }
 
 /**
@@ -369,6 +431,43 @@ void
 gsignond_session_data_set_window_id (GSignondSessionData *data,
                                      guint32 window_id)
 {
-    gsignond_dictionary_set_uint32 (data, "WindowId", window_id);
+    gsignond_dictionary_set_uint32 (GSIGNOND_DICTIONARY(data), "WindowId", window_id);
+}
+
+/**
+ * gsignond_session_data_copy:
+ * @other: instance of #GSignondSessionData
+ *
+ * Creates a copy of the dictionary session data.
+ *
+ * Returns: (transfer full): #GSignondSessionData object if the copy was successful,
+ * NULL otherwise.
+ */
+GSignondSessionData *
+gsignond_session_data_copy (GSignondSessionData *other)
+{
+    GSignondSessionData *session = NULL;
+    GHashTable *other_table = NULL;
+    GSignondDictionary *session_dict = NULL;
+    GHashTableIter iter;
+    gchar *key = NULL;
+    GVariant *value = NULL;
+
+    g_return_val_if_fail (other != NULL, NULL);
+
+    session = gsignond_session_data_new ();
+    other_table = gsignond_dictionary_get_table (GSIGNOND_DICTIONARY (other));
+    session_dict = GSIGNOND_DICTIONARY (session);
+
+    g_hash_table_iter_init (&iter, other_table);
+    while (g_hash_table_iter_next (&iter,
+                                   (gpointer)&key,
+                                   (gpointer)&value))
+    {
+        gsignond_dictionary_set (session_dict, key, value);
+    }
+    
+
+    return session;
 }
 

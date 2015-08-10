@@ -75,11 +75,11 @@ G_DEFINE_TYPE (GSignondAuthSession, gsignond_auth_session, G_TYPE_OBJECT)
 #define VALIDATE_X_ACCESS(info, ctx, ret) \
 { \
     GSignondAccessControlManager *acm = gsignond_get_access_control_manager(); \
-    GSignondSecurityContextList *acl = gsignond_identity_info_get_access_control_list (info); \
+    GList *acl = gsignond_identity_info_get_access_control_list (info); \
     GSignondSecurityContext *owner = gsignond_identity_info_get_owner (info); \
     gboolean valid = gsignond_access_control_manager_peer_is_allowed_to_use_identity (acm, ctx, owner, acl); \
     gsignond_security_context_free (owner); \
-    gsignond_security_context_list_free (acl); \
+    g_list_free_full (acl, (GDestroyNotify)gsignond_security_context_free); \
     if (!valid) { \
         WARN ("security check failed"); \
         if (error) { \
@@ -352,7 +352,7 @@ _dispose (GObject *object)
     }
 
     if (self->priv->token_data) {
-        gsignond_dictionary_unref (self->priv->token_data);
+        g_object_unref (self->priv->token_data);
         self->priv->token_data = NULL;
     }
 
@@ -530,15 +530,15 @@ gsignond_auth_session_notify_state_changed (GSignondAuthSession *self,
 
 void 
 gsignond_auth_session_notify_store (GSignondAuthSession *self, 
-                                    GSignondDictionary *token_data)
+                                    GSignondSessionData *token_data)
 {
     g_return_if_fail (self && GSIGNOND_IS_AUTH_SESSION (self));
     g_return_if_fail (token_data);
 
     /* cache token data */
     if (self->priv->token_data)
-        gsignond_dictionary_unref (self->priv->token_data);
-    self->priv->token_data = gsignond_dictionary_ref (token_data);
+        g_object_unref (self->priv->token_data);
+    self->priv->token_data = g_object_ref (token_data);
 
     g_signal_emit (self, signals[SIG_PROCESS_STORE], 0, token_data);
 }
@@ -584,7 +584,7 @@ gsignond_auth_session_new (GSignondIdentityInfo *info, const gchar *method, GSig
                       "method", method, NULL);
     auth_session->priv->proxy = proxy;
     auth_session->priv->identity_info = gsignond_identity_info_ref (info);
-    auth_session->priv->token_data = token_data ? gsignond_dictionary_ref(token_data)
+    auth_session->priv->token_data = token_data ? g_object_ref(token_data)
                                                 : gsignond_dictionary_new();
 
     return auth_session;

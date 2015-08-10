@@ -43,16 +43,47 @@
  *     guint32 age;
  *     gboolean success = gsignond_dictionary_get_uint32(dict, "age", &age);
  *     const gchar* name = gsignond_dictionary_get_string(dict, "name");
- *     gsignond_dictionary_unref(dict);
+ *     g_object_unref(dict);
  * ]| 
  */
 
 /**
  * GSignondDictionary:
- * 
- * #GSignondDictionary is a typedef for #GHashTable, which 
- * means the developers may also use methods associated with that structure.
+ *
+ * Opaque #GSignondDictionary data structure.
  */
+/**
+ * GSignondDictionaryClass:
+ *
+ * Opaque #GSignondDictionaryClass data structure.
+ */
+
+#define GSIGNOND_DICTIONARY_GET_PRIVATE(obj) \
+                                          (G_TYPE_INSTANCE_GET_PRIVATE ((obj),\
+                                           GSIGNOND_TYPE_DICTIONARY, \
+                                           GSignondDictionaryPrivate))
+
+G_DEFINE_TYPE (GSignondDictionary, gsignond_dictionary, G_TYPE_OBJECT);
+
+struct _GSignondDictionaryPrivate {
+    GHashTable *table; /*the dictionary table.*/
+};
+
+static void
+gsignond_dictionary_class_init (GSignondDictionaryClass *klass)
+{
+    g_type_class_add_private (klass, sizeof (GSignondDictionaryPrivate));
+}
+
+static void
+gsignond_dictionary_init (GSignondDictionary *self)
+{
+    self->priv = GSIGNOND_DICTIONARY_GET_PRIVATE (self);
+    self->priv->table = g_hash_table_new_full ((GHashFunc)g_str_hash,
+                            (GEqualFunc)g_str_equal,
+                            (GDestroyNotify)g_free,
+                            (GDestroyNotify)g_variant_unref);
+}
 
 /**
  * gsignond_dictionary_new_from_variant:
@@ -78,7 +109,7 @@ gsignond_dictionary_new_from_variant (GVariant *variant)
     g_variant_iter_init (&iter, variant);
     while (g_variant_iter_next (&iter, "{sv}", &key, &value))
     {
-        g_hash_table_insert (dict, key, value);
+        g_hash_table_insert (dict->priv->table, key, value);
     }
 
     return dict;
@@ -108,7 +139,7 @@ gsignond_dictionary_to_variant_builder (GSignondDictionary *dict)
 
     builder = g_variant_builder_new (G_VARIANT_TYPE_VARDICT);
 
-    g_hash_table_iter_init (&iter, dict);
+    g_hash_table_iter_init (&iter, dict->priv->table);
     while (g_hash_table_iter_next (&iter, (gpointer)&key, (gpointer)&value))
     {
         g_variant_builder_add (builder, "{sv}", key, value);
@@ -155,43 +186,8 @@ gsignond_dictionary_to_variant (GSignondDictionary *dict)
 GSignondDictionary *
 gsignond_dictionary_new (void)
 {
-    return g_hash_table_new_full ((GHashFunc)g_str_hash,
-                            (GEqualFunc)g_str_equal,
-                            (GDestroyNotify)g_free,
-                            (GDestroyNotify)g_variant_unref);
-}
-
-/**
- * gsignond_dictionary_ref:
- * @dict: instance of #GSignondDictionary
- *
- * Increments the reference count of the dictionary structure.
- * 
- * Returns: (transfer none): the pointer to the passed in #GSignondDictionary
- */
-GSignondDictionary*
-gsignond_dictionary_ref (GSignondDictionary *dict)
-{
-    g_return_val_if_fail (dict != NULL, NULL);
-
-    return (GSignondDictionary*)g_hash_table_ref (dict);
-}
-
-/**
- * gsignond_dictionary_unref:
- * @dict: instance of #GSignondDictionary
- *
- * Decrements the reference count of the dictionary structure. If the reference
- * count reaches zero, the structure is deallocated and shouldn't be used.
- *
- */
-void
-gsignond_dictionary_unref (GSignondDictionary *dict)
-{
-    if (!dict)
-        return;
-
-    g_hash_table_unref (dict);
+    return GSIGNOND_DICTIONARY (
+            g_object_new (GSIGNOND_TYPE_DICTIONARY, NULL));
 }
 
 /**
@@ -214,7 +210,7 @@ gsignond_dictionary_get (GSignondDictionary *dict, const gchar *key)
     g_return_val_if_fail (dict != NULL, NULL);
     g_return_val_if_fail (key != NULL, NULL);
 
-    return g_hash_table_lookup (dict, key);
+    return g_hash_table_lookup (dict->priv->table, key);
 }
 
 /**
@@ -239,7 +235,7 @@ gsignond_dictionary_set (GSignondDictionary *dict,
 
     g_variant_ref_sink(value);
     g_hash_table_replace (
-            dict,
+            dict->priv->table,
             g_strdup(key),
             value);
 
@@ -250,7 +246,7 @@ gsignond_dictionary_set (GSignondDictionary *dict,
  * gsignond_dictionary_get_boolean:
  * @dict: instance of #GSignondDictionary
  * @key: (transfer none): key to look up
- * @value: points to the location where the value should be set
+ * @value: (out): points to the location where the value should be set
  *
  * Retrieves a gboolean value.
  *
@@ -291,7 +287,7 @@ gsignond_dictionary_set_boolean (GSignondDictionary *dict, const gchar *key,
  * gsignond_dictionary_get_int32:
  * @dict: instance of #GSignondDictionary
  * @key: (transfer none): key to look up
- * @value: points to the location where the value should be set
+ * @value: (out): points to the location where the value should be set
  *
  * Retrieves a int32 value.
  * 
@@ -332,7 +328,7 @@ gsignond_dictionary_set_int32 (GSignondDictionary *dict, const gchar *key,
  * gsignond_dictionary_get_uint32:
  * @dict: instance of #GSignondDictionary
  * @key: (transfer none): key to look up
- * @value: points to the location where the value should be set
+ * @value: (out): points to the location where the value should be set
  *
  * Retrieves a uint32 value.
  * 
@@ -373,7 +369,7 @@ gsignond_dictionary_set_uint32 (GSignondDictionary *dict, const gchar *key,
  * gsignond_dictionary_get_int64:
  * @dict: instance of #GSignondDictionary
  * @key: (transfer none): key to look up
- * @value: points to the location where the value should be set
+ * @value: (out): points to the location where the value should be set
  *
  * Retrieves a int64 value.
  * 
@@ -414,7 +410,7 @@ gsignond_dictionary_set_int64 (GSignondDictionary *dict, const gchar *key,
  * gsignond_dictionary_get_uint64:
  * @dict: instance of #GSignondDictionary
  * @key: (transfer none): key to look up
- * @value: points to the location where the value should be set
+ * @value: (out): points to the location where the value should be set
  *
  * Retrieves a uint64 value.
  * 
@@ -505,7 +501,7 @@ gsignond_dictionary_remove (GSignondDictionary *dict, const gchar *key)
     g_return_val_if_fail (key != NULL, FALSE);
 
     return g_hash_table_remove (
-            dict,
+            dict->priv->table,
             key);
 }
 
@@ -530,7 +526,7 @@ gsignond_dictionary_copy (GSignondDictionary *other)
 
     dict = gsignond_dictionary_new ();
     
-    g_hash_table_iter_init (&iter, other);
+    g_hash_table_iter_init (&iter, other->priv->table);
     while (g_hash_table_iter_next (&iter,
                                    (gpointer)&key,
                                    (gpointer)&value))
@@ -558,6 +554,21 @@ gsignond_dictionary_contains (GSignondDictionary *dict,
     g_return_val_if_fail (dict != NULL, FALSE);
     g_return_val_if_fail (key != NULL, FALSE);
 
-    return g_hash_table_contains (dict, key);
+    return g_hash_table_contains (dict->priv->table, key);
+}
+
+/**
+ * gsignond_dictionary_get_table:
+ * @dict: instance of #GSignondDictionary
+ *
+ * Get the #GHashTable associated to the #GSignondDictionary.
+ *
+ * Returns: (transfer none) (element-type utf8 GVariant): #GHashTable object if successful, NULL otherwise.
+ */
+GHashTable *
+gsignond_dictionary_get_table (GSignondDictionary *dict)
+{
+    g_return_val_if_fail (dict != NULL, NULL);
+    return dict->priv->table;
 }
 

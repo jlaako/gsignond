@@ -32,20 +32,14 @@
 G_BEGIN_DECLS
 
 #define GSIGNOND_TYPE_SECURITY_CONTEXT (gsignond_security_context_get_type ())
-#define GSIGNOND_TYPE_SECURITY_CONTEXT_LIST (gsignond_security_context_list_get_type ())
 
 typedef struct _GSignondSecurityContext {
     gchar *sys_ctx;
     gchar *app_ctx;
 } GSignondSecurityContext;
 
-typedef GList GSignondSecurityContextList;
-
 GType
 gsignond_security_context_get_type (void);
-
-GType
-gsignond_security_context_list_get_type (void);
 
 GSignondSecurityContext *
 gsignond_security_context_new ();
@@ -94,22 +88,6 @@ gsignond_security_context_match (const GSignondSecurityContext *ctx1,
 gboolean
 gsignond_security_context_check (const GSignondSecurityContext *reference,
                                  const GSignondSecurityContext *test);
-
-/* security context list related functions */
-
-GVariant *
-gsignond_security_context_list_to_variant (
-                                    const GSignondSecurityContextList *list);
-
-GSignondSecurityContextList *
-gsignond_security_context_list_from_variant (GVariant *variant);
-
-GSignondSecurityContextList *
-gsignond_security_context_list_copy (
-                                const GSignondSecurityContextList *src_list);
-
-void
-gsignond_security_context_list_free (GSignondSecurityContextList *seclist);
 
 G_END_DECLS
 

@@ -83,11 +83,11 @@ static void _on_store_token (GSignondAuthSession *session, GSignondDictionary *t
 #define VALIDATE_IDENTITY_X_ACCESS(identity, ctx, ret) \
 { \
     GSignondAccessControlManager *acm = gsignond_daemon_get_access_control_manager (identity->priv->owner); \
-    GSignondSecurityContextList *acl = gsignond_identity_info_get_access_control_list (identity->priv->info); \
+    GList *acl = gsignond_identity_info_get_access_control_list (identity->priv->info); \
     GSignondSecurityContext *owner = gsignond_identity_info_get_owner (identity->priv->info); \
     gboolean valid = gsignond_access_control_manager_peer_is_allowed_to_use_identity (acm, ctx, owner, acl); \
     gsignond_security_context_free (owner); \
-    gsignond_security_context_list_free (acl); \
+    g_list_free_full (acl, (GDestroyNotify)gsignond_security_context_free); \
     if (!valid) { \
         WARN ("cannot access identity."); \
         if (error) *error = gsignond_get_gerror_for_id (GSIGNOND_ERROR_PERMISSION_DENIED, "identity can not be accessed"); \
@@ -111,9 +111,9 @@ static void _on_store_token (GSignondAuthSession *session, GSignondDictionary *t
 #define VALIDATE_IDENTITY_WRITE_ACL(identity, ctx, ret) \
 { \
     GSignondAccessControlManager *acm = gsignond_daemon_get_access_control_manager (identity->priv->owner); \
-    GSignondSecurityContextList *acl = gsignond_identity_info_get_access_control_list (identity->priv->info); \
+    GList *acl = gsignond_identity_info_get_access_control_list (identity->priv->info); \
     gboolean valid = gsignond_access_control_manager_acl_is_valid (acm, ctx, acl); \
-    gsignond_security_context_list_free (acl); \
+    g_list_free_full (acl, (GDestroyNotify)gsignond_security_context_free); \
     if (!valid) { \
         WARN ("acl validity check failed."); \
         if (error) *error = gsignond_get_gerror_for_id (GSIGNOND_ERROR_PERMISSION_DENIED, "invalid access control list"); \
@@ -362,10 +362,10 @@ _on_user_action_completed (GSignondSignonuiData *reply, GError *error, gpointer 
               error->message,
               gsignond_identity_info_get_id (priv->info));
         if (cb_data->session) {
-            GSignondSignonuiData *reply = gsignond_dictionary_new();
+            GSignondSignonuiData *reply = gsignond_signonui_data_new();
             gsignond_signonui_data_set_query_error (reply, SIGNONUI_ERROR_GENERAL);
             gsignond_auth_session_user_action_finished (cb_data->session, reply);
-            gsignond_dictionary_unref(reply);
+            g_object_unref(reply);
         }
         g_error_free (error);
         g_slice_free (GSignondIdentityCbData, cb_data);
@@ -552,7 +552,7 @@ gsignond_identity_get_auth_session (GSignondIdentity *identity,
 
     session = gsignond_auth_session_new (identity->priv->info, method, token_data);
 
-    if (token_data) gsignond_dictionary_unref (token_data);
+    if (token_data) g_object_unref (token_data);
 
     if (!session) {
         if (error) *error = gsignond_get_gerror_for_id (GSIGNOND_ERROR_UNKNOWN, "Unknown error");
@@ -653,7 +653,7 @@ gsignond_identity_request_credentials_update (GSignondIdentity *identity,
         return FALSE;
     }
 
-    ui_data = gsignond_dictionary_new ();
+    ui_data = gsignond_signonui_data_new ();
 
     gsignond_signonui_data_set_query_password (ui_data, TRUE);
     gsignond_signonui_data_set_username (ui_data, gsignond_identity_info_get_username (identity->priv->info));
@@ -663,7 +663,7 @@ gsignond_identity_request_credentials_update (GSignondIdentity *identity,
     gsignond_daemon_show_dialog (GSIGNOND_DAEMON (identity->priv->owner), G_OBJECT(identity),
         ui_data, _on_credentials_updated, NULL, identity);
 
-    gsignond_dictionary_unref (ui_data);
+    g_object_unref (ui_data);
 
     return TRUE;
 }
@@ -751,7 +751,7 @@ gsignond_identity_verify_user (GSignondIdentity *identity,
         return FALSE;
     }
 
-    ui_data = gsignond_dictionary_new_from_variant (params);
+    ui_data = gsignond_signonui_data_new_from_variant (params);
     gsignond_signonui_data_set_query_password (ui_data, TRUE);
     gsignond_signonui_data_set_username (ui_data, gsignond_identity_info_get_username (identity->priv->info));
     gsignond_signonui_data_set_caption (ui_data, gsignond_identity_info_get_caption (identity->priv->info));
@@ -759,7 +759,7 @@ gsignond_identity_verify_user (GSignondIdentity *identity,
     gsignond_daemon_show_dialog (GSIGNOND_DAEMON (identity->priv->owner), G_OBJECT (identity),
         ui_data, _on_user_verified, NULL, identity);
 
-    gsignond_dictionary_unref (ui_data);
+    g_object_unref (ui_data);
 
     return TRUE;
 }
@@ -857,7 +857,7 @@ gsignond_identity_store (GSignondIdentity *identity,
     GSignondIdentityInfo *identity_info = NULL;
     gboolean was_new_identity = FALSE;
     GSignondSecurityContext *owner_ctx = NULL;
-    GSignondSecurityContextList *contexts = NULL;
+    GList *contexts = NULL;
     GSignondIdentityInfoPropFlags flags;
     GSignondIdentityInfoPropFlags flag_mask;
     guint32 id;
@@ -892,7 +892,7 @@ gsignond_identity_store (GSignondIdentity *identity,
     contexts = gsignond_identity_info_get_access_control_list (identity_info);
     if (contexts) {
         VALIDATE_IDENTITY_WRITE_ACL (identity, ctx, 0);
-        gsignond_security_context_list_free (contexts);
+        g_list_free_full (contexts, (GDestroyNotify)gsignond_security_context_free);
     }
    
     flags = gsignond_identity_info_get_edit_flags (identity_info);

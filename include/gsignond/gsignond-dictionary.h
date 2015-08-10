@@ -31,24 +31,46 @@
 
 G_BEGIN_DECLS
 
-#define GSIGNOND_TYPE_DICTIONARY (G_TYPE_HASH_TABLE)
-
-#define GSIGNOND_DICTIONARY(obj)  (G_TYPE_CHECK_INSTANCE_CAST ((obj), \
+#define GSIGNOND_TYPE_DICTIONARY   \
+                                       (gsignond_dictionary_get_type ())
+#define GSIGNOND_DICTIONARY(obj)   (G_TYPE_CHECK_INSTANCE_CAST ((obj), \
                                            GSIGNOND_TYPE_DICTIONARY, \
                                            GSignondDictionary))
-#define GSIGNOND_IS_DICTIONARY(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj),\
+#define GSIGNOND_IS_DICTIONARY(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), \
                                            GSIGNOND_TYPE_DICTIONARY))
+#define GSIGNOND_DICTIONARY_CLASS(klass) \
+                                            (G_TYPE_CHECK_CLASS_CAST ((klass), \
+                                             GSIGNOND_TYPE_DICTIONARY, \
+                                             GSignondDictionaryClass))
+#define GSIGNOND_IS_DICTIONARY_CLASS(klass) \
+                                            (G_TYPE_CHECK_CLASS_TYPE ((klass), \
+                                             GSIGNOND_TYPE_DICTIONARY))
+#define GSIGNOND_DICTIONARY_GET_CLASS(obj) \
+                                            (G_TYPE_INSTANCE_GET_CLASS ((obj), \
+                                             GSIGNOND_TYPE_DICTIONARY, \
+                                             GSignondDictionaryClass))
 
-typedef GHashTable GSignondDictionary;
+typedef struct _GSignondDictionaryPrivate GSignondDictionaryPrivate;
+
+typedef struct {
+    GObject parent_instance;
+
+    /*< private >*/
+    GSignondDictionaryPrivate *priv;
+} GSignondDictionary;
+
+typedef struct {
+    /*< private >*/
+    GObjectClass parent_class;
+
+} GSignondDictionaryClass;
+
+/* used by GSIGNOND_TYPE_DICTIONARY */
+GType
+gsignond_dictionary_get_type (void);
 
 GSignondDictionary *
 gsignond_dictionary_new (void);
-
-GSignondDictionary *
-gsignond_dictionary_ref (GSignondDictionary *dict);
-
-void
-gsignond_dictionary_unref (GSignondDictionary *dict);
 
 GSignondDictionary *
 gsignond_dictionary_copy (GSignondDictionary *other);
@@ -121,6 +143,9 @@ gsignond_dictionary_remove (GSignondDictionary *dict, const gchar *key);
 
 gboolean
 gsignond_dictionary_contains (GSignondDictionary *dict, const gchar *key);
+
+GHashTable *
+gsignond_dictionary_get_table (GSignondDictionary *dict);
 
 G_END_DECLS
 

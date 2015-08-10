@@ -687,7 +687,7 @@ START_TEST(test_query_identities)
     res = gsignond_dbus_auth_service_call_query_identities_sync (auth_service,
             gsignond_dictionary_to_variant (filter),
             "app_context_A", &v_identities, NULL, &error);
-    gsignond_dictionary_unref (filter);
+    g_object_unref (filter);
     fail_if (res == FALSE || !v_identities, "Failed to query identities for "
                            "app context 'app_context_A' : %s",
                            error ? error->message : "");
@@ -712,7 +712,7 @@ START_TEST(test_query_identities)
     res = gsignond_dbus_auth_service_call_query_identities_sync (auth_service,
             gsignond_dictionary_to_variant (filter),
             "app_context_B", &v_identities, NULL, &error);
-    gsignond_dictionary_unref (filter);
+    g_object_unref (filter);
     fail_if (res == FALSE || !v_identities, "Failed to query identities for "
                            "app context 'app_context_B' and Type: 2 : %s",
                            error ? error->message : "");
@@ -732,7 +732,7 @@ START_TEST(test_query_identities)
     res = gsignond_dbus_auth_service_call_query_identities_sync (auth_service,
             gsignond_dictionary_to_variant (filter),
             "app_context_B", &v_identities, NULL, &error);
-    gsignond_dictionary_unref (filter);
+    g_object_unref (filter);
     fail_if (res == FALSE || !v_identities, "Failed to query identities for "
                            "app context 'app_context_A' : %s",
                            error ? error->message : "");

@@ -373,9 +373,9 @@ gboolean
 _gsignond_db_metadata_database_update_acl (
         GSignondDbMetadataDatabase *self,
         GSignondIdentityInfo *identity,
-        GSignondSecurityContextList *acl)
+        GList *acl)
 {
-    GSignondSecurityContextList *list = NULL;
+    GList *list = NULL;
     GSignondSecurityContext *ctx = NULL;
 
     g_return_val_if_fail (GSIGNOND_DB_IS_METADATA_DATABASE (self), FALSE);
@@ -1057,7 +1057,7 @@ gsignond_db_metadata_database_update_identity (
     guint32 ret = 0;
     GHashTable *methods = NULL;
     GSequence *realms = NULL;
-    GSignondSecurityContextList *acl = NULL, *list = NULL;
+    GList *acl = NULL, *list = NULL;
     GSignondSecurityContext *owner = NULL;
     GHashTableIter method_iter;
     const gchar *method = NULL;
@@ -1248,7 +1248,7 @@ gsignond_db_metadata_database_update_identity (
 finished:
     if (methods) g_hash_table_unref (methods);
     if (realms) g_sequence_free (realms);
-    if (acl) gsignond_security_context_list_free (acl);
+    if (acl) g_list_free_full (acl, (GDestroyNotify)gsignond_security_context_free);
     if (owner) gsignond_security_context_free (owner);
 
     return ret;
@@ -1278,7 +1278,7 @@ gsignond_db_metadata_database_get_identity (
     GHashTableIter iter;
     gchar *method = NULL;
     gint method_id = 0;
-    GSignondSecurityContextList *acl = NULL;
+    GList *acl = NULL;
     GSignondSecurityContext *owner = NULL;
 
     g_return_val_if_fail (GSIGNOND_DB_IS_METADATA_DATABASE (self), NULL);
@@ -1315,7 +1315,7 @@ gsignond_db_metadata_database_get_identity (
             identity_id);
     if (acl) {
         gsignond_identity_info_set_access_control_list (identity, acl);
-        gsignond_security_context_list_free (acl);
+        g_list_free_full (acl, (GDestroyNotify)gsignond_security_context_free);
     }
 
     /*owner*/
@@ -1658,16 +1658,16 @@ gsignond_db_metadata_database_get_references (
  *
  * Gets all the access control list from the database into a list.
  *
- * Returns: (transfer full) the list #GSignondSecurityContextList if successful,
+ * Returns: (transfer full) the list #GList if successful,
  * NULL otherwise. When done the list should be freed with
  * gsignond_identity_info_list_free
  */
-GSignondSecurityContextList *
+GList *
 gsignond_db_metadata_database_get_accesscontrol_list(
         GSignondDbMetadataDatabase *self,
         const guint32 identity_id)
 {
-    GSignondSecurityContextList *list = NULL;
+    GList *list = NULL;
     GHashTable *tuples = NULL;
     gchar *query = NULL;
     GHashTableIter iter;
