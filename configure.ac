@@ -46,8 +46,14 @@ fi
 
 PKG_CHECK_MODULES([LIBECRYPTFS], libecryptfs >= 96, [libecryptfs=yes], [libecryptfs=no])
 AM_CONDITIONAL(HAVE_LIBECRYPTFS, [test x$libecryptfs = xyes])
-if test "x$libecryptfs" = xes; then
+if test "x$libecryptfs" = xyes; then
     AC_DEFINE(HAVE_LIBECRYPTFS, [1], [Define if libecryptfs exists.])
+fi
+
+AC_CHECK_HEADER([trousers/tss.h], [libtspi=yes], [libtspi=no], AC_INCLUDES_DEFAULT)
+AM_CONDITIONAL(HAVE_LIBTSPI, [test x$libtspi = xyes])
+if test "x$libtspi" = xyes; then
+    AC_DEFINE(HAVE_LIBTSPI, [1], [Define if libtspi exists.])
 fi
 
 AC_PATH_PROG(GLIB_MKENUMS, glib-mkenums)
@@ -201,6 +207,7 @@ src/gplugind/Makefile
 src/extensions/Makefile
 src/extensions/test/Makefile
 src/extensions/tizen/Makefile
+src/extensions/ostro/Makefile
 src/plugins/Makefile
 src/plugins/password/Makefile
 src/plugins/ssotest/Makefile

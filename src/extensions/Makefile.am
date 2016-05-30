@@ -4,3 +4,8 @@ if HAVE_LIBECRYPTFS
 SUBDIRS += tizen
 endif
 endif
+if HAVE_LIBECRYPTFS
+if HAVE_LIBTSPI
+SUBDIRS += ostro
+endif
+endif
