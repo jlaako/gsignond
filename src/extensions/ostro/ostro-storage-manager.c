@@ -25,13 +25,20 @@
 
 #include <errno.h>
 #include <string.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/mount.h>
+#include <mntent.h>
+
 #include <glib.h>
 #include <glib/gstdio.h>
-#include <mntent.h>
+
 #include <ecryptfs.h>
+
+#include <trousers/tss.h>
+#include <trousers/trousers.h>
 
 #include "config.h"
 
@@ -48,8 +55,15 @@
 #define KEY_BYTES 16
 #define KEY_CIPHER "aes"
 
+typedef struct __key_bundle
+{
+    uint8_t key[KEY_BYTES];
+    uint8_t salt[ECRYPTFS_SALT_SIZE];
+} _key_bundle_t;
+
 struct _ExtensionOstroStorageManagerPrivate
 {
+    gchar *kdir;
     gchar *cdir;
     gchar fekey[ECRYPTFS_MAX_PASSPHRASE_BYTES + 1];
     gchar fesalt[ECRYPTFS_SALT_SIZE + 1];
@@ -92,6 +106,7 @@ _set_config (ExtensionOstroStorageManager *self, GSignondConfig *config)
 #   endif
     parent->location = g_build_filename (storage_path, user_dir, NULL);
     g_free (user_dir);
+    self->priv->kdir = g_strdup (storage_path);
     self->priv->cdir = g_strdup_printf ("%s.efs", parent->location);
     DBG ("location %s encryption point %s", parent->location, self->priv->cdir);
 }
@@ -162,8 +177,104 @@ _finalize (GObject *object)
     if (priv)
         memset(priv->ksig, 0x00, sizeof(priv->ksig));
     g_free (priv->cdir);
+    g_free (priv->kdir);
 
     G_OBJECT_CLASS (extension_ostro_storage_manager_parent_class)->finalize (object);
+}
+
+static gboolean
+_seal_key_bundle (void **skeyb, size_t *skeyb_size,
+                  _key_bundle_t *kbundle)
+{
+	TSS_HCONTEXT hctx = 0;
+	TSS_HTPM htpm = 0;
+	TSS_HKEY hkey = 0;
+	TSS_HPOLICY hpol = 0;
+	TSS_HENCDATA hencdata = 0;
+	TSS_UUID key_uuid = TSS_UUID_SRK;
+	BYTE wks[] = TSS_WELL_KNOWN_SECRET;
+    UINT32 datasize = 0;
+	BYTE *databuf = NULL;
+	TSS_RESULT res;
+    gboolean retval = FALSE;
+
+	res = Tspi_Context_Create (&hctx);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_Context_Create(): %x", res);
+		return FALSE;
+	}
+	res = Tspi_Context_Connect (hctx, NULL);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_Context_Connect(): %x", res);
+		goto ctx_exit;
+	}
+
+	res = Tspi_Context_GetTpmObject (hctx, &htpm);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_Context_GetTpmObject(): %x", res);
+		goto ctx_exit;
+	}
+
+	res = Tspi_Context_LoadKeyByUUID (hctx, TSS_PS_TYPE_SYSTEM,
+		key_uuid, &hkey);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_Context_LoadKeyByUUID(): %x", res);
+		goto tpm_exit;
+	}
+	res = Tspi_GetPolicyObject (hkey, TSS_POLICY_USAGE, &hpol);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_GetPolicyObject(): %x", res);
+		goto key_exit;
+	}
+	res = Tspi_Policy_SetSecret (hpol, TSS_SECRET_MODE_SHA1,
+		sizeof (wks), wks);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_Policy_SetSecret(): %x", res);
+		goto pol_exit;
+	}
+
+	res = Tspi_Context_CreateObject (hctx, TSS_OBJECT_TYPE_ENCDATA,
+		TSS_ENCDATA_SEAL, &hencdata);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_Context_CreateObject(): %x", res);
+		goto pol_exit;
+	}
+	res = Tspi_Data_Seal (hencdata, hkey,
+                          sizeof(_key_bundle_t), (BYTE *) kbundle, 0);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_Data_Seal(): %x", res);
+		goto enc_exit;
+	}
+
+	res = Tspi_GetAttribData (hencdata, TSS_TSPATTRIB_ENCDATA_BLOB,
+		TSS_TSPATTRIB_ENCDATABLOB_BLOB, &datasize, &databuf);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_GetAttribData(): %x", res);
+		goto enc_exit;
+	}
+    *skeyb = g_malloc0 (datasize);
+    memcpy (skeyb, databuf, datasize);
+    *skeyb_size = datasize;
+
+    retval = TRUE;
+
+enc_exit:
+	Tspi_Context_Close (hencdata);
+pol_exit:
+	Tspi_Context_Close (hpol);
+key_exit:
+	Tspi_Context_Close (hkey);
+tpm_exit:
+	Tspi_Context_Close (htpm);
+ctx_exit:
+	res = Tspi_Context_FreeMemory (hctx, NULL);
+	if (res != TSS_SUCCESS)
+		DBG ("Tspi_Context_FreeMemory(): %x", res);
+	res = Tspi_Context_Close (hctx);
+	if (res != TSS_SUCCESS)
+		DBG ("Tspi_Context_Close(): %x", res);
+
+    return retval;
 }
 
 static gboolean
@@ -179,6 +290,45 @@ _initialize_storage (GSignondStorageManager *parent)
     if (g_access (parent->location, R_OK) == 0 &&
         g_access (priv->cdir, R_OK) == 0)
         return TRUE;
+
+    /* generate random key bundle */
+    DBG ("generating random key bundle");
+    int rndfd = open ("/dev/random", O_RDONLY);
+    if (rndfd < 0) {
+        WARN ("open() of /dev/random failed");
+        return FALSE;
+    }
+    _key_bundle_t keyb;
+    if (read (rndfd, &keyb, sizeof (keyb)) < (ssize_t) sizeof (keyb)) {
+        WARN ("read() from /dev/random failed");
+        close (rndfd);
+        return FALSE;
+    }
+    close (rndfd);
+
+    /* seal the key bundle with TPM */
+    DBG ("sealing key bundle with TPM");
+    void *skeyb = NULL;
+    size_t skeyb_size = 0;
+    if (!_seal_key_bundle (&skeyb, &skeyb_size, &keyb)) {
+        WARN ("failed to create a sealed key bundle");
+        return FALSE;
+    }
+    memset (&keyb, 0x00, sizeof (keyb));
+
+    /* store sealed key bundle */
+    gchar *skbfile = g_build_filename (priv->kdir, "gsignond-kb.bin", NULL);
+    int skbfd = open (skbfile, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR);
+    if (skbfd < 0) {
+        WARN ("open(\"%s\") failed", skbfile);
+        return FALSE;
+    }
+    if (write (skbfd, skeyb, skeyb_size) < (ssize_t) skeyb_size) {
+        WARN ("write() of the sealed key bundle failed");
+        close (skbfd);
+        return FALSE;
+    }
+    close (skbfd);
 
     gboolean res = FALSE;
 
