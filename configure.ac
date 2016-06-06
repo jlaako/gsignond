@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.60])
-AC_INIT([gsignond], [1.0.4],[],[],[http://01.org/gsso])
+AC_INIT([gsignond], [1.0.5],[],[],[http://01.org/gsso])
 AC_CONFIG_SRCDIR([src/daemon/main.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -54,6 +54,7 @@ AC_CHECK_HEADER([trousers/tss.h], [libtspi=yes], [libtspi=no], AC_INCLUDES_DEFAU
 AM_CONDITIONAL(HAVE_LIBTSPI, [test x$libtspi = xyes])
 if test "x$libtspi" = xyes; then
     AC_DEFINE(HAVE_LIBTSPI, [1], [Define if libtspi exists.])
+    AC_SUBST(LIBTSPI_LIBS, [-ltspi])
 fi
 
 AC_PATH_PROG(GLIB_MKENUMS, glib-mkenums)

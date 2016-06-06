@@ -65,21 +65,17 @@ struct _ExtensionOstroStorageManagerPrivate
 {
     gchar *kdir;
     gchar *cdir;
-    gchar fekey[ECRYPTFS_MAX_PASSPHRASE_BYTES + 1];
-    gchar fesalt[ECRYPTFS_SALT_SIZE + 1];
     gchar ksig[ECRYPTFS_SIG_SIZE_HEX + 1];
 };
 
 enum
 {
     PROP_0,
-    PROP_FEKEY,
-    PROP_FESALT,
     N_PROPERTIES,
     PROP_CONFIG
 };
 
-static GParamSpec *properties[N_PROPERTIES] = { NULL, };
+/*static GParamSpec *properties[N_PROPERTIES] = { NULL, };*/
 
 G_DEFINE_TYPE (ExtensionOstroStorageManager,
                extension_ostro_storage_manager,
@@ -106,7 +102,8 @@ _set_config (ExtensionOstroStorageManager *self, GSignondConfig *config)
 #   endif
     parent->location = g_build_filename (storage_path, user_dir, NULL);
     g_free (user_dir);
-    self->priv->kdir = g_strdup (storage_path);
+    /* store key in user dir */
+    self->priv->kdir = g_strdup (parent->location);
     self->priv->cdir = g_strdup_printf ("%s.efs", parent->location);
     DBG ("location %s encryption point %s", parent->location, self->priv->cdir);
 }
@@ -117,21 +114,11 @@ _set_property (GObject *object, guint prop_id, const GValue *value,
 {
     ExtensionOstroStorageManager *self =
         EXTENSION_OSTRO_STORAGE_MANAGER (object);
-    ExtensionOstroStorageManagerPrivate *priv = self->priv;
+    /*ExtensionOstroStorageManagerPrivate *priv = self->priv;*/
 
     switch (prop_id) {
         case PROP_CONFIG:
             _set_config (self, GSIGNOND_CONFIG (g_value_dup_object (value)));
-            break;
-        case PROP_FEKEY:
-            g_strlcpy (priv->fekey,
-                       g_value_get_string (value),
-                       sizeof(priv->fekey));
-            break;
-        case PROP_FESALT:
-            g_strlcpy (priv->fesalt,
-                       g_value_get_string (value),
-                       sizeof(priv->fesalt));
             break;
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -143,18 +130,12 @@ _get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
     ExtensionOstroStorageManager *self =
         EXTENSION_OSTRO_STORAGE_MANAGER (object);
-    ExtensionOstroStorageManagerPrivate *priv = self->priv;
+    /*ExtensionOstroStorageManagerPrivate *priv = self->priv;*/
 
     switch (prop_id) {
         case PROP_CONFIG:
             g_value_set_object (value,
                                 GSIGNOND_STORAGE_MANAGER (self)->config);
-            break;
-        case PROP_FEKEY:
-            g_value_set_string (value, priv->fekey);
-            break;
-        case PROP_FESALT:
-            g_value_set_string (value, priv->fesalt);
             break;
         default:
             G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -253,8 +234,105 @@ _seal_key_bundle (void **skeyb, size_t *skeyb_size,
 		goto enc_exit;
 	}
     *skeyb = g_malloc0 (datasize);
-    memcpy (skeyb, databuf, datasize);
+    memcpy (*skeyb, databuf, datasize);
     *skeyb_size = datasize;
+
+    retval = TRUE;
+
+enc_exit:
+	Tspi_Context_Close (hencdata);
+pol_exit:
+	Tspi_Context_Close (hpol);
+key_exit:
+	Tspi_Context_Close (hkey);
+tpm_exit:
+	Tspi_Context_Close (htpm);
+ctx_exit:
+	res = Tspi_Context_FreeMemory (hctx, NULL);
+	if (res != TSS_SUCCESS)
+		DBG ("Tspi_Context_FreeMemory(): %x", res);
+	res = Tspi_Context_Close (hctx);
+	if (res != TSS_SUCCESS)
+		DBG ("Tspi_Context_Close(): %x", res);
+
+    return retval;
+}
+
+static gboolean
+_unseal_key_bundle (_key_bundle_t *kbundle, void *skeyb, size_t skeyb_size)
+{
+	TSS_HCONTEXT hctx = 0;
+	TSS_HTPM htpm = 0;
+	TSS_HKEY hkey = 0;
+	TSS_HPOLICY hpol = 0;
+	TSS_HENCDATA hencdata = 0;
+	TSS_UUID key_uuid = TSS_UUID_SRK;
+	BYTE wks[] = TSS_WELL_KNOWN_SECRET;
+    UINT32 datasize = 0;
+	BYTE *databuf = NULL;
+	TSS_RESULT res;
+    gboolean retval = FALSE;
+
+	res = Tspi_Context_Create (&hctx);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_Context_Create(): %x", res);
+		return FALSE;
+	}
+	res = Tspi_Context_Connect (hctx, NULL);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_Context_Connect(): %x", res);
+		goto ctx_exit;
+	}
+
+	res = Tspi_Context_GetTpmObject (hctx, &htpm);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_Context_GetTpmObject(): %x", res);
+		goto ctx_exit;
+	}
+
+	res = Tspi_Context_LoadKeyByUUID (hctx, TSS_PS_TYPE_SYSTEM,
+		key_uuid, &hkey);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_Context_LoadKeyByUUID(): %x", res);
+		goto tpm_exit;
+	}
+	res = Tspi_GetPolicyObject (hkey, TSS_POLICY_USAGE, &hpol);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_GetPolicyObject(): %x", res);
+		goto key_exit;
+	}
+	res = Tspi_Policy_SetSecret (hpol, TSS_SECRET_MODE_SHA1,
+		sizeof (wks), wks);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_Policy_SetSecret(): %x", res);
+		goto pol_exit;
+	}
+
+	res = Tspi_Context_CreateObject (hctx, TSS_OBJECT_TYPE_ENCDATA,
+		TSS_ENCDATA_SEAL, &hencdata);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_Context_CreateObject(): %x", res);
+		goto pol_exit;
+	}
+    res = Tspi_SetAttribData (hencdata, TSS_TSPATTRIB_ENCDATA_BLOB,
+		TSS_TSPATTRIB_ENCDATABLOB_BLOB, skeyb_size, skeyb);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_SetAttribData(): %x", res);
+		goto enc_exit;
+	}
+	datasize = 0;
+	databuf = NULL;
+	res = Tspi_Data_Unseal (hencdata, hkey, &datasize, &databuf);
+	if (res != TSS_SUCCESS) {
+		DBG ("Tspi_Data_Unseal(): %x", res);
+		goto enc_exit;
+	}
+
+    if (datasize != sizeof (_key_bundle_t)) {
+        DBG ("size of unsealed data doesn't match with key bundle size");
+        goto enc_exit;
+    }
+    memcpy (kbundle, databuf, sizeof (_key_bundle_t));
 
     retval = TRUE;
 
@@ -317,18 +395,22 @@ _initialize_storage (GSignondStorageManager *parent)
     memset (&keyb, 0x00, sizeof (keyb));
 
     /* store sealed key bundle */
+    DBG ("storing sealed key bundle");
     gchar *skbfile = g_build_filename (priv->kdir, "gsignond-kb.bin", NULL);
     int skbfd = open (skbfile, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR);
+    g_free (skbfile);
     if (skbfd < 0) {
         WARN ("open(\"%s\") failed", skbfile);
+        g_free (skeyb);
         return FALSE;
     }
-    if (write (skbfd, skeyb, skeyb_size) < (ssize_t) skeyb_size) {
-        WARN ("write() of the sealed key bundle failed");
-        close (skbfd);
-        return FALSE;
-    }
+    ssize_t skbwsize = write (skbfd, skeyb, skeyb_size);
     close (skbfd);
+    g_free (skeyb);
+    if (skbwsize < (ssize_t) skeyb_size) {
+        WARN ("write() of the sealed key bundle failed");
+        return FALSE;
+    }
 
     gboolean res = FALSE;
 
@@ -383,12 +465,53 @@ _mount_filesystem (GSignondStorageManager *parent)
     ExtensionOstroStorageManager *self =
         EXTENSION_OSTRO_STORAGE_MANAGER (parent);
     ExtensionOstroStorageManagerPrivate *priv = self->priv;
+    /*gchar fekey[ECRYPTFS_MAX_PASSPHRASE_BYTES + 1];
+    gchar fesalt[ECRYPTFS_SALT_SIZE];*/
 
+    DBG ("load sealed key bundle");
+    gchar *skbfile = g_build_filename (priv->kdir, "gsignond-kb.bin", NULL);
+    int skbfd = open (skbfile, O_RDONLY);
+    g_free (skbfile);
+    if (skbfd < 0) {
+        DBG ("failed to open sealed key bundle file");
+        return NULL;
+    }
+    struct stat skbstat;
+    if (fstat (skbfd, &skbstat)) {
+        DBG ("fstat() of sealed key bundle file failed");
+        close (skbfd);
+        return NULL;
+    }
+    size_t skeyb_size = skbstat.st_size;
+    void *skeyb = g_malloc0 (skeyb_size);
+    ssize_t skbrsize = read (skbfd, skeyb, skeyb_size);
+    close (skbfd);
+    if (skbrsize < (ssize_t) skeyb_size) {
+        DBG ("failed to read sealed key bundle");
+        g_free (skeyb);
+        return NULL;
+    }
+    DBG ("unseal key bundle");
+    _key_bundle_t keyb;
+    if (!_unseal_key_bundle (&keyb, skeyb, skeyb_size)) {
+        DBG ("failed to unseal key bundle");
+        g_free (skeyb);
+        return NULL;
+    }
+    g_free (skeyb);
+
+    /* ecryptfs expects string key and binary salt, thus we base64 encode the
+     * binary key data for "passphrase" */
+    gchar *passphrase = g_base64_encode (keyb.key, sizeof (keyb.key));
     DBG ("add passphrase to kernel keyring");
     if (ecryptfs_add_passphrase_key_to_keyring (priv->ksig,
-                                                priv->fekey,
-                                                priv->fesalt) < 0)
+                                                passphrase,
+                                                (char *) keyb.salt) < 0) {
+        g_free (passphrase);
         return NULL;
+    }
+    g_free (passphrase);
+    memset (&keyb, 0x00, sizeof (keyb));
 
     gchar *mntopts = g_strdup_printf (
                                       "ecryptfs_check_dev_ruid" \
@@ -480,17 +603,7 @@ extension_ostro_storage_manager_class_init (
     base->dispose = _dispose;
     base->finalize = _finalize;
 
-    properties[PROP_FEKEY] = g_param_spec_string ("fekey",
-                                                  "fekey",
-                                                  "File encryption key",
-                                                  "0123456789",
-                                                  G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-    properties[PROP_FESALT] = g_param_spec_string ("fesalt",
-                                                   "fesalt",
-                                                   "File encryption salt",
-                                                   "9876543210",
-                                                   G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
-    g_object_class_install_properties (base, N_PROPERTIES, properties);
+    /*g_object_class_install_properties (base, N_PROPERTIES, properties);*/
     g_object_class_override_property (base, PROP_CONFIG, "config");
 
     g_type_class_add_private (klass,
@@ -512,8 +625,5 @@ extension_ostro_storage_manager_init (ExtensionOstroStorageManager *self)
     ExtensionOstroStorageManagerPrivate *priv =
         EXTENSION_OSTRO_STORAGE_MANAGER_GET_PRIVATE (self);
     self->priv = priv;
-
-    g_strlcpy (priv->fekey, "1234567890", sizeof(priv->fekey));
-    g_strlcpy (priv->fesalt, "0987654321", sizeof(priv->fesalt));
 }
 
