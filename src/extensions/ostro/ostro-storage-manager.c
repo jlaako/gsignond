@@ -458,6 +458,15 @@ _storage_is_initialized (GSignondStorageManager *parent)
     return TRUE;
 }
 
+static void
+_clear_string (gchar *string)
+{
+    while (*string) {
+        *string = '\0';
+        string++;
+    }
+}
+
 static const gchar *
 _mount_filesystem (GSignondStorageManager *parent)
 {
@@ -503,15 +512,16 @@ _mount_filesystem (GSignondStorageManager *parent)
     /* ecryptfs expects string key and binary salt, thus we base64 encode the
      * binary key data for "passphrase" */
     gchar *passphrase = g_base64_encode (keyb.key, sizeof (keyb.key));
-    DBG ("add passphrase to kernel keyring");
-    if (ecryptfs_add_passphrase_key_to_keyring (priv->ksig,
-                                                passphrase,
-                                                (char *) keyb.salt) < 0) {
-        g_free (passphrase);
-        return NULL;
-    }
-    g_free (passphrase);
     memset (&keyb, 0x00, sizeof (keyb));
+    DBG ("add passphrase to kernel keyring");
+    int ecryptfs_err =
+        ecryptfs_add_passphrase_key_to_keyring (priv->ksig,
+                                                passphrase,
+                                                (char *) keyb.salt);
+    _clear_string (passphrase);
+    g_free (passphrase);
+    if (ecryptfs_err < 0)
+        return NULL;
 
     gchar *mntopts = g_strdup_printf (
                                       "ecryptfs_check_dev_ruid" \
