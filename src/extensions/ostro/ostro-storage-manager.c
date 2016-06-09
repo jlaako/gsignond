@@ -200,38 +200,38 @@ _seal_key_bundle (void **skeyb, size_t *skeyb_size,
 		key_uuid, &hkey);
 	if (res != TSS_SUCCESS) {
 		DBG ("Tspi_Context_LoadKeyByUUID(): %x", res);
-		goto tpm_exit;
+		goto ctx_exit;
 	}
 	res = Tspi_GetPolicyObject (hkey, TSS_POLICY_USAGE, &hpol);
 	if (res != TSS_SUCCESS) {
 		DBG ("Tspi_GetPolicyObject(): %x", res);
-		goto key_exit;
+		goto ctx_exit;
 	}
 	res = Tspi_Policy_SetSecret (hpol, TSS_SECRET_MODE_SHA1,
 		sizeof (wks), wks);
 	if (res != TSS_SUCCESS) {
 		DBG ("Tspi_Policy_SetSecret(): %x", res);
-		goto pol_exit;
+		goto ctx_exit;
 	}
 
 	res = Tspi_Context_CreateObject (hctx, TSS_OBJECT_TYPE_ENCDATA,
 		TSS_ENCDATA_SEAL, &hencdata);
 	if (res != TSS_SUCCESS) {
 		DBG ("Tspi_Context_CreateObject(): %x", res);
-		goto pol_exit;
+		goto ctx_exit;
 	}
 	res = Tspi_Data_Seal (hencdata, hkey,
                           sizeof(_key_bundle_t), (BYTE *) kbundle, 0);
 	if (res != TSS_SUCCESS) {
 		DBG ("Tspi_Data_Seal(): %x", res);
-		goto enc_exit;
+		goto ctx_exit;
 	}
 
 	res = Tspi_GetAttribData (hencdata, TSS_TSPATTRIB_ENCDATA_BLOB,
 		TSS_TSPATTRIB_ENCDATABLOB_BLOB, &datasize, &databuf);
 	if (res != TSS_SUCCESS) {
 		DBG ("Tspi_GetAttribData(): %x", res);
-		goto enc_exit;
+		goto ctx_exit;
 	}
     *skeyb = g_malloc0 (datasize);
     memcpy (*skeyb, databuf, datasize);
@@ -239,14 +239,6 @@ _seal_key_bundle (void **skeyb, size_t *skeyb_size,
 
     retval = TRUE;
 
-enc_exit:
-	Tspi_Context_Close (hencdata);
-pol_exit:
-	Tspi_Context_Close (hpol);
-key_exit:
-	Tspi_Context_Close (hkey);
-tpm_exit:
-	Tspi_Context_Close (htpm);
 ctx_exit:
 	res = Tspi_Context_FreeMemory (hctx, NULL);
 	if (res != TSS_SUCCESS)
@@ -294,56 +286,48 @@ _unseal_key_bundle (_key_bundle_t *kbundle, void *skeyb, size_t skeyb_size)
 		key_uuid, &hkey);
 	if (res != TSS_SUCCESS) {
 		DBG ("Tspi_Context_LoadKeyByUUID(): %x", res);
-		goto tpm_exit;
+		goto ctx_exit;
 	}
 	res = Tspi_GetPolicyObject (hkey, TSS_POLICY_USAGE, &hpol);
 	if (res != TSS_SUCCESS) {
 		DBG ("Tspi_GetPolicyObject(): %x", res);
-		goto key_exit;
+		goto ctx_exit;
 	}
 	res = Tspi_Policy_SetSecret (hpol, TSS_SECRET_MODE_SHA1,
 		sizeof (wks), wks);
 	if (res != TSS_SUCCESS) {
 		DBG ("Tspi_Policy_SetSecret(): %x", res);
-		goto pol_exit;
+		goto ctx_exit;
 	}
 
 	res = Tspi_Context_CreateObject (hctx, TSS_OBJECT_TYPE_ENCDATA,
 		TSS_ENCDATA_SEAL, &hencdata);
 	if (res != TSS_SUCCESS) {
 		DBG ("Tspi_Context_CreateObject(): %x", res);
-		goto pol_exit;
+		goto ctx_exit;
 	}
     res = Tspi_SetAttribData (hencdata, TSS_TSPATTRIB_ENCDATA_BLOB,
 		TSS_TSPATTRIB_ENCDATABLOB_BLOB, skeyb_size, skeyb);
 	if (res != TSS_SUCCESS) {
 		DBG ("Tspi_SetAttribData(): %x", res);
-		goto enc_exit;
+		goto ctx_exit;
 	}
 	datasize = 0;
 	databuf = NULL;
 	res = Tspi_Data_Unseal (hencdata, hkey, &datasize, &databuf);
 	if (res != TSS_SUCCESS) {
 		DBG ("Tspi_Data_Unseal(): %x", res);
-		goto enc_exit;
+		goto ctx_exit;
 	}
 
     if (datasize != sizeof (_key_bundle_t)) {
         DBG ("size of unsealed data doesn't match with key bundle size");
-        goto enc_exit;
+        goto ctx_exit;
     }
     memcpy (kbundle, databuf, sizeof (_key_bundle_t));
 
     retval = TRUE;
 
-enc_exit:
-	Tspi_Context_Close (hencdata);
-pol_exit:
-	Tspi_Context_Close (hpol);
-key_exit:
-	Tspi_Context_Close (hkey);
-tpm_exit:
-	Tspi_Context_Close (htpm);
 ctx_exit:
 	res = Tspi_Context_FreeMemory (hctx, NULL);
 	if (res != TSS_SUCCESS)
