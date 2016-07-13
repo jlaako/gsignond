@@ -50,8 +50,8 @@
  * configure gSSO to use it.
  * 
  * Examples of custom extensions can be seen here:
- * <ulink url="https://code.google.com/p/accounts-sso/source/browse/?repo=gsignond#git%2Fsrc%2Fextensions">
- * https://code.google.com/p/accounts-sso/source/browse/?repo=gsignond#git%2Fsrc%2Fextensions</ulink>
+ * <ulink url="https://gitlab.com/accounts-sso/gsignond/tree/master/src/extensions">
+ * https://gitlab.com/accounts-sso/gsignond/tree/master/src/extensions</ulink>
  * and gSSO configuration is described in #GSignondConfig.
  */
 /**

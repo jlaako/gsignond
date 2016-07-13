@@ -64,8 +64,8 @@
  * <refsect1><title>Example configuration file</title></refsect1>
  * 
  * See example configuration file here:
- * <ulink url="http://code.google.com/p/accounts-sso/source/browse/gsignond.conf.in?repo=gsignond">
- * http://code.google.com/p/accounts-sso/source/browse/gsignond.conf.in?repo=gsignond</ulink>
+ * <ulink url="https://gitlab.com/accounts-sso/gsignond/blob/master/gsignond.conf.in">
+ * https://gitlab.com/accounts-sso/gsignond/blob/master/gsignond.conf.in</ulink>
  */
 
 /**

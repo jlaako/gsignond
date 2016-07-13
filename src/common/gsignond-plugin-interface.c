@@ -116,16 +116,16 @@
  * <refsect1><title>Example plugins</title></refsect1>
  * 
  * See example plugin implementation here:
- * <ulink url="https://code.google.com/p/accounts-sso/source/browse/?repo=gsignond#git%2Fsrc%2Fplugins">
- * https://code.google.com/p/accounts-sso/source/browse/?repo=gsignond#git%2Fsrc%2Fplugins</ulink>.
+ * <ulink url="https://gitlab.com/accounts-sso/gsignond/tree/master/src/plugins">
+ * https://gitlab.com/accounts-sso/gsignond/tree/master/src/plugins</ulink>.
  * 
  * For examples of out of tree plugins, you can have a look at SASL or OAuth plugin
  * implementations:
- * <ulink url="http://code.google.com/p/accounts-sso/source/browse?repo=gsignond-plugin-sasl">
- * http://code.google.com/p/accounts-sso/source/browse?repo=gsignond-plugin-sasl</ulink>.
+ * <ulink url="https://gitlab.com/accounts-sso/gsignond-plugin-sasl/tree/master">
+ * https://gitlab.com/accounts-sso/gsignond-plugin-sasl/tree/master</ulink>.
  * 
- * <ulink url="http://code.google.com/p/accounts-sso/source/browse?repo=gsignond-plugin-oa">
- * http://code.google.com/p/accounts-sso/source/browse?repo=gsignond-plugin-oa</ulink>.
+ * <ulink url="https://gitlab.com/accounts-sso/gsignond-plugin-oa/tree/master">
+ * https://gitlab.com/accounts-sso/gsignond-plugin-oa/tree/master</ulink>.
  * 
  */
 
