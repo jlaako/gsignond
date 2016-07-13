@@ -44,7 +44,7 @@
             code (as long as the IPC protocol, described below, is preserved),
             or it's also possible to write such a loader from scratch. The source
             code for the GLib plugin loader can be found
-            <ulink url="https://code.google.com/p/accounts-sso/source/browse/?repo=gsignond#git%2Fsrc%2Fgplugind">
+            <ulink url="https://gitlab.com/accounts-sso/gsignond/tree/master/src/gplugind">
             here</ulink>.
         </para>
     </refsect1>
@@ -101,7 +101,7 @@
             When run with a <systemitem>--load-plugin</systemitem> command line
             option, the plugin loader process is expected to export a D-Bus object
             on path "/" that implements
-            <ulink url="https://code.google.com/p/accounts-sso/source/browse/src/daemon/dbus/interfaces/com.google.code.AccountsSSO.gSingleSignOn.RemotePlugin.xml?repo=gsignond">
+            <ulink url="https://gitlab.com/accounts-sso/gsignond/blob/master/src/daemon/dbus/interfaces/com.google.code.AccountsSSO.gSingleSignOn.RemotePlugin.xml">
                 this interface</ulink>.
         </para>
         <para>

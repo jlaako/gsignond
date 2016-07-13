@@ -1,6 +1,6 @@
 Format: http://dep.debian.net/deps/dep5
 Upstream-Name: gsignond
-Source: http://code.google.com/p/accounts-sso/source/checkout?repo=gsignond
+Source: https://gitlab.com/accounts-sso/gsignond/tree/master
 
 Files: *
 Copyright: 2012 - 2013 Intel Corporation

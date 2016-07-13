@@ -5,8 +5,8 @@ Maintainer: Jussi Laako <jussi.laako@linux.intel.com>
 Build-Depends: debhelper (>= 8.0.0), autotools-dev, pkg-config, libdbus-1-dev, gtk-doc-tools, libsqlite3-dev, libglib2.0-dev
 Standards-Version: 3.9.2
 Homepage: https://01.org/gsso
-Vcs-Git: http://code.google.com/p/accounts-sso.gsignond/
-Vcs-Browser: http://code.google.com/p/accounts-sso/source/browse/?repo=gsignond
+Vcs-Git: https://gitlab.com/accounts-sso/gsignond
+Vcs-Browser: https://gitlab.com/accounts-sso/gsignond/tree/master
 
 Package: gsignond
 Architecture: any
