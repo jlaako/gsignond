@@ -93,7 +93,7 @@ static void gsignond_ssotest_plugin_request_initial (
 
     self->priv->is_canceled = FALSE;
 
-    GSignondSessionData *response = gsignond_dictionary_copy (session_data);
+    GSignondSessionData *response = gsignond_session_data_copy (session_data);
     DBG ("response=%p", response);
     gsignond_session_data_set_realm (response, "testRealm_after_test");
 
@@ -113,13 +113,13 @@ static void gsignond_ssotest_plugin_request_initial (
                                      "Session canceled");
         gsignond_plugin_error (plugin, error); 
         g_error_free (error);
-        gsignond_dictionary_unref (response);
+        g_object_unref (response);
         return;
     }
 
     if (g_strcmp0 (mechanism, "BLOB") == 0) {
         gsignond_plugin_response_final (plugin, response);
-        gsignond_dictionary_unref (response);
+        g_object_unref (response);
         INFO ("mechanism 'BLOB' responded");
         return;
     }
@@ -127,14 +127,16 @@ static void gsignond_ssotest_plugin_request_initial (
     GHashTableIter iter;
     gchar *key;
     GVariant *value;
-    g_hash_table_iter_init (&iter, session_data);
+    GHashTable * session_data_table;
+    session_data_table = gsignond_dictionary_get_table (GSIGNOND_DICTIONARY (session_data));
+    g_hash_table_iter_init (&iter, session_data_table);
     while (g_hash_table_iter_next (&iter,
                                    (gpointer *) &key, (gpointer *) &value))
         INFO ("Key: %s", key);
 
     if (g_strcmp0 (mechanism, "mech1") == 0) {
         gsignond_plugin_response_final (plugin, response);
-        gsignond_dictionary_unref (response);
+        g_object_unref (response);
         INFO ("mechanism 'mech1' responded");
         return;
     }
@@ -142,21 +144,21 @@ static void gsignond_ssotest_plugin_request_initial (
     if (g_strcmp0 (mechanism, "mech2") == 0) {
         const gchar* username =
             gsignond_session_data_get_username (session_data);
-        GSignondSignonuiData *user_action_data = gsignond_dictionary_new();
+        GSignondSignonuiData *user_action_data = gsignond_signonui_data_new();
         if (username == NULL)
             gsignond_signonui_data_set_query_username (user_action_data, TRUE);
         else
             gsignond_signonui_data_set_username (user_action_data, username);
         gsignond_signonui_data_set_query_password (user_action_data, TRUE);
         gsignond_plugin_user_action_required (plugin, user_action_data);
-        gsignond_dictionary_unref (user_action_data);
-        gsignond_dictionary_unref (response);
+        g_object_unref (user_action_data);
+        g_object_unref (response);
         INFO ("mechanism 'mech2' responded'");
         return;
     }
 
     INFO ("no response from plugin");
-    gsignond_dictionary_unref (response);
+    g_object_unref (response);
 }
 
 static void gsignond_ssotest_plugin_user_action_finished (
@@ -182,11 +184,11 @@ static void gsignond_ssotest_plugin_user_action_finished (
     if (query_error == SIGNONUI_ERROR_NONE && 
         username != NULL && 
         secret != NULL) {
-        GSignondSessionData *response = gsignond_dictionary_new ();
+        GSignondSessionData *response = gsignond_session_data_new ();
         gsignond_session_data_set_username (response, username);
         gsignond_session_data_set_secret (response, secret);
         gsignond_plugin_response_final (plugin, response);
-        gsignond_dictionary_unref (response);
+        g_object_unref (response);
         return;
     } else if (query_error == SIGNONUI_ERROR_CANCELED) {
         GError* error = g_error_new (GSIGNOND_ERROR, 

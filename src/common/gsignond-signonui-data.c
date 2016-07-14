@@ -59,6 +59,8 @@
  * gsignond_dictionary_new().
  */
 
+G_DEFINE_TYPE (GSignondSignonuiData, gsignond_signonui_data, GSIGNOND_TYPE_DICTIONARY);
+
 /**
  * GSignondSignonuiError:
  * @SIGNONUI_ERROR_NONE: No errors
@@ -98,9 +100,105 @@
 #define SIGNONUI_KEY_URL_RESPONSE "UrlResponse"
 #define SIGNONUI_KEY_USERNAME "UserName"
 
+static void
+gsignond_signonui_data_class_init (GSignondSignonuiDataClass *klass)
+{
+  
+}
+
+static void
+gsignond_signonui_data_init (GSignondSignonuiData *self)
+{
+  /* initialize the object */
+}
+
+/**
+ * gsignond_signonui_data_new_from_variant:
+ * @variant: instance of #GVariant
+ *
+ * Converts the #GVariant to #GSignondSignonuiData. This is useful for example if 
+ * the dictionary needs to be deserialized, or if it's contained in another 
+ * #GSignondSignonuiData and has been retrieved using gsignond_dictionary_get().
+ *
+ * Returns: (transfer full): #GSignondSignonuiData if successful, NULL otherwise.
+ */
+GSignondSignonuiData *
+gsignond_signonui_data_new_from_variant (GVariant *variant)
+{
+    GSignondSignonuiData *signonui_data = NULL;
+    GVariantIter iter;
+    gchar *key = NULL;
+    GVariant *value = NULL;
+    GHashTable * table = NULL;
+
+    g_return_val_if_fail (variant != NULL, NULL);
+
+    signonui_data = gsignond_signonui_data_new ();
+    table = gsignond_dictionary_get_table (GSIGNOND_DICTIONARY (signonui_data));
+    g_variant_iter_init (&iter, variant);
+    while (g_variant_iter_next (&iter, "{sv}", &key, &value))
+    {
+        g_hash_table_insert (table, key, value);
+    }
+
+    return signonui_data;
+}
+
+/**
+ * gsignond_signonui_data_new:
+ *
+ * Creates a new instance of #GSignondSignonuiData.
+ *
+ * Returns: (transfer full): #GSignondSignonuiData object if successful,
+ * NULL otherwise.
+ */
+GSignondSignonuiData *
+gsignond_signonui_data_new (void)
+{
+    return GSIGNOND_SIGNONUI_DATA (
+            g_object_new (GSIGNOND_TYPE_SIGNONUI_DATA, NULL));
+}
+
+/**
+ * gsignond_signonui_data_copy:
+ * @other: instance of #GSignondSignonuiData
+ *
+ * Creates a copy of the dictionary session data.
+ *
+ * Returns: (transfer full): #GSignondSignonuiData object if the copy was successful,
+ * NULL otherwise.
+ */
+GSignondSignonuiData *
+gsignond_signonui_data_copy (GSignondSignonuiData *other)
+{
+    GSignondSignonuiData *data = NULL;
+    GHashTable *other_table = NULL;
+    GSignondDictionary *data_dict = NULL;
+    GHashTableIter iter;
+    gchar *key = NULL;
+    GVariant *value = NULL;
+
+    g_return_val_if_fail (other != NULL, NULL);
+
+    data = gsignond_signonui_data_new ();
+    other_table = gsignond_dictionary_get_table (GSIGNOND_DICTIONARY (other));
+    data_dict = GSIGNOND_DICTIONARY (data);
+
+    g_hash_table_iter_init (&iter, other_table);
+    while (g_hash_table_iter_next (&iter,
+                                   (gpointer)&key,
+                                   (gpointer)&value))
+    {
+        gsignond_dictionary_set (data_dict, key, value);
+    }
+    
+
+    return data;
+}
+
 /**
  * gsignond_signonui_data_get_captcha_response:
- * @data: a #GSignondDictionary structure
+ * @data: a #GSignondSignonuiData structure
  * 
  * A getter for the user's response to a captcha query.
  * 
@@ -109,12 +207,13 @@
 const gchar*
 gsignond_signonui_data_get_captcha_response (GSignondSignonuiData *data) 
 {
-    return gsignond_dictionary_get_string (data, SIGNONUI_KEY_CAPTCHA_RESPONSE);
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data),
+                                           SIGNONUI_KEY_CAPTCHA_RESPONSE);
 }
 
 /**
  * gsignond_signonui_data_set_captcha_response:
- * @data: a #GSignondDictionary structure
+ * @data: a #GSignondSignonuiData structure
  * @response: the string entered by the user in response to a captcha query.
  * 
  * A setter for the user's response to a captcha query.
@@ -123,12 +222,13 @@ void
 gsignond_signonui_data_set_captcha_response (GSignondSignonuiData *data,
                                              const gchar *response)
 {
-    gsignond_dictionary_set_string (data, SIGNONUI_KEY_CAPTCHA_RESPONSE, response);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_CAPTCHA_RESPONSE, response);
 }
 
 /**
  * gsignond_signonui_data_get_captcha_url:
- * @data: a #GSignondDictionary structure
+ * @data: a #GSignondSignonuiData structure
  * 
  * A getter for the captcha URL.
  * 
@@ -137,12 +237,13 @@ gsignond_signonui_data_set_captcha_response (GSignondSignonuiData *data,
 const gchar*
 gsignond_signonui_data_get_captcha_url (GSignondSignonuiData *data)
 {
-    return gsignond_dictionary_get_string (data, SIGNONUI_KEY_CAPTCHA_URL);
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data),
+                                           SIGNONUI_KEY_CAPTCHA_URL);
 }
 
 /**
  * gsignond_signonui_data_set_captcha_url:
- * @data: a #GSignondDictionary structure
+ * @data: a #GSignondSignonuiData structure
  * @url: the URL to the captcha image to be verified by user
  * 
  * A setter for the captcha URL.
@@ -151,12 +252,13 @@ void
 gsignond_signonui_data_set_captcha_url (GSignondSignonuiData *data,
                                         const gchar *url)
 {
-    gsignond_dictionary_set_string (data, SIGNONUI_KEY_CAPTCHA_URL, url);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_CAPTCHA_URL, url);
 }
 
 /**
  * gsignond_signonui_data_get_caption:
- * @data: a #GSignondDictionary structure
+ * @data: a #GSignondSignonuiData structure
  * 
  * A getter for the caption string. Caption tells the user which 
  * application/credentials/provider is requestion authentication.
@@ -166,7 +268,8 @@ gsignond_signonui_data_set_captcha_url (GSignondSignonuiData *data,
 const gchar*
 gsignond_signonui_data_get_caption (GSignondSignonuiData *data)
 {
-    return gsignond_dictionary_get_string (data, SIGNONUI_KEY_CAPTION);
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data),
+                                           SIGNONUI_KEY_CAPTION);
 }
 
 /**
@@ -182,13 +285,14 @@ void
 gsignond_signonui_data_set_caption (GSignondSignonuiData *data,
                                     const gchar *caption)
 {
-    gsignond_dictionary_set_string (data, SIGNONUI_KEY_CAPTION, caption);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_CAPTION, caption);
 }
 
 /**
  * gsignond_signonui_data_get_confirm:
  * @data: a #GSignondDictionary structure
- * @confirm: the value for the property is written here
+ * @confirm: (out): the value for the property is written here
  * 
  * A getter for the confirm mode. In confirm mode the user is asked to enter
  * an old password (which is compared to the supplied password), and a new password twice
@@ -200,7 +304,8 @@ gboolean
 gsignond_signonui_data_get_confirm (GSignondSignonuiData *data,
                                     gboolean *confirm)
 {
-    return gsignond_dictionary_get_boolean (data, SIGNONUI_KEY_CONFIRM, confirm);
+    return gsignond_dictionary_get_boolean (GSIGNOND_DICTIONARY(data),
+                                            SIGNONUI_KEY_CONFIRM, confirm);
 }
 
 /**
@@ -217,7 +322,8 @@ void
 gsignond_signonui_data_set_confirm (GSignondSignonuiData *data,
                                     gboolean confirm)
 {
-    gsignond_dictionary_set_boolean (data, SIGNONUI_KEY_CONFIRM, confirm);
+    gsignond_dictionary_set_boolean (GSIGNOND_DICTIONARY(data),
+                                     SIGNONUI_KEY_CONFIRM, confirm);
 }
 
 /**
@@ -234,7 +340,8 @@ gsignond_signonui_data_set_confirm (GSignondSignonuiData *data,
 const gchar*
 gsignond_signonui_data_get_final_url (GSignondSignonuiData *data)
 {
-    return gsignond_dictionary_get_string (data, SIGNONUI_KEY_FINAL_URL);
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data),
+                                           SIGNONUI_KEY_FINAL_URL);
 }
 
 /**
@@ -252,7 +359,8 @@ void
 gsignond_signonui_data_set_final_url (GSignondSignonuiData *data,
                                       const gchar *url)
 {
-    gsignond_dictionary_set_string (data, SIGNONUI_KEY_FINAL_URL, url);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_FINAL_URL, url);
 }
 
 /**
@@ -267,7 +375,7 @@ gsignond_signonui_data_set_final_url (GSignondSignonuiData *data,
 const gchar*
 gsignond_signonui_data_get_forgot_password (GSignondSignonuiData *data)
 {
-    return gsignond_dictionary_get_string (data, 
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data), 
                                             SIGNONUI_KEY_FORGOT_PASSWORD);
 }
 
@@ -285,7 +393,8 @@ void
 gsignond_signonui_data_set_forgot_password (GSignondSignonuiData *data,
                                             const gchar* forgot)
 {
-    gsignond_dictionary_set_string (data, SIGNONUI_KEY_FORGOT_PASSWORD, forgot);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_FORGOT_PASSWORD, forgot);
 }
 
 /**
@@ -300,7 +409,8 @@ gsignond_signonui_data_set_forgot_password (GSignondSignonuiData *data,
 const gchar*
 gsignond_signonui_data_get_forgot_password_url (GSignondSignonuiData *data)
 {
-    return gsignond_dictionary_get_string (data, SIGNONUI_KEY_FORGOT_PASSWORD_URL);
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data),
+                                           SIGNONUI_KEY_FORGOT_PASSWORD_URL);
 }
 
 /**
@@ -317,7 +427,8 @@ void
 gsignond_signonui_data_set_forgot_password_url (GSignondSignonuiData *data,
                                                 const gchar *url)
 {
-    gsignond_dictionary_set_string (data, SIGNONUI_KEY_FORGOT_PASSWORD_URL, url);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_FORGOT_PASSWORD_URL, url);
 }
 
 /**
@@ -331,7 +442,8 @@ gsignond_signonui_data_set_forgot_password_url (GSignondSignonuiData *data,
 const gchar*
 gsignond_signonui_data_get_message (GSignondSignonuiData *data)
 {
-    return gsignond_dictionary_get_string (data, SIGNONUI_KEY_MESSAGE);
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data),
+                                           SIGNONUI_KEY_MESSAGE);
 }
 
 /**
@@ -346,7 +458,8 @@ void
 gsignond_signonui_data_set_message (GSignondSignonuiData *data,
                                     const gchar *message)
 {
-    gsignond_dictionary_set_string (data, SIGNONUI_KEY_MESSAGE, message);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_MESSAGE, message);
 }
 
 /**
@@ -360,7 +473,8 @@ gsignond_signonui_data_set_message (GSignondSignonuiData *data,
 const gchar*
 gsignond_signonui_data_get_open_url (GSignondSignonuiData *data)
 {
-    return gsignond_dictionary_get_string (data, SIGNONUI_KEY_OPEN_URL);
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data),
+                                           SIGNONUI_KEY_OPEN_URL);
 }
 
 /**
@@ -375,7 +489,8 @@ void
 gsignond_signonui_data_set_open_url (GSignondSignonuiData *data,
                                      const gchar *url)
 {
-    gsignond_dictionary_set_string (data, SIGNONUI_KEY_OPEN_URL, url);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_OPEN_URL, url);
 }
 
 /**
@@ -389,7 +504,8 @@ gsignond_signonui_data_set_open_url (GSignondSignonuiData *data,
 const gchar*
 gsignond_signonui_data_get_password (GSignondSignonuiData *data)
 {
-    return gsignond_dictionary_get_string (data, SIGNONUI_KEY_PASSWORD);
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data),
+                                           SIGNONUI_KEY_PASSWORD);
 }
 
 /**
@@ -404,13 +520,14 @@ void
 gsignond_signonui_data_set_password (GSignondSignonuiData *data,
                                      const gchar *password)
 {
-    gsignond_dictionary_set_string (data, SIGNONUI_KEY_PASSWORD, password);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_PASSWORD, password);
 }
 
 /**
  * gsignond_signonui_data_get_query_error:
  * @data: a #GSignondDictionary structure
- * @error: the error is written here
+ * @error: (out): the error is written here
  * 
  * A getter for the UI interaction error. Signon UI sets this to @SIGNONUI_ERROR_NONE if
  * there were no errors.
@@ -421,7 +538,7 @@ gboolean
 gsignond_signonui_data_get_query_error (GSignondSignonuiData *data,
                                         GSignondSignonuiError *error)
 {
-    return gsignond_dictionary_get_uint32 (data, 
+    return gsignond_dictionary_get_uint32 (GSIGNOND_DICTIONARY(data), 
                                           SIGNONUI_KEY_QUERY_ERROR_CODE, 
                                           error);
 }
@@ -439,13 +556,14 @@ void
 gsignond_signonui_data_set_query_error (GSignondSignonuiData *data,
                                         GSignondSignonuiError error)
 {
-    gsignond_dictionary_set_uint32 (data, SIGNONUI_KEY_QUERY_ERROR_CODE, error);
+    gsignond_dictionary_set_uint32 (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_QUERY_ERROR_CODE, error);
 }
 
 /**
  * gsignond_signonui_data_get_query_password:
  * @data: a #GSignondDictionary structure
- * @query_password: the property is written here
+ * @query_password: (out): the property is written here
  * 
  * A getter for the query password property. It indicates whether the signon UI
  * should ask the user for a password (and return it in the password property).
@@ -456,7 +574,7 @@ gboolean
 gsignond_signonui_data_get_query_password (GSignondSignonuiData *data,
                                             gboolean *query_password)
 {
-    return gsignond_dictionary_get_boolean (data, 
+    return gsignond_dictionary_get_boolean (GSIGNOND_DICTIONARY(data), 
                                             SIGNONUI_KEY_QUERY_PASSWORD,
                                             query_password);
 }
@@ -474,13 +592,14 @@ void
 gsignond_signonui_data_set_query_password (GSignondSignonuiData *data,
                                            gboolean query)
 {
-    gsignond_dictionary_set_boolean (data, SIGNONUI_KEY_QUERY_PASSWORD, query);
+    gsignond_dictionary_set_boolean (GSIGNOND_DICTIONARY(data),
+                                     SIGNONUI_KEY_QUERY_PASSWORD, query);
 }
 
 /**
  * gsignond_signonui_data_get_query_username:
  * @data: a #GSignondDictionary structure
- * @query_username: the property is written here
+ * @query_username: (out): the property is written here
  * 
  * A getter for the query username property. It indicates whether the signon UI
  * should ask the user for a username (and return it in the username property).
@@ -491,7 +610,7 @@ gboolean
 gsignond_signonui_data_get_query_username (GSignondSignonuiData *data,
                                             gboolean *query_username)
 {
-    return gsignond_dictionary_get_boolean (data, 
+    return gsignond_dictionary_get_boolean (GSIGNOND_DICTIONARY(data), 
                                             SIGNONUI_KEY_QUERY_USERNAME,
                                             query_username);
 }
@@ -509,13 +628,14 @@ void
 gsignond_signonui_data_set_query_username (GSignondSignonuiData *data,
                                            gboolean query)
 {
-    gsignond_dictionary_set_boolean (data, SIGNONUI_KEY_QUERY_USERNAME, query);
+    gsignond_dictionary_set_boolean (GSIGNOND_DICTIONARY(data),
+                                     SIGNONUI_KEY_QUERY_USERNAME, query);
 }
 
 /**
  * gsignond_signonui_data_get_remember_password:
  * @data: a #GSignondDictionary structure
- * @remember_password: the property is written here
+ * @remember_password: (out): the property is written here
  * 
  * A getter for whether the password should be remembered.
  * 
@@ -525,7 +645,7 @@ gboolean
 gsignond_signonui_data_get_remember_password (GSignondSignonuiData *data,
                                             gboolean *remember_password)
 {
-    return gsignond_dictionary_get_boolean (data, 
+    return gsignond_dictionary_get_boolean (GSIGNOND_DICTIONARY(data), 
                                             SIGNONUI_KEY_REMEMBER_PASSWORD,
                                             remember_password);
 }
@@ -542,7 +662,8 @@ void
 gsignond_signonui_data_set_remember_password (GSignondSignonuiData *data,
                                               gboolean remember)
 {
-    gsignond_dictionary_set_boolean (data, SIGNONUI_KEY_REMEMBER_PASSWORD, remember);
+    gsignond_dictionary_set_boolean (GSIGNOND_DICTIONARY(data),
+                                     SIGNONUI_KEY_REMEMBER_PASSWORD, remember);
 }
 
 /**
@@ -557,7 +678,8 @@ gsignond_signonui_data_set_remember_password (GSignondSignonuiData *data,
 const gchar*
 gsignond_signonui_data_get_request_id (GSignondSignonuiData *data)
 {
-    return gsignond_dictionary_get_string (data, SIGNONUI_KEY_REQUEST_ID);
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data),
+                                           SIGNONUI_KEY_REQUEST_ID);
 }
 
 /**
@@ -573,7 +695,8 @@ void
 gsignond_signonui_data_set_request_id (GSignondSignonuiData *data,
                                        const gchar *id)
 {
-    gsignond_dictionary_set_string (data, SIGNONUI_KEY_REQUEST_ID, id);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_REQUEST_ID, id);
 }
 
 /**
@@ -588,7 +711,8 @@ gsignond_signonui_data_set_request_id (GSignondSignonuiData *data,
 const gchar*
 gsignond_signonui_data_get_test_reply (GSignondSignonuiData *data)
 {
-    return gsignond_dictionary_get_string (data, SIGNONUI_KEY_TEST_REPLY_VALUES);
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data),
+                                           SIGNONUI_KEY_TEST_REPLY_VALUES);
 }
 
 /**
@@ -604,7 +728,8 @@ void
 gsignond_signonui_data_set_test_reply (GSignondSignonuiData *data,
                                        const gchar *reply)
 {
-    gsignond_dictionary_set_string (data, SIGNONUI_KEY_TEST_REPLY_VALUES, reply);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_TEST_REPLY_VALUES, reply);
 }
 
 /**
@@ -618,7 +743,8 @@ gsignond_signonui_data_set_test_reply (GSignondSignonuiData *data,
 const gchar*
 gsignond_signonui_data_get_title (GSignondSignonuiData *data)
 {
-    return gsignond_dictionary_get_string (data, SIGNONUI_KEY_TITLE);
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data),
+                                           SIGNONUI_KEY_TITLE);
 }
 
 /**
@@ -633,7 +759,8 @@ void
 gsignond_signonui_data_set_title (GSignondSignonuiData *data,
                                   const gchar* title)
 {
-    gsignond_dictionary_set_string (data, SIGNONUI_KEY_TITLE, title);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_TITLE, title);
 }
 
 /**
@@ -649,7 +776,8 @@ gsignond_signonui_data_set_title (GSignondSignonuiData *data,
 const gchar*
 gsignond_signonui_data_get_url_response (GSignondSignonuiData *data)
 {
-    return gsignond_dictionary_get_string (data, SIGNONUI_KEY_URL_RESPONSE);
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data),
+                                           SIGNONUI_KEY_URL_RESPONSE);
 }
 
 /**
@@ -668,7 +796,8 @@ void
 gsignond_signonui_data_set_url_response (GSignondSignonuiData *data,
                                          const gchar *response)
 {
-    gsignond_dictionary_set_string (data, SIGNONUI_KEY_URL_RESPONSE, response);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_URL_RESPONSE, response);
 }
 
 /**
@@ -682,7 +811,8 @@ gsignond_signonui_data_set_url_response (GSignondSignonuiData *data,
 const gchar*
 gsignond_signonui_data_get_username (GSignondSignonuiData *data)
 {
-    return gsignond_dictionary_get_string (data, SIGNONUI_KEY_USERNAME);
+    return gsignond_dictionary_get_string (GSIGNOND_DICTIONARY(data),
+                                           SIGNONUI_KEY_USERNAME);
 }
 
 /**
@@ -697,6 +827,7 @@ void
 gsignond_signonui_data_set_username (GSignondSignonuiData *data,
                                      const gchar *username)
 {
-    gsignond_dictionary_set_string (data, SIGNONUI_KEY_USERNAME, username);
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data),
+                                    SIGNONUI_KEY_USERNAME, username);
 }
 

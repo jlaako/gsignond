@@ -446,13 +446,13 @@ gsignond_daemon_register_new_identity (GSignondDaemon *daemon,
     GSignondIdentityInfo *info = gsignond_identity_info_new ();
     GSignondIdentity *identity = NULL;
     GSignondSecurityContext *owner = NULL;
-    GSignondSecurityContextList *acl = NULL;
+    GList *acl = NULL;
 
     owner = gsignond_security_context_copy (ctx);
 
     gsignond_identity_info_set_owner (info, owner);
 
-    acl = (GSignondSecurityContextList *)g_list_append (NULL, owner);
+    acl = g_list_append (NULL, owner);
     gsignond_identity_info_set_access_control_list (info, acl);
     gsignond_security_context_free (owner);
     g_list_free (acl);
@@ -492,11 +492,11 @@ gsignond_daemon_get_identity (GSignondDaemon *daemon,
 #define VALIDATE_IDENTITY_X_ACCESS(info, ctx, ret) \
 { \
     GSignondAccessControlManager *acm = daemon->priv->acm; \
-    GSignondSecurityContextList *acl = gsignond_identity_info_get_access_control_list (info); \
+    GList *acl = gsignond_identity_info_get_access_control_list (info); \
     GSignondSecurityContext *owner = gsignond_identity_info_get_owner (info); \
     gboolean valid = gsignond_access_control_manager_peer_is_allowed_to_use_identity (acm, ctx, owner, acl); \
     gsignond_security_context_free (owner); \
-    gsignond_security_context_list_free (acl); \
+    g_list_free_full (acl, (GDestroyNotify)gsignond_security_context_free); \
     if (!valid) { \
         WARN ("identity access check failed"); \
         gsignond_identity_info_unref (info); \
@@ -636,7 +636,7 @@ gsignond_daemon_query_identities (GSignondDaemon *self,
     identities = gsignond_db_credentials_database_load_identities (
                       self->priv->db, filter_map);
 
-    gsignond_dictionary_unref (filter_map);
+    g_object_unref (filter_map);
 
     if (!identities) {
         if (error) *error = gsignond_get_gerror_for_id (GSIGNOND_ERROR_UNKNOWN,

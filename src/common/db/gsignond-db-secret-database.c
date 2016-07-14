@@ -312,7 +312,7 @@ gsignond_db_secret_database_load_data (
 
     if (G_UNLIKELY (rows <= 0)) {
         DBG ("Load data from DB failed");
-        gsignond_dictionary_unref (data);
+        g_object_unref (data);
         data = NULL;
     }
 
@@ -333,6 +333,7 @@ gsignond_db_secret_database_update_data (
     GVariant *value = NULL;
     guint32 data_counter = 0;
     GSignondDbSqlDatabase *parent = NULL;
+    GHashTable* data_table = NULL;
 
     g_return_val_if_fail (GSIGNOND_DB_IS_SECRET_DATABASE (self), FALSE);
     RETURN_IF_NOT_OPEN (self, FALSE);
@@ -359,7 +360,8 @@ gsignond_db_secret_database_update_data (
     }
 
     /* Check if the size requirement is met before running any queries */
-    g_hash_table_iter_init (&iter, data);
+    data_table = gsignond_dictionary_get_table (data);
+    g_hash_table_iter_init (&iter, data_table);
     while (g_hash_table_iter_next (&iter,(gpointer *) &key,
             (gpointer *) &value)) {
         data_counter = data_counter + strlen (key) +
@@ -376,7 +378,7 @@ gsignond_db_secret_database_update_data (
     const char* statement = "INSERT OR REPLACE INTO STORE "
                             "(identity_id, method_id, key, value) "
                             "VALUES(?, ?, ?, ?)";
-    g_hash_table_iter_init (&iter, data);
+    g_hash_table_iter_init (&iter, data_table);
     while (g_hash_table_iter_next (&iter, (gpointer *)&key,
             (gpointer *) &value )) {
         gsize val_size;

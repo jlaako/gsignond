@@ -49,30 +49,6 @@
  */
 
 /**
- * GSignondSecurityContext:
- * @sys_ctx: system context
- * @app_ctx: application context
- * 
- * Security context descriptor used for access control checks. System context
- * and application context can contain a wildcard match "*" which has special
- * meaning in gsignond_security_context_match() and
- * gsignond_security_context_check().
- */
-
-/**
- * GSignondSecurityContextList:
- * 
- * GList of #GSignondSecurityContext items.
- */
-static void
-_security_context_free (gpointer ptr)
-{
-    GSignondSecurityContext *ctx = (GSignondSecurityContext *) ptr;
-
-    gsignond_security_context_free (ctx);
-}
-
-/**
  * gsignond_security_context_new:
  *
  * Allocates a new security context item. System and app context are empty strings.
@@ -150,6 +126,8 @@ gsignond_security_context_free (GSignondSecurityContext *ctx)
     g_free (ctx->app_ctx);
     g_slice_free (GSignondSecurityContext, ctx);
 }
+
+G_DEFINE_BOXED_TYPE (GSignondSecurityContext, gsignond_security_context, gsignond_security_context_copy, gsignond_security_context_free)
 
 /**
  * gsignond_security_context_set_system_context:
@@ -360,98 +338,5 @@ gsignond_security_context_check (const GSignondSecurityContext *reference,
     }
 
     return FALSE;
-}
-
-/**
- * gsignond_security_context_list_to_variant:
- * @list: #GSignondSecurityContextList item.
- *
- * Builds a GVariant of type "a(ss)" from a GList of #GSignondSecurityContext
- * items.
- *
- * Returns: (transfer full): GVariant construct of a #GSignondSecurityContextList.
- */
-GVariant *
-gsignond_security_context_list_to_variant (
-                                        const GSignondSecurityContextList *list)
-{
-    GVariantBuilder builder;
-    GVariant *variant;
-    GSignondSecurityContext *ctx;
-
-    g_variant_builder_init (&builder, G_VARIANT_TYPE_ARRAY);
-    for ( ; list != NULL; list = g_list_next (list)) {
-        ctx = (GSignondSecurityContext *) list->data;
-        g_variant_builder_add_value (
-                                    &builder,
-                                    gsignond_security_context_to_variant (ctx));
-    }
-    variant = g_variant_builder_end (&builder);
-
-    return variant;
-}
-
-/**
- * gsignond_security_context_list_from_variant:
- * @variant: GVariant item with a list of security context tuples.
- *
- * Builds a GList of #GSignondSecurityContext items from a GVariant of type
- * "a(ss)".
- *
- * Returns: (transfer full): #GSignondSecurityContextList item.
- */
-GSignondSecurityContextList *
-gsignond_security_context_list_from_variant (GVariant *variant)
-{
-    GSignondSecurityContextList *list = NULL;
-    GVariantIter iter;
-    GVariant *value;
-
-    g_return_val_if_fail (variant != NULL, NULL);
-
-    g_variant_iter_init (&iter, variant);
-    while ((value = g_variant_iter_next_value (&iter))) {
-        list = g_list_append (list,
-                              gsignond_security_context_from_variant (value));
-        g_variant_unref (value);
-    }
-
-    return list;
-}
-
-/**
- * gsignond_security_context_list_copy:
- * @src_list: source #GSignondSecurityContextList.
- *
- * Copies a GList of #GSignondSecurityContext items.
- *
- * Returns: (transfer full): #GSignondSecurityContextList item.
- */
-GSignondSecurityContextList *
-gsignond_security_context_list_copy (
-                                    const GSignondSecurityContextList *src_list)
-{
-    GSignondSecurityContext *ctx;
-    GSignondSecurityContextList *dst_list = NULL;
-
-    for ( ; src_list != NULL; src_list = g_list_next (src_list)) {
-        ctx = (GSignondSecurityContext *) src_list->data;
-        dst_list = g_list_append (dst_list,
-                                  gsignond_security_context_copy (ctx));
-    }
-
-    return dst_list;
-}
-
-/**
- * gsignond_security_context_list_free:
- * @seclist: (transfer full): #GSignondSecurityContextList item.
- *
- * Frees all items and the GList of #GSignondSecurityContext.
- */
-void
-gsignond_security_context_list_free (GSignondSecurityContextList *seclist)
-{
-    g_list_free_full (seclist, _security_context_free);
 }
 

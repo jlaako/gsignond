@@ -132,7 +132,7 @@ gsignond_auth_session_notify_state_changed (GSignondAuthSession *self,
 
 void 
 gsignond_auth_session_notify_store (GSignondAuthSession *self, 
-                                    GSignondDictionary *token_data);
+                                    GSignondSessionData *token_data);
 
 void 
 gsignond_auth_session_notify_user_action_required (GSignondAuthSession *self, 

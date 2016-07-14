@@ -5,7 +5,8 @@ ACLOCAL_AMFLAGS = -I m4
 AM_DISTCHECK_CONFIGURE_FLAGS = \
     --enable-debug \
     --enable-gtk-doc \
-    --enable-distcheck
+    --enable-distcheck \
+    --enable-introspection=yes
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = gsignond.pc
@@ -14,7 +15,7 @@ sysconf_DATA = gsignond.conf
 
 SUBDIRS = src test docs
 
-EXTRA_DIST = dists tools
+EXTRA_DIST = dists tools m4/introspection.m4
 
 valgrind:
 	cd test; make valgrind

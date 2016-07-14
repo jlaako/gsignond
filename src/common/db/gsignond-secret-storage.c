@@ -257,7 +257,7 @@ _check_credentials (
     return equal;
 }
 
-static GHashTable*
+static GSignondDictionary*
 _load_data (
         GSignondSecretStorage *self,
         const guint32 id,
@@ -273,7 +273,7 @@ _update_data (
         GSignondSecretStorage *self,
         const guint32 id,
         const guint32 method,
-        GHashTable *data)
+        GSignondDictionary *data)
 {
     g_return_val_if_fail (GSIGNOND_IS_SECRET_STORAGE (self), FALSE);
     return gsignond_db_secret_database_update_data (self->priv->database,

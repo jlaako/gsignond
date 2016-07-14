@@ -69,7 +69,17 @@ response_callback(
         gpointer user_data)
 {
     GSignondSessionData** user_data_p = user_data;
-    *user_data_p = gsignond_dictionary_copy(result);
+    *user_data_p = gsignond_session_data_copy (result);
+}
+
+static void
+refresh_callback(
+        GSignondPlugin* plugin,
+        GSignondSignonuiData* result,
+        gpointer user_data)
+{
+    GSignondSignonuiData** user_data_p = user_data;
+    *user_data_p = gsignond_signonui_data_copy (result);
 }
 
 static void
@@ -79,7 +89,7 @@ user_action_required_callback(
         gpointer user_data)
 {
     GSignondSignonuiData** user_data_p = user_data;
-    *user_data_p = gsignond_dictionary_copy(ui_request);
+    *user_data_p = gsignond_signonui_data_copy (ui_request);
     gsignond_signonui_data_set_username(*user_data_p, "user1");
     gsignond_signonui_data_set_password(*user_data_p, "password1");
 }
@@ -113,7 +123,7 @@ START_TEST (test_digestplugin_request)
             G_CALLBACK(user_action_required_callback), &ui_action);
     g_signal_connect(plugin, "error", G_CALLBACK(error_callback), &error);
 
-    GSignondSessionData* data = gsignond_dictionary_new();
+    GSignondSessionData* data = gsignond_session_data_new();
 
     // set only username and password
     gsignond_session_data_set_username(data, "user1");
@@ -133,11 +143,11 @@ START_TEST (test_digestplugin_request)
     GSequence *allowed_realms = gsignond_copy_array_to_sequence(realm_list);
     gsignond_session_data_set_allowed_realms(data, allowed_realms);
     g_sequence_free(allowed_realms);
-    gsignond_dictionary_set_string(data, "Algo", "md5-sess");
-    gsignond_dictionary_set_string(data, "Nonce",
+    gsignond_dictionary_set_string(GSIGNOND_DICTIONARY(data), "Algo", "md5-sess");
+    gsignond_dictionary_set_string(GSIGNOND_DICTIONARY(data), "Nonce",
             "abg10b1234ee1f0e8b11d0f600bfb0c093");
-    gsignond_dictionary_set_string(data, "Method", "GET");
-    gsignond_dictionary_set_string(data, "DigestUri", "/test/index.html");
+    gsignond_dictionary_set_string(GSIGNOND_DICTIONARY(data), "Method", "GET");
+    gsignond_dictionary_set_string(GSIGNOND_DICTIONARY(data), "DigestUri", "/test/index.html");
 
     gsignond_plugin_request_initial(plugin, data, NULL, "digest");
     fail_if(result == NULL);
@@ -145,13 +155,13 @@ START_TEST (test_digestplugin_request)
     fail_if(error != NULL);
     fail_if(g_strcmp0(gsignond_session_data_get_username(result),
             "user1") != 0);
-    fail_if(gsignond_dictionary_get_string(result, "Response") == NULL);
-    fail_if(gsignond_dictionary_get_string(result, "CNonce") == NULL);
-    gsignond_dictionary_unref(result);
+    fail_if(gsignond_dictionary_get_string(GSIGNOND_DICTIONARY(result), "Response") == NULL);
+    fail_if(gsignond_dictionary_get_string(GSIGNOND_DICTIONARY(result), "CNonce") == NULL);
+    g_object_unref(result);
     result = NULL;
 
     //remove secret so that ui action is required
-    gsignond_dictionary_remove (data, "Secret");
+    gsignond_dictionary_remove (GSIGNOND_DICTIONARY(data), "Secret");
     gsignond_plugin_request_initial(plugin, data, NULL, "digest");
     fail_if(result != NULL);
     fail_if(ui_action == NULL);
@@ -160,16 +170,16 @@ START_TEST (test_digestplugin_request)
             "user1") != 0);
     fail_if(g_strcmp0(gsignond_signonui_data_get_password(ui_action),
             "password1") != 0);
-    fail_if(gsignond_dictionary_get_string(ui_action, "Realm") == NULL);
-    fail_if(gsignond_dictionary_get_string(ui_action, "DigestUri") == NULL);
+    fail_if(gsignond_dictionary_get_string(GSIGNOND_DICTIONARY(ui_action), "Realm") == NULL);
+    fail_if(gsignond_dictionary_get_string(GSIGNOND_DICTIONARY(ui_action), "DigestUri") == NULL);
     gsignond_signonui_data_get_query_username(ui_action, &query_res);
     fail_if(query_res == FALSE);
     gsignond_signonui_data_get_query_password(ui_action, &query_res);
     fail_if(query_res == FALSE);
-    gsignond_dictionary_unref(ui_action);
+    g_object_unref(ui_action);
     ui_action = NULL;
 
-    gsignond_dictionary_unref(data);
+    g_object_unref(data);
     g_object_unref(plugin);
 }
 END_TEST
@@ -191,7 +201,7 @@ START_TEST (test_digestplugin_user_action_finished)
             G_CALLBACK(user_action_required_callback), &ui_action);
     g_signal_connect(plugin, "error", G_CALLBACK(error_callback), &error);
 
-    ui_data = gsignond_dictionary_new();
+    ui_data = gsignond_signonui_data_new();
     gsignond_signonui_data_set_query_error(ui_data, SIGNONUI_ERROR_NONE);
 
     //empty data
@@ -240,20 +250,20 @@ START_TEST (test_digestplugin_user_action_finished)
     error = NULL;
 
     //correct values
-    data = gsignond_dictionary_new ();
+    data = gsignond_session_data_new ();
     gsignond_session_data_set_username (data, "user1");
     gsignond_session_data_set_realm(data, "realm1");
     GSequence *allowed_realms = gsignond_copy_array_to_sequence(realm_list);
     gsignond_session_data_set_allowed_realms(data, allowed_realms);
     g_sequence_free(allowed_realms);
     gsignond_session_data_set_realm (data, "realm1");
-    gsignond_dictionary_set_string (data, "Algo", "md5-sess");
-    gsignond_dictionary_set_string (data, "Nonce",
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data), "Algo", "md5-sess");
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data), "Nonce",
             "abg10b1234ee1f0e8b11d0f600bfb0c093");
-    gsignond_dictionary_set_string (data, "Method", "GET");
-    gsignond_dictionary_set_string (data, "DigestUri", "/test/index.html");
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data), "Method", "GET");
+    gsignond_dictionary_set_string (GSIGNOND_DICTIONARY(data), "DigestUri", "/test/index.html");
     gsignond_plugin_request_initial (plugin, data, NULL, "digest");
-    gsignond_dictionary_unref (data); data = NULL;
+    g_object_unref (data); data = NULL;
 
     gsignond_plugin_user_action_finished (plugin, ui_data);
     fail_if (result == NULL);
@@ -261,14 +271,14 @@ START_TEST (test_digestplugin_user_action_finished)
     fail_if(ui_action == NULL);
     fail_if(g_strcmp0(gsignond_session_data_get_username(result),
             "user1") != 0);
-    fail_if(gsignond_dictionary_get_string(result, "Response") == NULL);
-    fail_if(gsignond_dictionary_get_string(result, "CNonce") == NULL);
-    gsignond_dictionary_unref(result);
+    fail_if(gsignond_dictionary_get_string(GSIGNOND_DICTIONARY(result), "Response") == NULL);
+    fail_if(gsignond_dictionary_get_string(GSIGNOND_DICTIONARY(result), "CNonce") == NULL);
+    g_object_unref(result);
     result = NULL;
-    gsignond_dictionary_unref(ui_action);
+    g_object_unref(ui_action);
     ui_action = NULL;
 
-    gsignond_dictionary_unref (ui_data);
+    g_object_unref (ui_data);
     g_object_unref (plugin);
 }
 END_TEST
@@ -280,21 +290,21 @@ START_TEST (test_digestplugin_refresh)
     plugin = g_object_new(GSIGNOND_TYPE_DIGEST_PLUGIN, NULL);
     fail_if(plugin == NULL);
 
-    GSignondSessionData* result = NULL;
+    GSignondSignonuiData* result = NULL;
     GError* error = NULL;
 
-    g_signal_connect(plugin, "refreshed", G_CALLBACK(response_callback),
+    g_signal_connect(plugin, "refreshed", G_CALLBACK(refresh_callback),
             &result);
     g_signal_connect(plugin, "error", G_CALLBACK(error_callback), &error);
 
-    GSignondSessionData* data = gsignond_dictionary_new();
+    GSignondSignonuiData* data = gsignond_signonui_data_new();
     gsignond_plugin_refresh(plugin, data);
     fail_if(result == NULL);
     fail_if(error != NULL);
-    gsignond_dictionary_unref(result);
+    g_object_unref(result);
     result = NULL;
 
-    gsignond_dictionary_unref(data);
+    g_object_unref(data);
     g_object_unref(plugin);
 }
 END_TEST

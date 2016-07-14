@@ -30,15 +30,39 @@
 
 G_BEGIN_DECLS
 
-#define GSIGNOND_TYPE_SIGNONUI_DATA (GSIGNOND_TYPE_DICTIONARY)
-
-#define GSIGNOND_SIGNONUI_DATA(obj)  (G_TYPE_CHECK_INSTANCE_CAST ((obj), \
+#define GSIGNOND_TYPE_SIGNONUI_DATA   \
+                                       (gsignond_signonui_data_get_type ())
+#define GSIGNOND_SIGNONUI_DATA(obj)   (G_TYPE_CHECK_INSTANCE_CAST ((obj), \
                                            GSIGNOND_TYPE_SIGNONUI_DATA, \
                                            GSignondSignonuiData))
-#define GSIGNOND_IS_SIGNONUI_DATA(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj),\
+#define GSIGNOND_IS_SIGNONUI_DATA(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), \
                                            GSIGNOND_TYPE_SIGNONUI_DATA))
+#define GSIGNOND_SIGNONUI_DATA_CLASS(klass) \
+                                            (G_TYPE_CHECK_CLASS_CAST ((klass), \
+                                             GSIGNOND_TYPE_SIGNONUI_DATA, \
+                                             GSignondSignonuiDataClass))
+#define GSIGNOND_IS_SIGNONUI_DATA_CLASS(klass) \
+                                            (G_TYPE_CHECK_CLASS_TYPE ((klass), \
+                                             GSIGNOND_TYPE_SIGNONUI_DATA))
+#define GSIGNOND_SIGNONUI_DATA_GET_CLASS(obj) \
+                                            (G_TYPE_INSTANCE_GET_CLASS ((obj), \
+                                             GSIGNOND_TYPE_SIGNONUI_DATA, \
+                                             GSignondSignonuiDataClass))
 
-typedef GSignondDictionary GSignondSignonuiData;
+typedef struct {
+    GSignondDictionary parent_instance;
+
+} GSignondSignonuiData;
+
+typedef struct {
+    /*< private >*/
+    GSignondDictionaryClass parent_class;
+
+} GSignondSignonuiDataClass;
+
+/* used by GSIGNOND_TYPE_SESSION_DATA */
+GType
+gsignond_signonui_data_get_type (void);
 
 typedef enum {
     SIGNONUI_ERROR_NONE = 0, 
@@ -54,6 +78,15 @@ typedef enum {
     SIGNONUI_ERROR_FORBIDDEN,
     SIGNONUI_ERROR_FORGOT_PASSWORD
 } GSignondSignonuiError;
+
+GSignondSignonuiData *
+gsignond_signonui_data_new (void);
+
+GSignondSignonuiData *
+gsignond_signonui_data_new_from_variant (GVariant *variant);
+
+GSignondSignonuiData *
+gsignond_signonui_data_copy (GSignondSignonuiData *other);
 
 const gchar*
 gsignond_signonui_data_get_captcha_response (GSignondSignonuiData *data);

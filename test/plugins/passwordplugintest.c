@@ -65,7 +65,14 @@ static void response_callback(GSignondPlugin* plugin, GSignondSessionData* resul
                      gpointer user_data)
 {
     GSignondSessionData** user_data_p = user_data;
-    *user_data_p = gsignond_dictionary_copy(result);
+    *user_data_p = gsignond_session_data_copy (result);
+}
+
+static void refreshed_callback(GSignondPlugin* plugin, GSignondSignonuiData* result,
+                     gpointer user_data)
+{
+    GSignondSignonuiData** user_data_p = user_data;
+    *user_data_p = gsignond_signonui_data_copy (result);
 }
 
 static void user_action_required_callback(GSignondPlugin* plugin, 
@@ -73,7 +80,7 @@ static void user_action_required_callback(GSignondPlugin* plugin,
                                           gpointer user_data)
 {
     GSignondSignonuiData** user_data_p = user_data;
-    *user_data_p = gsignond_dictionary_copy(ui_request);
+    *user_data_p = gsignond_signonui_data_copy (ui_request);
 }
 
 static void error_callback(GSignondPlugin* plugin, GError* error,
@@ -101,7 +108,7 @@ START_TEST (test_passwordplugin_request)
                      G_CALLBACK(user_action_required_callback), &ui_action);
     g_signal_connect(plugin, "error", G_CALLBACK(error_callback), &error);
 
-    GSignondSessionData* data = gsignond_dictionary_new();
+    GSignondSessionData* data = gsignond_session_data_new();
 
     // username empty, password not empty
     gsignond_session_data_set_secret(data, "megapassword");
@@ -112,7 +119,7 @@ START_TEST (test_passwordplugin_request)
     fail_if(gsignond_session_data_get_username(result) != NULL);
     fail_if(g_strcmp0(
         gsignond_session_data_get_secret(result), "megapassword") != 0);
-    gsignond_dictionary_unref(result);
+    g_object_unref(result);
     result = NULL;
     
     // username and password not empty
@@ -125,12 +132,12 @@ START_TEST (test_passwordplugin_request)
         gsignond_session_data_get_username(result), "megauser") != 0);
     fail_if(g_strcmp0(
         gsignond_session_data_get_secret(result), "megapassword") != 0);
-    gsignond_dictionary_unref(result);
+    g_object_unref(result);
     result = NULL;
     
     //username and password empty
-    gsignond_dictionary_unref(data);
-    data = gsignond_dictionary_new();
+    g_object_unref(data);
+    data = gsignond_session_data_new();
     gsignond_plugin_request_initial(plugin, data, NULL, "password");
     fail_if(result != NULL);    
     fail_if(ui_action == NULL);
@@ -139,7 +146,7 @@ START_TEST (test_passwordplugin_request)
     fail_if(bool_res == FALSE);
     fail_if(gsignond_signonui_data_get_query_password(ui_action, &bool_res) == FALSE);
     fail_if(bool_res == FALSE);    
-    gsignond_dictionary_unref(ui_action);
+    g_object_unref(ui_action);
     ui_action = NULL;
     
     //username not empty, password empty
@@ -152,10 +159,10 @@ START_TEST (test_passwordplugin_request)
     fail_if(bool_res == TRUE);
     fail_if(gsignond_signonui_data_get_query_password(ui_action, &bool_res) == FALSE);
     fail_if(bool_res == FALSE);    
-    gsignond_dictionary_unref(ui_action);
+    g_object_unref(ui_action);
     ui_action = NULL;
     
-    gsignond_dictionary_unref(data);
+    g_object_unref(data);
     g_object_unref(plugin);
 }
 END_TEST
@@ -176,7 +183,7 @@ START_TEST (test_passwordplugin_user_action_finished)
                      G_CALLBACK(user_action_required_callback), &ui_action);
     g_signal_connect(plugin, "error", G_CALLBACK(error_callback), &error);
 
-    GSignondSignonuiData* data = gsignond_dictionary_new();
+    GSignondSignonuiData* data = gsignond_signonui_data_new ();
     
     //empty data
     gsignond_plugin_user_action_finished(plugin, data);
@@ -200,7 +207,7 @@ START_TEST (test_passwordplugin_user_action_finished)
         gsignond_session_data_get_username(result), "megauser") != 0);
     fail_if(g_strcmp0(
         gsignond_session_data_get_secret(result), "megapassword") != 0);
-    gsignond_dictionary_unref(result);
+    g_object_unref(result);
     result = NULL;
 
     // user canceled
@@ -225,7 +232,7 @@ START_TEST (test_passwordplugin_user_action_finished)
     g_error_free(error);
     error = NULL;
     
-    gsignond_dictionary_unref(data);
+    g_object_unref(data);
     g_object_unref(plugin);
 }
 END_TEST
@@ -240,17 +247,17 @@ START_TEST (test_passwordplugin_refresh)
     GSignondSessionData* result = NULL;
     GError* error = NULL;
 
-    g_signal_connect(plugin, "refreshed", G_CALLBACK(response_callback), &result);
+    g_signal_connect(plugin, "refreshed", G_CALLBACK(refreshed_callback), &result);
     g_signal_connect(plugin, "error", G_CALLBACK(error_callback), &error);
 
-    GSignondSessionData* data = gsignond_dictionary_new();
+    GSignondSignonuiData* data = gsignond_signonui_data_new();
     gsignond_plugin_refresh(plugin, data);
     fail_if(result == NULL);    
     fail_if(error != NULL);
-    gsignond_dictionary_unref(result);
+    g_object_unref(result);
     result = NULL;
     
-    gsignond_dictionary_unref(data);
+    g_object_unref(data);
     g_object_unref(plugin);
 }
 END_TEST

@@ -160,10 +160,9 @@ _handle_request_from_dbus (
     DBG("%s", data_str);
     g_free(data_str);
 
-    GSignondSessionData *data = (GSignondSessionData *)
-            gsignond_dictionary_new_from_variant ((GVariant *)session_data);
+    GSignondSessionData *data = gsignond_session_data_new_from_variant (session_data);
     gsignond_plugin_request (self->priv->plugin, data);
-    gsignond_dictionary_unref (data);
+    g_object_unref (data);
     return TRUE;
 }
 
@@ -193,13 +192,11 @@ _handle_request_initial_from_dbus (
     g_free(data_str);
     g_free(cache_str);
 
-    GSignondSessionData *data = (GSignondSessionData *)
-            gsignond_dictionary_new_from_variant ((GVariant *)session_data);
-    GSignondSessionData *cache = 
-            gsignond_dictionary_new_from_variant ((GVariant *)identity_method_cache);
+    GSignondSessionData *data = gsignond_session_data_new_from_variant (session_data);
+    GSignondDictionary *cache = gsignond_dictionary_new_from_variant (identity_method_cache);
     gsignond_plugin_request_initial (self->priv->plugin, data, cache, mechanism);
-    gsignond_dictionary_unref (data);
-    gsignond_dictionary_unref (cache);
+    g_object_unref (data);
+    g_object_unref (cache);
 
     return TRUE;
 }
@@ -220,10 +217,9 @@ _handle_user_action_finished_from_dbus (
     DBG("%s", data_str);
     g_free(data_str);
 
-    GSignondSignonuiData *data = (GSignondSignonuiData *)
-            gsignond_dictionary_new_from_variant ((GVariant *)ui_data);
+    GSignondSignonuiData *data = gsignond_signonui_data_new_from_variant (ui_data);
     gsignond_plugin_user_action_finished (self->priv->plugin, data);
-    gsignond_dictionary_unref (data);
+    g_object_unref (data);
     return TRUE;
 }
 
@@ -243,10 +239,9 @@ _handle_refresh_from_dbus (
     DBG("%s", data_str);
     g_free(data_str);
 
-    GSignondSignonuiData *data = (GSignondSignonuiData *)
-            gsignond_dictionary_new_from_variant ((GVariant *)ui_data);
+    GSignondSignonuiData *data = gsignond_signonui_data_new_from_variant (ui_data);
     gsignond_plugin_refresh (self->priv->plugin, data);
-    gsignond_dictionary_unref (data);
+    g_object_unref (data);
     return TRUE;
 }
 
@@ -259,7 +254,7 @@ _handle_response_from_plugin (
     g_return_if_fail (self && GSIGNOND_IS_PLUGIN_DAEMON (self));
 
     GVariant *data = gsignond_dictionary_to_variant (
-            (GSignondDictionary *)session_data);
+            GSIGNOND_DICTIONARY(session_data));
     gchar *data_str = g_variant_print(data, TRUE);
     DBG("%s", data_str);
     g_free(data_str);
@@ -276,8 +271,7 @@ _handle_response_final_from_plugin (
 {
     g_return_if_fail (self && GSIGNOND_IS_PLUGIN_DAEMON (self));
 
-    GVariant *data = gsignond_dictionary_to_variant (
-            (GSignondDictionary *)session_data);
+    GVariant *data = gsignond_dictionary_to_variant (GSIGNOND_DICTIONARY(session_data));
     gchar *data_str = g_variant_print(data, TRUE);
     DBG("%s", data_str);
     g_free(data_str);
@@ -294,8 +288,7 @@ _handle_store_from_plugin (
 {
     g_return_if_fail (self && GSIGNOND_IS_PLUGIN_DAEMON (self));
 
-    GVariant *data = gsignond_dictionary_to_variant (
-            (GSignondDictionary *)session_data);
+    GVariant *data = gsignond_dictionary_to_variant (GSIGNOND_DICTIONARY(session_data));
     gchar *data_str = g_variant_print(data, TRUE);
     DBG("%s", data_str);
     g_free(data_str);
@@ -329,7 +322,7 @@ _handle_user_action_required_from_plugin (
 {
     g_return_if_fail (self && GSIGNOND_IS_PLUGIN_DAEMON (self));
 
-    GVariant *data = gsignond_dictionary_to_variant (ui_data);
+    GVariant *data = gsignond_dictionary_to_variant (GSIGNOND_DICTIONARY(ui_data));
     gchar *data_str = g_variant_print(data, TRUE);
     DBG("%s", data_str);
     g_free(data_str);
@@ -346,7 +339,7 @@ _handle_refreshed_from_plugin(
 {
     g_return_if_fail (self && GSIGNOND_IS_PLUGIN_DAEMON (self));
 
-    GVariant *data = gsignond_dictionary_to_variant (ui_data);
+    GVariant *data = gsignond_dictionary_to_variant (GSIGNOND_DICTIONARY(ui_data));
     gchar *data_str = g_variant_print(data, TRUE);
     DBG("%s", data_str);
     g_free(data_str);

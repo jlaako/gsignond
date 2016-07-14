@@ -85,10 +85,10 @@ _gsignond_identity_info_seq_cmp (
 
 static gboolean
 _gsignond_identity_info_sec_context_list_cmp (
-        GSignondSecurityContextList *one,
-        GSignondSecurityContextList *two)
+        GList *one,
+        GList *two)
 {
-    GSignondSecurityContextList *list_elem1 = NULL, *list_elem2 = NULL;
+    GList *list_elem1 = NULL, *list_elem2 = NULL;
     gboolean equal = TRUE;
 
     if (one == NULL && two == NULL)
@@ -277,7 +277,7 @@ gsignond_identity_info_new (void)
  *
  * Creates new instance of GSignondIdentityInfo.
  *
- * Returns: (transfer full) #GSignondIdentityInfo object if successful,
+ * Returns: (transfer full): #GSignondIdentityInfo object if successful,
  * NULL otherwise.
  */
 GSignondIdentityInfo *
@@ -385,7 +385,7 @@ gsignond_identity_info_copy (GSignondIdentityInfo *info)
  *
  * Increment reference count of the info structure.
  * 
- * Returns: (transfer none) returns the same  copy of the info.
+ * Returns: (transfer none): returns the same  copy of the info.
  */
 GSignondIdentityInfo *
 gsignond_identity_info_ref (GSignondIdentityInfo *info)
@@ -409,7 +409,7 @@ gsignond_identity_info_unref (GSignondIdentityInfo *info)
     g_return_if_fail (info != NULL);
 
     if (g_atomic_int_dec_and_test (&info->ref_count)) {
-        gsignond_dictionary_unref (info->map);
+        g_object_unref (info->map);
         g_free(info->username);
         g_free(info->secret);
         g_slice_free (GSignondIdentityInfo, info);
@@ -440,7 +440,6 @@ gsignond_identity_info_get_id (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_id:
  * @info: instance of #GSignondIdentityInfo
- *
  * @id: id to be set
  *
  * Sets the id of the info.
@@ -520,7 +519,6 @@ gsignond_identity_info_get_username (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_username:
  * @info: instance of #GSignondIdentityInfo
- *
  * @username: username to be set
  *
  * Sets the username of the info.
@@ -565,7 +563,6 @@ gsignond_identity_info_get_is_username_secret (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_username_secret:
  * @info: instance of #GSignondIdentityInfo
- *
  * @store_secret: store_secret to be set
  *
  * Sets the store_secret of the info.
@@ -611,7 +608,6 @@ gsignond_identity_info_get_secret (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_secret:
  * @info: instance of #GSignondIdentityInfo
- *
  * @secret: secret to be set
  *
  * Sets the secret of the info.
@@ -659,7 +655,6 @@ gsignond_identity_info_get_store_secret (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_store_secret:
  * @info: instance of #GSignondIdentityInfo
- *
  * @store_secret: store_secret to be set
  *
  * Sets the store_secret of the info.
@@ -704,7 +699,6 @@ gsignond_identity_info_get_caption (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_caption:
  * @info: instance of #GSignondIdentityInfo
- *
  * @caption: caption to be set
  *
  * Sets the caption of the info.
@@ -758,7 +752,6 @@ gsignond_identity_info_get_realms (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_realms:
  * @info: instance of #GSignondIdentityInfo
- *
  * @realms: (transfer none): realms to be set
  *
  * Sets the realms of the info.
@@ -833,7 +826,6 @@ gsignond_identity_info_get_methods (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_methods:
  * @info: instance of #GSignondIdentityInfo
- *
  * @methods: (transfer none): methods to be set whereas #GHashTable consists of
  * (gchar*,#GSequence*) and #GSequence is a sequence of gchar *.
  *
@@ -890,7 +882,6 @@ gsignond_identity_info_set_methods (
 /**
  * gsignond_identity_info_get_mechanisms:
  * @info: instance of #GSignondIdentityInfo
- *
  * @method: the method for which mechanisms are sought
  *
  * Retrieves the mechanisms from the info.
@@ -969,23 +960,34 @@ gsignond_identity_info_remove_method (
  *
  * Retrieves the access control list from the info.
  *
- * Returns: (transfer full): the list if successful, NULL otherwise.
- * when done, list should be freed using gsignond_security_context_list_free.
+ * Returns: (element-type GVariant) (transfer full): the list if successful, NULL otherwise.
+ * when done, list should be freed.
  */
-GSignondSecurityContextList *
+GList *
 gsignond_identity_info_get_access_control_list (GSignondIdentityInfo *info)
 {
     g_return_val_if_fail (info && GSIGNOND_IS_IDENTITY_INFO (info), NULL);
+    GList *list = NULL;
+    GVariantIter iter;
+    GVariant *value;
 
     GVariant *var = gsignond_dictionary_get (info->map,
                         GSIGNOND_IDENTITY_INFO_ACL);
-    return var ? gsignond_security_context_list_from_variant (var) : NULL;
+    if (var == NULL)
+        return NULL;
+
+    g_variant_iter_init (&iter, var);
+    while ((value = g_variant_iter_next_value (&iter))) {
+        list = g_list_append (list,
+                              gsignond_security_context_from_variant (value));
+        g_variant_unref (value);
+    }
+    return list;
 }
 
 /**
  * gsignond_identity_info_set_access_control_list:
  * @info: instance of #GSignondIdentityInfo
- *
  * @acl: (transfer none): access control list to be set
  *
  * Sets the access control list of the info.
@@ -995,17 +997,29 @@ gsignond_identity_info_get_access_control_list (GSignondIdentityInfo *info)
 gboolean
 gsignond_identity_info_set_access_control_list (
         GSignondIdentityInfo *info,
-        const GSignondSecurityContextList *acl)
+        const GList *acl)
 {
     g_return_val_if_fail (info && GSIGNOND_IS_IDENTITY_INFO (info), FALSE);
-
+    GVariantBuilder builder;
+    GList *l = (GList *)acl;
+    GSignondSecurityContext *ctx;
     GVariant *current_acl = gsignond_dictionary_get (info->map,
                               GSIGNOND_IDENTITY_INFO_ACL);
     GVariant *var_acl = NULL;
 
-    if (!current_acl && !acl) return TRUE;
+    if (!current_acl && !acl)
+        return TRUE;
 
-    var_acl = gsignond_security_context_list_to_variant (acl);
+    g_variant_builder_init (&builder, G_VARIANT_TYPE_ARRAY);
+    for (l = g_list_first (l); l != NULL; l = g_list_next(l)) {
+        ctx = (GSignondSecurityContext *) l->data;
+        g_variant_builder_add_value (
+                                    &builder,
+                                    gsignond_security_context_to_variant (ctx));
+    }
+
+    var_acl = g_variant_builder_end (&builder);
+
     if (current_acl != NULL &&
         g_variant_equal (current_acl, var_acl) == TRUE) {
         g_variant_unref (var_acl);
@@ -1042,7 +1056,6 @@ gsignond_identity_info_get_owner (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_owner:
  * @info: instance of #GSignondIdentityInfo
- *
  * @owner: (transfer none): owner to be set
  *
  * Sets the owner of the info.
@@ -1092,7 +1105,6 @@ gsignond_identity_info_get_validated (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_validated:
  * @info: instance of #GSignondIdentityInfo
- *
  * @validated: validated flag to be set
  *
  * Sets the validated flag of the info.
@@ -1137,7 +1149,6 @@ gsignond_identity_info_get_identity_type (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_identity_type:
  * @info: instance of #GSignondIdentityInfo
- *
  * @type: type to be set
  *
  * Sets the type of the info.
@@ -1164,7 +1175,6 @@ gsignond_identity_info_set_identity_type (
 /**
  * gsignond_identity_info_compare:
  * @info: instance1 of #GSignondIdentityInfo
- *
  * @other: instance2 of #GSignondIdentityInfo
  *
  * Compares two instances of #GSignondIdentityInfo for equality.
@@ -1181,7 +1191,7 @@ gsignond_identity_info_compare (
 
     GSequence *info_realms = NULL, *other_realms = NULL;
     GHashTable *info_methods = NULL, *other_methods = NULL;
-    GSignondSecurityContextList *info_acl = NULL, *other_acl = NULL;
+    GList *info_acl = NULL, *other_acl = NULL;
     GSignondSecurityContext *info_owner = NULL, *other_owner = NULL;
     gboolean equal = FALSE;
 
@@ -1245,8 +1255,8 @@ gsignond_identity_info_compare (
                         other_acl,
                         (GCompareFunc)gsignond_security_context_compare);
     equal = _gsignond_identity_info_sec_context_list_cmp (info_acl, other_acl);
-    if (info_acl) gsignond_security_context_list_free (info_acl);
-    if (other_acl) gsignond_security_context_list_free (other_acl);
+    if (info_acl) g_list_free_full (info_acl, (GDestroyNotify)gsignond_security_context_free);
+    if (other_acl) g_list_free_full (other_acl, (GDestroyNotify)gsignond_security_context_free);
     if (!equal) {
         return FALSE;
     }

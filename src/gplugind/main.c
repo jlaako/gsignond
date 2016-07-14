@@ -126,7 +126,7 @@ static void _list_plugins()
 
 static void _list_watch_path()
 {
-    g_print(_plugin_path());
+    g_print("%s", _plugin_path());
 }
 
 int main (int argc, char **argv)

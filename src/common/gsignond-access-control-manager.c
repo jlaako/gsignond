@@ -220,7 +220,7 @@ static gboolean
 _peer_is_allowed_to_use_identity (GSignondAccessControlManager *self,
                                 const GSignondSecurityContext *peer_ctx,
                                 const GSignondSecurityContext *owner_ctx,
-                                const GSignondSecurityContextList *identity_acl)
+                                const GList *identity_acl)
 {
     GSignondSecurityContext *acl_ctx;
 
@@ -265,7 +265,7 @@ _peer_is_owner_of_identity (GSignondAccessControlManager *self,
 static gboolean
 _acl_is_valid (GSignondAccessControlManager *self,
                const GSignondSecurityContext *peer_ctx,
-               const GSignondSecurityContextList *identity_acl)
+               const GList *identity_acl)
 {
     (void) self;
     (void) peer_ctx;
@@ -377,7 +377,7 @@ gsignond_access_control_manager_security_context_of_peer (
  * @self: object instance.
  * @peer_ctx: security context of the peer connection.
  * @owner_ctx: security context of the identity owner.
- * @identity_acl: access control list for the identity in question. Includes the @owner_ctx as well.
+ * @identity_acl: (element-type GSignondSecurityContext): access control list for the identity in question. Includes the @owner_ctx as well.
  *
  * Checks if specified peer is allowed to access the specified identity.
  * 
@@ -391,7 +391,7 @@ gsignond_access_control_manager_peer_is_allowed_to_use_identity (
                             GSignondAccessControlManager *self,
                             const GSignondSecurityContext *peer_ctx,
                             const GSignondSecurityContext *owner_ctx,
-                            const GSignondSecurityContextList *identity_acl)
+                            const GList *identity_acl)
 {
     return GSIGNOND_ACCESS_CONTROL_MANAGER_GET_CLASS (self)->
         peer_is_allowed_to_use_identity (self, peer_ctx, owner_ctx, identity_acl);
@@ -424,7 +424,7 @@ gsignond_access_control_manager_peer_is_owner_of_identity (
  * gsignond_access_control_manager_acl_is_valid:
  * @self: object instance.
  * @peer_ctx: security context of the peer connection.
- * @identity_acl: access control list for the identity.
+ * @identity_acl: (element-type GSignondSecurityContext): access control list for the identity.
  *
  * Checks if the specified peer is allowed to set the specified access
  * control list. gsignond_access_control_manager_peer_is_owner_of_identity()
@@ -438,7 +438,7 @@ gboolean
 gsignond_access_control_manager_acl_is_valid (
                             GSignondAccessControlManager *self,
                             const GSignondSecurityContext *peer_ctx,
-                            const GSignondSecurityContextList *identity_acl)
+                            const GList *identity_acl)
 {
     return GSIGNOND_ACCESS_CONTROL_MANAGER_GET_CLASS (self)->
         acl_is_valid (self, peer_ctx, identity_acl);

@@ -30,17 +30,39 @@
 
 G_BEGIN_DECLS
 
-#define GSIGNOND_TYPE_SESSION_DATA (GSIGNOND_TYPE_DICTIONARY)
+#define GSIGNOND_TYPE_SESSION_DATA   \
+                                       (gsignond_session_data_get_type ())
+#define GSIGNOND_SESSION_DATA(obj)   (G_TYPE_CHECK_INSTANCE_CAST ((obj), \
+                                           GSIGNOND_TYPE_SESSION_DATA, \
+                                           GSignondSessionData))
+#define GSIGNOND_IS_SESSION_DATA(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), \
+                                           GSIGNOND_TYPE_SESSION_DATA))
+#define GSIGNOND_SESSION_DATA_CLASS(klass) \
+                                            (G_TYPE_CHECK_CLASS_CAST ((klass), \
+                                             GSIGNOND_TYPE_SESSION_DATA, \
+                                             GSignondSessionDataClass))
+#define GSIGNOND_IS_SESSION_DATA_CLASS(klass) \
+                                            (G_TYPE_CHECK_CLASS_TYPE ((klass), \
+                                             GSIGNOND_TYPE_SESSION_DATA))
+#define GSIGNOND_SESSION_DATA_GET_CLASS(obj) \
+                                            (G_TYPE_INSTANCE_GET_CLASS ((obj), \
+                                             GSIGNOND_TYPE_SESSION_DATA, \
+                                             GSignondSessionDataClass))
 
-#define GSIGNOND_SESSION_DATA(obj) \
-    (G_TYPE_CHECK_INSTANCE_CAST ((obj), \
-                                 GSIGNOND_TYPE_SESSION_DATA, \
-                                 GSignondSessionData))
-#define GSIGNOND_IS_SESSION_DATA(obj) \
-    (G_TYPE_CHECK_INSTANCE_TYPE ((obj),\
-                                 GSIGNOND_TYPE_SESSION_DATA))
+typedef struct {
+    GSignondDictionary parent_instance;
 
-typedef GSignondDictionary GSignondSessionData;
+} GSignondSessionData;
+
+typedef struct {
+    /*< private >*/
+    GSignondDictionaryClass parent_class;
+
+} GSignondSessionDataClass;
+
+/* used by GSIGNOND_TYPE_SESSION_DATA */
+GType
+gsignond_session_data_get_type (void);
 
 typedef enum {
     GSIGNOND_UI_POLICY_DEFAULT = 0,
@@ -49,6 +71,14 @@ typedef enum {
     GSIGNOND_UI_POLICY_VALIDATION
 } GSignondUiPolicy;
 
+GSignondSessionData *
+gsignond_session_data_new (void);
+
+GSignondSessionData *
+gsignond_session_data_new_from_variant (GVariant *variant);
+
+GSignondSessionData *
+gsignond_session_data_copy (GSignondSessionData *other);
 
 const gchar *
 gsignond_session_data_get_username (GSignondSessionData *data);
@@ -122,7 +152,6 @@ gsignond_session_data_get_window_id (GSignondSessionData *data,
 void
 gsignond_session_data_set_window_id (GSignondSessionData *data,
                                      guint32 window_id);
-
 
 G_END_DECLS
 

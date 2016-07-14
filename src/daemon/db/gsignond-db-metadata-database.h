@@ -140,7 +140,7 @@ gsignond_db_metadata_database_get_references (
         const guint32 identity_id,
         const GSignondSecurityContext* ref_owner);
 
-GSignondSecurityContextList *
+GList *
 gsignond_db_metadata_database_get_accesscontrol_list(
         GSignondDbMetadataDatabase *self,
         const guint32 identity_id);

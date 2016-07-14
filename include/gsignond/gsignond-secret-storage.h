@@ -161,7 +161,7 @@ gsignond_secret_storage_check_credentials (
         GSignondSecretStorage *self,
         GSignondCredentials* creds);
 
-GHashTable*
+GSignondDictionary*
 gsignond_secret_storage_load_data (
         GSignondSecretStorage *self,
         const guint32 id,
@@ -172,7 +172,7 @@ gsignond_secret_storage_update_data (
         GSignondSecretStorage *self,
         const guint32 id,
         const guint32 method,
-        GHashTable *data);
+        GSignondDictionary *data);
 
 gboolean
 gsignond_secret_storage_remove_data (
