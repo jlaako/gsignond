@@ -38,6 +38,8 @@ pages:
   script:
     - mkdir public
     - cp -a build/docs/html/* public
+  only:
+    - tags
   dependencies:
     - test_amd64
   artifacts:
