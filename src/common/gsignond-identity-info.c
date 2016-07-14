@@ -1001,6 +1001,7 @@ gsignond_identity_info_set_access_control_list (
 {
     g_return_val_if_fail (info && GSIGNOND_IS_IDENTITY_INFO (info), FALSE);
     GVariantBuilder builder;
+    GList *l = (GList *)acl;
     GSignondSecurityContext *ctx;
     GVariant *current_acl = gsignond_dictionary_get (info->map,
                               GSIGNOND_IDENTITY_INFO_ACL);
@@ -1010,8 +1011,8 @@ gsignond_identity_info_set_access_control_list (
         return TRUE;
 
     g_variant_builder_init (&builder, G_VARIANT_TYPE_ARRAY);
-    for ( ; acl != NULL; acl = g_list_next (acl)) {
-        ctx = (GSignondSecurityContext *) acl->data;
+    for (l = g_list_first (l); l != NULL; l = g_list_next(l)) {
+        ctx = (GSignondSecurityContext *) l->data;
         g_variant_builder_add_value (
                                     &builder,
                                     gsignond_security_context_to_variant (ctx));

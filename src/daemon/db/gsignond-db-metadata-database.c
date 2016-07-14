@@ -136,10 +136,10 @@ static GSequence *
 _gsignond_db_metadata_database_list_to_sequence (GList *list)
 {
     GSequence *seq = NULL;
+    GList *l = NULL;
     seq = g_sequence_new ((GDestroyNotify)g_free);
-    list = g_list_first (list);
-    for ( ; list != NULL; list = g_list_next (list)) {
-        g_sequence_insert_sorted (seq, (gchar *) list->data,
+    for (l = g_list_first (list) ; l != NULL; l = g_list_next (l)) {
+        g_sequence_insert_sorted (seq, (gchar *) l->data,
         		(GCompareDataFunc)_compare_strings, NULL);
     }
     return seq;
@@ -386,7 +386,7 @@ _gsignond_db_metadata_database_update_acl (
         return FALSE;
     }
 
-    for (list = acl;  list != NULL; list = g_list_next (list)) {
+    for (list = g_list_first (acl);  list != NULL; list = g_list_next (list)) {
         ctx = (GSignondSecurityContext *) list->data;
         _gsignond_db_metadata_database_exec (self,
                 "INSERT OR IGNORE INTO SECCTX (sysctx, appctx) "
@@ -1170,7 +1170,7 @@ gsignond_db_metadata_database_update_identity (
             (gpointer)&mechanisms)) {
 
         if (g_list_length (acl) > 0) {
-            for (list = acl;  list != NULL; list = g_list_next (list)) {
+            for (list = g_list_first (acl);  list != NULL; list = g_list_next (list)) {
                 GSequenceIter *mech_iter = NULL;
                 GSignondSecurityContext *ctx = NULL;
 
@@ -1225,7 +1225,7 @@ gsignond_db_metadata_database_update_identity (
     }
     /* insert acl in case where methods are missing */
     if (g_hash_table_size (methods) <= 0) {
-        for (list = acl;  list != NULL; list = g_list_next (list)) {
+        for (list = g_list_first (acl);  list != NULL; list = g_list_next (list)) {
             GSignondSecurityContext *ctx = NULL;
 
             ctx = (GSignondSecurityContext *) list->data;

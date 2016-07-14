@@ -97,7 +97,7 @@ START_TEST (test_session_data)
     GSignondSessionData* data_from_copy;
     GVariant* variant;
     
-    data = gsignond_dictionary_new();
+    data = gsignond_session_data_new();
     fail_if(data == NULL);
     
     fail_unless(gsignond_session_data_get_username(data) == NULL);
@@ -115,7 +115,7 @@ START_TEST (test_session_data)
     fail_unless(g_strcmp0(gsignond_session_data_get_username(data), 
                           "usermega") == 0);
     
-    data_from_copy = gsignond_dictionary_copy(data);
+    data_from_copy = gsignond_session_data_copy(data);
     fail_if(data_from_copy == NULL);
 
     fail_unless(g_strcmp0(gsignond_session_data_get_username(data_from_copy), 
@@ -123,9 +123,9 @@ START_TEST (test_session_data)
     fail_unless(g_strcmp0(gsignond_session_data_get_secret(data_from_copy), 
                           "megapassword") == 0);
 
-    variant = gsignond_dictionary_to_variant(data);
+    variant = gsignond_dictionary_to_variant(GSIGNOND_DICTIONARY(data));
     fail_if(variant == NULL);
-    data_from_variant = gsignond_dictionary_new_from_variant(variant);
+    data_from_variant = gsignond_session_data_new_from_variant(variant);
     fail_if(data_from_variant == NULL);
 
     fail_unless(g_strcmp0(gsignond_session_data_get_username(data_from_variant), 
@@ -328,7 +328,7 @@ START_TEST (test_identity_info)
     list2 = g_list_nth (list, 2);
     ctx = (GSignondSecurityContext *) list2->data;
     fail_unless (gsignond_security_context_compare (ctx, ctx3) == 0);
-    g_list_free_full (list, gsignond_security_context_free); list = NULL;
+    g_list_free_full (list, (GDestroyNotify)gsignond_security_context_free); list = NULL;
 
     /*owners*/
     fail_unless (gsignond_identity_info_set_owner (
@@ -355,7 +355,7 @@ START_TEST (test_identity_info)
     gsignond_identity_info_unref (identity2);
     fail_unless (gsignond_identity_info_compare (identity, identity) == TRUE);
 
-    g_list_free_full (ctx_list, gsignond_security_context_free); ctx_list = NULL;
+    g_list_free_full (ctx_list, (GDestroyNotify)gsignond_security_context_free); ctx_list = NULL;
 
     gsignond_identity_info_unref (identity);
 }

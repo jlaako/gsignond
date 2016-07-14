@@ -138,7 +138,7 @@ _get_filled_identity_info_2 (
     if (add_owner) {
         gsignond_identity_info_set_owner (identity, ctx1);
     }
-    g_list_free_full (ctx_list, gsignond_security_context_free)
+    g_list_free_full (ctx_list, gsignond_security_context_free);
 
     gsignond_identity_info_set_validated (identity, FALSE);
     gsignond_identity_info_set_identity_type (identity, type);
@@ -183,7 +183,7 @@ START_TEST (test_sql_database)
     const gchar *dir = NULL;
     GSignondCredentials *creds = NULL;
     guint32 id = 1, method = 2;
-    GHashTable *data = NULL;
+    GSignondDictionary *data = NULL;
     GSignondDictionary *data2 = NULL;
     Data input;
     sqlite3_stmt *stmt = NULL;
@@ -243,12 +243,6 @@ START_TEST (test_sql_database)
             database, id) == TRUE);
 
     /* add data to store */
-    data = g_hash_table_new_full ((GHashFunc)g_str_hash,
-            (GEqualFunc)g_str_equal,
-            (GDestroyNotify)NULL,
-            (GDestroyNotify)g_variant_unref);
-    fail_if (data == NULL);
-
     GVariantBuilder builder;
     g_variant_builder_init (&builder, G_VARIANT_TYPE_VARDICT);
     g_variant_builder_add (&builder, "{sv}", "key1", g_variant_new_string ("string_value"));
@@ -256,19 +250,20 @@ START_TEST (test_sql_database)
     g_variant_builder_add (&builder, "{sv}", "key3",g_variant_new_uint16(20));
     g_variant_builder_add (&builder, "{sv}", "key4",g_variant_new("^ay", "byte_value"));
 
-    g_hash_table_insert (data, "dummy_client_id", g_variant_builder_end (&builder));
+    data = gsignond_dictionary_new_from_variant (g_variant_builder_end (&builder));
+    fail_if (data == NULL);
 
     fail_unless (gsignond_db_secret_database_update_data (
             database, id, method, data) == TRUE);
     data2 = gsignond_db_secret_database_load_data (database, id, method);
     fail_if (data2 == NULL);
-    input.table = data;
+    input.table = gsignond_dictionary_get_table (data);
     input.status = 1;
-    g_hash_table_foreach (data2, (GHFunc)_compare_key_value, &input);
+    g_hash_table_foreach (gsignond_dictionary_get_table (data2), (GHFunc)_compare_key_value, &input);
     fail_if (input.status != 1);
 
     g_object_unref (data2);
-    g_hash_table_unref(data);
+    g_object_unref (data);
 
 
     /*sql database tests*/
@@ -448,28 +443,24 @@ START_TEST (test_secret_storage)
             storage, id) == TRUE);
 
     /* add data to store */
-    data = g_hash_table_new_full ((GHashFunc)g_str_hash,
-            (GEqualFunc)g_str_equal,
-            (GDestroyNotify)NULL,
-            (GDestroyNotify)g_variant_unref);
-    fail_if (data == NULL);
+    data = gsignond_dictionary_new ();
 
-    g_hash_table_insert (data,"key1",g_variant_new_string ("string_value"));
-    g_hash_table_insert (data,"key2",g_variant_new_double (12223.4223));
-    g_hash_table_insert (data,"key3",g_variant_new_uint16(20));
-    g_hash_table_insert (data,"key4",g_variant_new("^ay", "byte_value"));
+    g_hash_table_insert (gsignond_dictionary_get_table (data),"key1",g_variant_new_string ("string_value"));
+    g_hash_table_insert (gsignond_dictionary_get_table (data),"key2",g_variant_new_double (12223.4223));
+    g_hash_table_insert (gsignond_dictionary_get_table (data),"key3",g_variant_new_uint16(20));
+    g_hash_table_insert (gsignond_dictionary_get_table (data),"key4",g_variant_new("^ay", "byte_value"));
 
     fail_unless (gsignond_secret_storage_update_data (
             storage, id, method, data) == TRUE);
     data2 = gsignond_secret_storage_load_data (storage, id, method);
     fail_if (data2 == NULL);
-    input.table = data;
+    input.table = gsignond_dictionary_get_table (data);
     input.status = 1;
-    g_hash_table_foreach (data2, (GHFunc)_compare_key_value, &input);
+    g_hash_table_foreach (gsignond_dictionary_get_table (data2), (GHFunc)_compare_key_value, &input);
     fail_if (input.status != 1);
 
-    g_object_unref(data2);
-    g_hash_table_unref(data);
+    g_object_unref (data2);
+    g_object_unref (data);
 
     fail_unless (gsignond_secret_storage_remove_data (
             storage, id, method) == TRUE);
@@ -727,14 +718,11 @@ START_TEST (test_credentials_database)
     g_list_free_full (methods, g_free);
 
     /* add data to store */
-    data = g_hash_table_new_full ((GHashFunc)g_str_hash,
-            (GEqualFunc)g_str_equal,
-            (GDestroyNotify)NULL,
-            (GDestroyNotify)g_variant_unref);
-    g_hash_table_insert (data,"key1",g_variant_new_string ("string_value"));
-    g_hash_table_insert (data,"key2",g_variant_new_double (12223.4223));
-    g_hash_table_insert (data,"key3",g_variant_new_uint16(20));
-    g_hash_table_insert (data,"key4",g_variant_new("^ay", "byte_value"));
+    data = gsignond_dictionary_new ();
+    g_hash_table_insert (gsignond_dictionary_get_table (data),"key1",g_variant_new_string ("string_value"));
+    g_hash_table_insert (gsignond_dictionary_get_table (data),"key2",g_variant_new_double (12223.4223));
+    g_hash_table_insert (gsignond_dictionary_get_table (data),"key3",g_variant_new_uint16(20));
+    g_hash_table_insert (gsignond_dictionary_get_table (data),"key4",g_variant_new("^ay", "byte_value"));
 
     fail_unless (gsignond_db_credentials_database_update_data (
             credentials_db, 0, "method1", data) == FALSE);
@@ -753,12 +741,12 @@ START_TEST (test_credentials_database)
     data2 = gsignond_db_credentials_database_load_data (credentials_db,
             identity_id, "method1");
     fail_if (data2 == NULL);
-    input.table = data;
+    input.table = gsignond_dictionary_get_table (data);
     input.status = 1;
-    g_hash_table_foreach (data2, (GHFunc)_compare_key_value, &input);
+    g_hash_table_foreach (gsignond_dictionary_get_table (data2), (GHFunc)_compare_key_value, &input);
     fail_if (input.status != 1);
-    g_object_unref(data2);
-    g_hash_table_unref(data);
+    g_object_unref (data2);
+    g_object_unref (data);
 
     fail_unless (gsignond_db_credentials_database_remove_data (
             credentials_db, 0, "method1") == FALSE);

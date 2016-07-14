@@ -69,7 +69,17 @@ response_callback(
         gpointer user_data)
 {
     GSignondSessionData** user_data_p = user_data;
-    *user_data_p = gsignond_dictionary_copy(result);
+    *user_data_p = gsignond_session_data_copy (result);
+}
+
+static void
+refresh_callback(
+        GSignondPlugin* plugin,
+        GSignondSignonuiData* result,
+        gpointer user_data)
+{
+    GSignondSignonuiData** user_data_p = user_data;
+    *user_data_p = gsignond_signonui_data_copy (result);
 }
 
 static void
@@ -79,7 +89,7 @@ user_action_required_callback(
         gpointer user_data)
 {
     GSignondSignonuiData** user_data_p = user_data;
-    *user_data_p = gsignond_dictionary_copy(ui_request);
+    *user_data_p = gsignond_signonui_data_copy (ui_request);
     gsignond_signonui_data_set_username(*user_data_p, "user1");
     gsignond_signonui_data_set_password(*user_data_p, "password1");
 }
@@ -145,8 +155,8 @@ START_TEST (test_digestplugin_request)
     fail_if(error != NULL);
     fail_if(g_strcmp0(gsignond_session_data_get_username(result),
             "user1") != 0);
-    fail_if(gsignond_dictionary_get_string(result, "Response") == NULL);
-    fail_if(gsignond_dictionary_get_string(result, "CNonce") == NULL);
+    fail_if(gsignond_dictionary_get_string(GSIGNOND_DICTIONARY(result), "Response") == NULL);
+    fail_if(gsignond_dictionary_get_string(GSIGNOND_DICTIONARY(result), "CNonce") == NULL);
     g_object_unref(result);
     result = NULL;
 
@@ -191,7 +201,7 @@ START_TEST (test_digestplugin_user_action_finished)
             G_CALLBACK(user_action_required_callback), &ui_action);
     g_signal_connect(plugin, "error", G_CALLBACK(error_callback), &error);
 
-    ui_data = gsignond_dictionary_new();
+    ui_data = gsignond_signonui_data_new();
     gsignond_signonui_data_set_query_error(ui_data, SIGNONUI_ERROR_NONE);
 
     //empty data
@@ -280,14 +290,14 @@ START_TEST (test_digestplugin_refresh)
     plugin = g_object_new(GSIGNOND_TYPE_DIGEST_PLUGIN, NULL);
     fail_if(plugin == NULL);
 
-    GSignondSessionData* result = NULL;
+    GSignondSignonuiData* result = NULL;
     GError* error = NULL;
 
-    g_signal_connect(plugin, "refreshed", G_CALLBACK(response_callback),
+    g_signal_connect(plugin, "refreshed", G_CALLBACK(refresh_callback),
             &result);
     g_signal_connect(plugin, "error", G_CALLBACK(error_callback), &error);
 
-    GSignondSessionData* data = gsignond_session_data_new();
+    GSignondSignonuiData* data = gsignond_signonui_data_new();
     gsignond_plugin_refresh(plugin, data);
     fail_if(result == NULL);
     fail_if(error != NULL);
