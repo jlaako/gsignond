@@ -1,3 +1,9 @@
+gsignond (1.0.6) UNRELEASED; urgency=low
+
+  * Update to 1.0.6
+
+ -- Corentin Noël <corentin@elementary.io>  Tue, 11 Apr 2017 18:11:49 +0200
+
 gsignond (1.0.5) UNRELEASED; urgency=low
 
   * Update to 1.0.5
