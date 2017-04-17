@@ -387,7 +387,6 @@ gsignond_signonui_data_get_forgot_password (GSignondSignonuiData *data)
  * A setter for the forgot password string, which is shown to the user as a link to
  * reset the password or remind him of the password.
  * 
- * Returns: (transfer none): 
  */
 void
 gsignond_signonui_data_set_forgot_password (GSignondSignonuiData *data,
@@ -421,7 +420,6 @@ gsignond_signonui_data_get_forgot_password_url (GSignondSignonuiData *data)
  * A setter for the forgot password URL, where the user can reset or request a 
  * reminder of the password.
  * 
- * Returns: (transfer none)
  */
 void
 gsignond_signonui_data_set_forgot_password_url (GSignondSignonuiData *data,
@@ -790,7 +788,6 @@ gsignond_signonui_data_get_url_response (GSignondSignonuiData *data)
  * detects that it has been reached, then the full final URL is returned using
  * this property. This is used by redirection-based authentication such as OAauth.
  * 
- * Returns: (transfer none)
  */
 void
 gsignond_signonui_data_set_url_response (GSignondSignonuiData *data,

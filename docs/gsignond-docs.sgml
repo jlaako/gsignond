@@ -20,7 +20,7 @@
     <xi:include href="building.xml"/>
   </chapter>
 
-    <chapter>
+  <chapter>
     <title>GSignond configuration</title>
     <xi:include href="xml/gsignond-config.xml"/>
     <xi:include href="xml/gsignond-config-general.xml"/>

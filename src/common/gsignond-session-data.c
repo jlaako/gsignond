@@ -210,7 +210,7 @@ gsignond_session_data_set_allowed_realms (GSignondSessionData *data,
 }
 
 /**
- * gsignond_session_data_get_allowed_realms:
+ * gsignond_session_data_get_allowed_realms: (skip)
  * @data: a #GSignondDictionary structure
  *
  * A getter for a list of realms allowed for the identity use.

@@ -275,7 +275,7 @@ _compare_strings (
 }
 
 /**
- * gsignond_sequence_to_variant:
+ * gsignond_sequence_to_variant: (skip)
  * @seq: Sequence of strings to convert
  *
  * Convert a string sequence to a variant.
@@ -303,7 +303,7 @@ gsignond_sequence_to_variant (GSequence *seq)
 }
 
 /**
- * gsignond_variant_to_sequence:
+ * gsignond_variant_to_sequence: (skip)
  * @var: Variant of "as" to convert
  *
  * Convert variant containing string array to sequence.
@@ -386,7 +386,7 @@ gsignond_array_to_sequence (gchar **items)
 }
 
 /**
- * gsignond_copy_array_to_sequence:
+ * gsignond_copy_array_to_sequence: (skip)
  * @items: Null-terminated array of strings to copy
  *
  * Copy null-terminated array of strings to a sequence.
