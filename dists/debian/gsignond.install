@@ -1,6 +1,0 @@
-/etc/gsignond
-/usr/bin/gsignond*
-/usr/lib/*/gsignond/extensions/*.so*
-/usr/lib/*/gsignond/gplugins/*.so*
-/usr/lib/*/gsignond/pluginloaders/gsignond-plugind
-/usr/share/dbus-1/services/*SingleSignOn*.service
