@@ -376,7 +376,7 @@ _on_bus_acquired (GDBusConnection *connection,
                   gpointer         user_data)
 {
     GSignondDbusServer *server = GSIGNOND_DBUS_SERVER (user_data);
-    INFO ("bus aquired on connection '%p'", connection);
+    INFO ("bus acquired on connection '%p'", connection);
     gsignond_dbus_server_start_auth_service (server, connection);
 }
 

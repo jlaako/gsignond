@@ -220,7 +220,7 @@ static void gsignond_plugin_default_init (GSignondPluginInterface *g_class)
      * @plugin: the plugin which emitted the signal
      * @data: a #GSignondDictionary containing data to place in persistent storage
      * 
-     * This signal is issued by the plugin when it has data to store in persistant
+     * This signal is issued by the plugin when it has data to store in persistent
      * storage. The same data would later be provided to plugin via 
      * gsignond_plugin_request_initial @identity_method_cache parameter.
      */
@@ -233,7 +233,7 @@ static void gsignond_plugin_default_init (GSignondPluginInterface *g_class)
      * @plugin: the plugin which emitted the signal
      * @error: the details of the error
      * 
-     * This signal is issued by the plugin when an error has occured, or the
+     * This signal is issued by the plugin when an error has occurred, or the
      * plugin otherwise has a reason to cancel the authentication session. The
      * @error should be specified according to 
      * <link linkend="gsignond-Errors">GSignond errors.</link>

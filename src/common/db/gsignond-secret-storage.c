@@ -559,7 +559,7 @@ gsignond_secret_storage_remove_data (
  * gsignond_secret_storage_get_last_error:
  * @self: instance of #GSignondSecretStorage
  *
- * Retrieves the last occurred error that has occured
+ * Retrieves the last occurred error that has occurred
  *
  * Returns: (transfer none): last occurred #GError
  */

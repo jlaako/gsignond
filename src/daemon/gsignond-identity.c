@@ -304,7 +304,7 @@ gsignond_identity_get_info (GSignondIdentity *identity, const GSignondSecurityCo
     /* prepare identity info, excluding password and username if secret */
     vinfo = gsignond_identity_info_to_variant (identity->priv->info);
     if (!vinfo) {
-        WARN ("identity info to variant convertion failed.");
+        WARN ("identity info to variant conversion failed.");
         if (error) *error = gsignond_get_gerror_for_id (GSIGNOND_ERROR_IDENTITY_ERR, "Identity internal eror.");
         return NULL;
     }
@@ -610,7 +610,7 @@ _on_credentials_updated (GSignondSignonuiData *reply, GError *error, gpointer us
 
             if (!secret) {
                 err = gsignond_get_gerror_for_id (GSIGNOND_ERROR_INTERNAL_SERVER,
-                                "Server internal error occured");
+                                "Server internal error occurred");
             } else if (identity->priv->info) {
                 gsignond_identity_info_set_secret (identity->priv->info, secret) ;
 
@@ -708,7 +708,7 @@ _on_user_verified (GSignondSignonuiData *reply, GError *error, gpointer user_dat
 
             if (!secret) {
                 err = gsignond_get_gerror_for_id (GSIGNOND_ERROR_INTERNAL_SERVER,
-                                "Server internal error occured");
+                                "Server internal error occurred");
             } else if (identity->priv->info) {
                 res = g_strcmp0 (secret, gsignond_identity_info_get_secret 
                                        (identity->priv->info)) == 0;
