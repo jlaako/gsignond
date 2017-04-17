@@ -163,7 +163,7 @@ extension_tizen_access_control_manager_peer_is_allowed_to_use_identity (
                             GSignondAccessControlManager *self,
                             const GSignondSecurityContext *peer_ctx,
                             const GSignondSecurityContext *identity_owner,
-                            const GSignondSecurityContextList *identity_acl)
+                            const GList *identity_acl)
 {
     GSignondSecurityContext* acl_ctx = NULL;
     const gchar *peer_system_ctx = gsignond_security_context_get_system_context(peer_ctx);

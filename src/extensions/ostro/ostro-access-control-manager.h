@@ -85,7 +85,7 @@ extension_ostro_access_control_manager_peer_is_allowed_to_use_identity (
                             GSignondAccessControlManager *self,
                             const GSignondSecurityContext *peer_ctx,
                             const GSignondSecurityContext *identity_owner,
-                            const GSignondSecurityContextList *identity_acl);
+                            const GList *identity_acl);
 
 gboolean
 extension_ostro_access_control_manager_peer_is_owner_of_identity (
