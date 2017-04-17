@@ -198,7 +198,7 @@ user_action_required_callback(
 {
     DBG ("");
     GSignondSignonuiData** user_data_p = user_data;
-    *user_data_p = gsignond_dictionary_copy(ui_request);
+    *user_data_p = gsignond_signonui_data_copy(ui_request);
     _stop_mainloop ();
 }
 
@@ -346,7 +346,7 @@ START_TEST (test_pluginremote_request)
                      G_CALLBACK(user_action_required_callback), &ui_action);
     g_signal_connect(plugin, "error", G_CALLBACK(error_callback), &error);
 
-    GSignondSessionData* data = gsignond_dictionary_new ();
+    GSignondSessionData* data = gsignond_session_data_new ();
 
     // username empty, password not empty
     gsignond_session_data_set_secret(data, "megapassword");
@@ -379,7 +379,7 @@ START_TEST (test_pluginremote_request)
     
     //username and password empty
     g_object_unref(data);
-    data = gsignond_dictionary_new();
+    data = gsignond_session_data_new();
     gsignond_plugin_request_initial(plugin, data, NULL, "password");
     _run_mainloop ();
 
@@ -443,7 +443,7 @@ START_TEST (test_pluginremote_user_action_finished)
                      G_CALLBACK(user_action_required_callback), &ui_action);
     g_signal_connect(plugin, "error", G_CALLBACK(error_callback), &error);
 
-    GSignondSignonuiData* data = gsignond_dictionary_new();
+    GSignondSignonuiData* data = gsignond_signonui_data_new();
     
     //empty data
     gsignond_plugin_user_action_finished(plugin, data);
@@ -525,7 +525,7 @@ START_TEST (test_pluginremote_refresh)
             &result);
     g_signal_connect(plugin, "error", G_CALLBACK(error_callback), &error);
 
-    GSignondSessionData* data = gsignond_dictionary_new();
+    GSignondSignonuiData* data = gsignond_signonui_data_new();
     gsignond_plugin_refresh(plugin, data);
     _run_mainloop ();
 

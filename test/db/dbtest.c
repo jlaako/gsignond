@@ -377,8 +377,8 @@ START_TEST (test_secret_storage)
     GSignondConfig *config = NULL;
     GSignondCredentials *creds = NULL;
     guint32 id = 1, method = 2;
-    GHashTable *data = NULL;
-    GHashTable *data2 = NULL;
+    GSignondDictionary *data = NULL;
+    GSignondDictionary *data2 = NULL;
     Data input;
     const gchar *dir = NULL;
 
@@ -445,10 +445,10 @@ START_TEST (test_secret_storage)
     /* add data to store */
     data = gsignond_dictionary_new ();
 
-    g_hash_table_insert (gsignond_dictionary_get_table (data),"key1",g_variant_new_string ("string_value"));
-    g_hash_table_insert (gsignond_dictionary_get_table (data),"key2",g_variant_new_double (12223.4223));
-    g_hash_table_insert (gsignond_dictionary_get_table (data),"key3",g_variant_new_uint16(20));
-    g_hash_table_insert (gsignond_dictionary_get_table (data),"key4",g_variant_new("^ay", "byte_value"));
+    gsignond_dictionary_set (data,"key1",g_variant_new_string ("string_value"));
+    gsignond_dictionary_set (data,"key2",g_variant_new_double (12223.4223));
+    gsignond_dictionary_set (data,"key3",g_variant_new_uint16(20));
+    gsignond_dictionary_set (data,"key4",g_variant_new("^ay", "byte_value"));
 
     fail_unless (gsignond_secret_storage_update_data (
             storage, id, method, data) == TRUE);
@@ -650,8 +650,8 @@ START_TEST (test_credentials_database)
     GSignondSecurityContext *owner = NULL;
     GSignondDbCredentialsDatabase *credentials_db = NULL;
     GSignondSecretStorage *storage =NULL;
-    GHashTable *data = NULL;
-    GHashTable *data2 = NULL;
+    GSignondDictionary *data = NULL;
+    GSignondDictionary *data2 = NULL;
     Data input;
     GSignondDictionary *cap_filter = NULL;
     GSignondDictionary *type_filter = NULL;
@@ -719,10 +719,10 @@ START_TEST (test_credentials_database)
 
     /* add data to store */
     data = gsignond_dictionary_new ();
-    g_hash_table_insert (gsignond_dictionary_get_table (data),"key1",g_variant_new_string ("string_value"));
-    g_hash_table_insert (gsignond_dictionary_get_table (data),"key2",g_variant_new_double (12223.4223));
-    g_hash_table_insert (gsignond_dictionary_get_table (data),"key3",g_variant_new_uint16(20));
-    g_hash_table_insert (gsignond_dictionary_get_table (data),"key4",g_variant_new("^ay", "byte_value"));
+    gsignond_dictionary_set (data,"key1",g_variant_new_string ("string_value"));
+    gsignond_dictionary_set (data,"key2",g_variant_new_double (12223.4223));
+    gsignond_dictionary_set (data,"key3",g_variant_new_uint16(20));
+    gsignond_dictionary_set (data,"key4",g_variant_new("^ay", "byte_value"));
 
     fail_unless (gsignond_db_credentials_database_update_data (
             credentials_db, 0, "method1", data) == FALSE);
