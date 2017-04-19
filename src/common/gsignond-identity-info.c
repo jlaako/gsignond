@@ -263,8 +263,8 @@ gsignond_identity_info_remove_owner (GSignondIdentityInfo *info)
  *
  * Creates new instance of GSignondIdentityInfo.
  *
- * Returns: (transfer full): #GSignondIdentityInfo object if successful,
- * NULL otherwise.
+ * Returns: (nullable): #GSignondIdentityInfo object if successful,
+ * %NULL otherwise.
  */
 GSignondIdentityInfo *
 gsignond_identity_info_new (void)
@@ -277,8 +277,8 @@ gsignond_identity_info_new (void)
  *
  * Creates new instance of GSignondIdentityInfo.
  *
- * Returns: (transfer full): #GSignondIdentityInfo object if successful,
- * NULL otherwise.
+ * Returns: (nullable): #GSignondIdentityInfo object if successful,
+ * %NULL otherwise.
  */
 GSignondIdentityInfo *
 gsignond_identity_info_new_from_variant (GVariant *variant_map)
@@ -359,7 +359,7 @@ gsignond_identity_info_new_from_variant (GVariant *variant_map)
  *
  * Creates a copy of info structure.
  *
- * Returns: copy of the info.
+ * Returns: (transfer full): copy of the info.
  */
 GSignondIdentityInfo *
 gsignond_identity_info_copy (GSignondIdentityInfo *info)
@@ -444,7 +444,7 @@ gsignond_identity_info_get_id (GSignondIdentityInfo *info)
  *
  * Sets the id of the info.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_set_id (
@@ -470,7 +470,7 @@ gsignond_identity_info_set_id (
  *
  * Retrieves the info whether the identity is new or not.
  *
- * Returns: TRUE if new, FALSE otherwise.
+ * Returns: %TRUE if new, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_get_is_identity_new (GSignondIdentityInfo *info)
@@ -487,7 +487,7 @@ gsignond_identity_info_get_is_identity_new (GSignondIdentityInfo *info)
  *
  * Sets the id of the identity info to be new.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_set_identity_new (
@@ -506,7 +506,7 @@ gsignond_identity_info_set_identity_new (
  *
  * Retrieves the username from the info.
  *
- * Returns: the username if successful, NULL otherwise.
+ * Returns: (nullable): the username if successful, %NULL otherwise.
  */
 const gchar *
 gsignond_identity_info_get_username (GSignondIdentityInfo *info)
@@ -523,7 +523,7 @@ gsignond_identity_info_get_username (GSignondIdentityInfo *info)
  *
  * Sets the username of the info.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_set_username (
@@ -567,7 +567,7 @@ gsignond_identity_info_get_is_username_secret (GSignondIdentityInfo *info)
  *
  * Sets the store_secret of the info.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_set_username_secret (
@@ -595,12 +595,12 @@ gsignond_identity_info_set_username_secret (
  *
  * Retrieves the secret from the info.
  *
- * Returns: the secret if successful, NULL otherwise.
+ * Returns: (nullable): the secret if successful, %NULL otherwise.
  */
 const gchar *
 gsignond_identity_info_get_secret (GSignondIdentityInfo *info)
 {
-    g_return_val_if_fail (info && GSIGNOND_IS_IDENTITY_INFO (info), FALSE);
+    g_return_val_if_fail (info && GSIGNOND_IS_IDENTITY_INFO (info), NULL);
 
     return info->secret;
 }
@@ -612,7 +612,7 @@ gsignond_identity_info_get_secret (GSignondIdentityInfo *info)
  *
  * Sets the secret of the info.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_set_secret (
@@ -659,7 +659,7 @@ gsignond_identity_info_get_store_secret (GSignondIdentityInfo *info)
  *
  * Sets the store_secret of the info.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_set_store_secret (
@@ -684,7 +684,7 @@ gsignond_identity_info_set_store_secret (
  *
  * Retrieves the caption from the info.
  *
- * Returns: the caption if successful, NULL otherwise.
+ * Returns: (nullable): the caption if successful, %NULL otherwise.
  */
 const gchar *
 gsignond_identity_info_get_caption (GSignondIdentityInfo *info)
@@ -703,7 +703,7 @@ gsignond_identity_info_get_caption (GSignondIdentityInfo *info)
  *
  * Sets the caption of the info.
  *
- * Returns: TRUE in case of success, FALSE otherwise.
+ * Returns: %TRUE in case of success, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_set_caption (
@@ -736,7 +736,7 @@ gsignond_identity_info_set_caption (
  *
  * Retrieves the realms from the info.
  *
- * Returns: (transfer full): the realms if successful, NULL Otherwise.
+ * Returns: (transfer full) (nullable): the realms if successful, %NULL Otherwise.
  * when done realms should be freed using g_sequence_free.
  */
 GSequence *
@@ -752,11 +752,11 @@ gsignond_identity_info_get_realms (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_realms:
  * @info: instance of #GSignondIdentityInfo
- * @realms: (transfer none): realms to be set
+ * @realms: realms to be set
  *
  * Sets the realms of the info.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_set_realms (
@@ -787,11 +787,11 @@ gsignond_identity_info_set_realms (
  * gsignond_identity_info_get_methods:
  * @info: instance of #GSignondIdentityInfo
  *
- * Retrieves the methods from the info whereas #GHashTable consists of
- * (gchar*,GSequence*) and #GSequence is a sequence of gchar *.
+ * Retrieves the methods from the info.
  *
- * Returns: (transfer full): the methods if successful, NULL otherwise.
- * when done, methods should be freed using g_hash_table_unref.
+ * Returns: (transfer full) (element-type utf8 GSequence) (nullable): the
+ * methods if successful, %NULL otherwise. when done, methods should be freed
+ * using g_hash_table_unref.
  */
 GHashTable *
 gsignond_identity_info_get_methods (GSignondIdentityInfo *info)
@@ -826,12 +826,11 @@ gsignond_identity_info_get_methods (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_methods:
  * @info: instance of #GSignondIdentityInfo
- * @methods: (transfer none): methods to be set whereas #GHashTable consists of
- * (gchar*,#GSequence*) and #GSequence is a sequence of gchar *.
+ * @methods: (transfer none) (element-type utf8 GSequence): methods to be set.
  *
  * Sets the methods of the info.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_set_methods (
@@ -886,7 +885,7 @@ gsignond_identity_info_set_methods (
  *
  * Retrieves the mechanisms from the info.
  *
- * Returns: (transfer full): the mechanisms if successful, NULL otherwise.
+ * Returns: (transfer full) (nullable): the mechanisms if successful, %NULL otherwise.
  * when done, mechanisms should be freed using g_sequence_free; #GSequence is a
  * sequence of gchar *.
  */
@@ -931,7 +930,7 @@ gsignond_identity_info_get_mechanisms (
  *
  * Removes the method from the info.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_remove_method (
@@ -960,8 +959,9 @@ gsignond_identity_info_remove_method (
  *
  * Retrieves the access control list from the info.
  *
- * Returns: (element-type GVariant) (transfer full): the list if successful, NULL otherwise.
- * when done, list should be freed.
+ * Returns: (element-type GSignondSecurityContext) (transfer full) (nullable):
+ * the list if successful, %NULL otherwise. The list should be freed with
+ * g_list_free_full (list, (GDestroyNotify)gsignond_security_context_free)
  */
 GList *
 gsignond_identity_info_get_access_control_list (GSignondIdentityInfo *info)
@@ -988,11 +988,11 @@ gsignond_identity_info_get_access_control_list (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_access_control_list:
  * @info: instance of #GSignondIdentityInfo
- * @acl: (transfer none): access control list to be set
+ * @acl: (element-type GSignondSecurityContext): access control list to be set
  *
  * Sets the access control list of the info.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_set_access_control_list (
@@ -1039,9 +1039,8 @@ gsignond_identity_info_set_access_control_list (
  *
  * Retrieves the id from the info.
  *
- * Returns: (transfer full): the owner if successful, NULL otherwise.
- * when done, owner list should be freed using
- * gsignond_security_context_free.
+ * Returns: (transfer full) (nullable): the owner if successful, %NULL otherwise.
+ * when done, owner list should be freed using gsignond_security_context_free.
  */
 GSignondSecurityContext *
 gsignond_identity_info_get_owner (GSignondIdentityInfo *info)
@@ -1056,11 +1055,11 @@ gsignond_identity_info_get_owner (GSignondIdentityInfo *info)
 /**
  * gsignond_identity_info_set_owner:
  * @info: instance of #GSignondIdentityInfo
- * @owner: (transfer none): owner to be set
+ * @owner: owner to be set
  *
  * Sets the owner of the info.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_set_owner (
@@ -1109,7 +1108,7 @@ gsignond_identity_info_get_validated (GSignondIdentityInfo *info)
  *
  * Sets the validated flag of the info.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_set_validated (
@@ -1134,7 +1133,7 @@ gsignond_identity_info_set_validated (
  *
  * Retrieves the type from the info.
  *
- * Returns: the type; negative type is returned in case of failure.
+ * Returns: the type.
  */
 guint32
 gsignond_identity_info_get_identity_type (GSignondIdentityInfo *info)
@@ -1143,7 +1142,7 @@ gsignond_identity_info_get_identity_type (GSignondIdentityInfo *info)
 
     GVariant *var = gsignond_dictionary_get (info->map,
                         GSIGNOND_IDENTITY_INFO_TYPE);
-    return var ? g_variant_get_int32 (var) : 0;
+    return var ? g_variant_get_uint32 (var) : 0;
 }
 
 /**
@@ -1153,7 +1152,7 @@ gsignond_identity_info_get_identity_type (GSignondIdentityInfo *info)
  *
  * Sets the type of the info.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_set_identity_type (
@@ -1167,7 +1166,7 @@ gsignond_identity_info_set_identity_type (
 
     return gsignond_dictionary_set (info->map,
                 GSIGNOND_IDENTITY_INFO_TYPE,
-                g_variant_new_int32 (type)) &&
+                g_variant_new_uint32 (type)) &&
            gsignond_identity_info_set_edit_flags (info,
                 IDENTITY_INFO_PROP_TYPE);
 }
@@ -1179,7 +1178,7 @@ gsignond_identity_info_set_identity_type (
  *
  * Compares two instances of #GSignondIdentityInfo for equality.
  *
- * Returns: TRUE if the two instances are equal, FALSE otherwise.
+ * Returns: %TRUE if the two instances are equal, %FALSE otherwise.
  */
 gboolean
 gsignond_identity_info_compare (
@@ -1289,7 +1288,8 @@ gsignond_identity_info_compare (
  *
  * Converts the #GSignondIndentityInfo to a #GVariant.
  *
- * Returns: (transfer full): #GVariant object if successful, NULL otherwise.
+ * Returns: (transfer full) (nullable): #GVariant object if successful,
+ * %NULL otherwise.
  */
 GVariant *
 gsignond_identity_info_to_variant (GSignondIdentityInfo *info)

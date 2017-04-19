@@ -376,7 +376,7 @@ gsignond_secret_storage_init (GSignondSecretStorage *self)
  * 
  * The default implementation is using SQLite for the storage.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_secret_storage_open_db (GSignondSecretStorage *self)
@@ -390,7 +390,7 @@ gsignond_secret_storage_open_db (GSignondSecretStorage *self)
  *
  * Closes the database. To reopen it, call gsignond_secret_storage_open_db().
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_secret_storage_close_db (GSignondSecretStorage *self)
@@ -404,7 +404,7 @@ gsignond_secret_storage_close_db (GSignondSecretStorage *self)
  *
  * Removes all stored secrets from the database.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_secret_storage_clear_db (GSignondSecretStorage *self)
@@ -418,7 +418,7 @@ gsignond_secret_storage_clear_db (GSignondSecretStorage *self)
  *
  * Checks if the database is open or not.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_secret_storage_is_open_db (GSignondSecretStorage *self)
@@ -433,8 +433,8 @@ gsignond_secret_storage_is_open_db (GSignondSecretStorage *self)
  *
  * Loads the credentials from the database.
  *
- * Returns: (transfer full): #GSignondCredentials if successful,
- * NULL otherwise.
+ * Returns: (transfer full) (nullable): #GSignondCredentials if successful,
+ * %NULL otherwise.
  */
 GSignondCredentials*
 gsignond_secret_storage_load_credentials (
@@ -451,7 +451,7 @@ gsignond_secret_storage_load_credentials (
  *
  * Stores/updates the credentials for the given identity.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_secret_storage_update_credentials (
@@ -468,7 +468,7 @@ gsignond_secret_storage_update_credentials (
  *
  * Remove the credentials for the given identity.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_secret_storage_remove_credentials (
@@ -485,7 +485,7 @@ gsignond_secret_storage_remove_credentials (
  *
  * Checks whether the given credentials match what is stored in the database.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_secret_storage_check_credentials (
@@ -524,7 +524,7 @@ gsignond_secret_storage_load_data (
  * Calling this method updates the secret data
  * associated with the given id/method.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_secret_storage_update_data (
@@ -544,7 +544,7 @@ gsignond_secret_storage_update_data (
  *
  * Removes secret data associated with a given id/method.
  *
- * Returns: TRUE if successful, FALSE otherwise.
+ * Returns: %TRUE if successful, %FALSE otherwise.
  */
 gboolean
 gsignond_secret_storage_remove_data (

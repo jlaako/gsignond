@@ -377,14 +377,15 @@ gsignond_access_control_manager_security_context_of_peer (
  * @self: object instance.
  * @peer_ctx: security context of the peer connection.
  * @owner_ctx: security context of the identity owner.
- * @identity_acl: (element-type GSignondSecurityContext): access control list for the identity in question. Includes the @owner_ctx as well.
+ * @identity_acl: (element-type GSignondSecurityContext): access control list
+ * for the identity in question. Includes the @owner_ctx as well.
  *
  * Checks if specified peer is allowed to access the specified identity.
  * 
  * The default implementation goes over items in @identity_acl, using 
  * gsignond_security_context_check() to check them against @peer_ctx.
  *
- * Returns: access is allowed?
+ * Returns: %TRUE if the peer is allowed to use the identity, %FALSE otherwise.
  */
 gboolean
 gsignond_access_control_manager_peer_is_allowed_to_use_identity (
@@ -408,7 +409,7 @@ gsignond_access_control_manager_peer_is_allowed_to_use_identity (
  * The default implementation is using gsignond_security_context_check() 
  * to check @peer_ctx against @owner_ctx directly.
  *
- * Returns: is owner?
+ * Returns: %TRUE if the peer is the owner to use the identity, %FALSE otherwise.
  */
 gboolean
 gsignond_access_control_manager_peer_is_owner_of_identity (
@@ -424,15 +425,16 @@ gsignond_access_control_manager_peer_is_owner_of_identity (
  * gsignond_access_control_manager_acl_is_valid:
  * @self: object instance.
  * @peer_ctx: security context of the peer connection.
- * @identity_acl: (element-type GSignondSecurityContext): access control list for the identity.
+ * @identity_acl: (element-type GSignondSecurityContext): access control list
+ * for the identity.
  *
  * Checks if the specified peer is allowed to set the specified access
  * control list. gsignond_access_control_manager_peer_is_owner_of_identity()
  * is used before calling this method to verify identity ownership.
  * 
- * The default implementation always returns TRUE.
+ * The default implementation always returns %TRUE.
  *
- * Returns: access control list is OK?
+ * Returns: %TRUE if the ACL is valid, %FALSE otherwise.
  */
 gboolean
 gsignond_access_control_manager_acl_is_valid (

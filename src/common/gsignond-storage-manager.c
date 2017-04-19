@@ -291,7 +291,7 @@ gsignond_storage_manager_init (GSignondStorageManager *self)
  * Initialize encryption storage. This means making sure that the 
  * necessary directories under #GSIGNOND_CONFIG_GENERAL_STORAGE_PATH exist and are accessible.
  *
- * Returns: success?
+ * Returns: %TRUE if the storage has been initialized, %FALSE otherwise.
  */
 gboolean
 gsignond_storage_manager_initialize_storage (GSignondStorageManager *self)
@@ -307,7 +307,7 @@ gsignond_storage_manager_initialize_storage (GSignondStorageManager *self)
  * Destroys all the encryption keys and wipes the storage. gsignond_wipe_directory()
  * is typically used for the latter.
  *
- * Returns: success?
+ * Returns: %TRUE if the storage has been deleted, %FALSE otherwise.
  */
 gboolean
 gsignond_storage_manager_delete_storage (GSignondStorageManager *self)
@@ -322,7 +322,7 @@ gsignond_storage_manager_delete_storage (GSignondStorageManager *self)
  *
  * Checks if the storage has been initialized.
  *
- * Returns: storage has been initialized?
+ * Returns: %TRUE if the storage has been initialized, %FALSE otherwise.
  */
 gboolean
 gsignond_storage_manager_storage_is_initialized (GSignondStorageManager *self)
@@ -343,7 +343,7 @@ gsignond_storage_manager_storage_is_initialized (GSignondStorageManager *self)
  * The default implemenation does nothing, and immediately returns the path for the 
  * secret database.
  *
- * Returns: (transfer none): path of the storage mount point.
+ * Returns: The path of the storage mount point.
  */
 const gchar *
 gsignond_storage_manager_mount_filesystem (GSignondStorageManager *self)
@@ -358,7 +358,7 @@ gsignond_storage_manager_mount_filesystem (GSignondStorageManager *self)
  *
  * Unmounts a previously mounted encrypted storage filesystem.
  *
- * Returns: success?
+ * Returns: %TRUE if the filesystem has been unmounted, %FALSE otherwise.
  */
 gboolean
 gsignond_storage_manager_unmount_filesystem (GSignondStorageManager *self)
@@ -373,7 +373,7 @@ gsignond_storage_manager_unmount_filesystem (GSignondStorageManager *self)
  *
  * Checks if the encrypted storage filesystem is currently mounted.
  *
- * Returns: filesystem is currently mounted?
+ * Returns: %TRUE if the filesystem is mounted, %FALSE otherwise.
  */
 gboolean
 gsignond_storage_manager_filesystem_is_mounted (GSignondStorageManager *self)

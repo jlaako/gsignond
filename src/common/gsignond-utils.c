@@ -158,7 +158,7 @@ _rng_exit:
  * gsignond_wipe_file() on each file. It also removes links and empty directories but 
  * does not recursively wipe them.
  *
- * Returns: TRUE if wiping and removal was successful.
+ * Returns: %TRUE if wiping and removal was successful.
  */
 gboolean
 gsignond_wipe_directory (const gchar *dirname)
@@ -358,7 +358,7 @@ gsignond_sequence_to_array (GSequence *seq)
 }
 
 /**
- * gsignond_array_to_sequence:
+ * gsignond_array_to_sequence: (skip)
  * @items: (transfer full): Null-terminated array of strings to convert
  *
  * Convert null-terminated array of strings to a sequence.

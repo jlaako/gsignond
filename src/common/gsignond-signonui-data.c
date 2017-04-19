@@ -120,7 +120,7 @@ gsignond_signonui_data_init (GSignondSignonuiData *self)
  * the dictionary needs to be deserialized, or if it's contained in another 
  * #GSignondSignonuiData and has been retrieved using gsignond_dictionary_get().
  *
- * Returns: (transfer full): #GSignondSignonuiData if successful, NULL otherwise.
+ * Returns: a new #GSignondSignonuiData object.
  */
 GSignondSignonuiData *
 gsignond_signonui_data_new_from_variant (GVariant *variant)
@@ -149,8 +149,7 @@ gsignond_signonui_data_new_from_variant (GVariant *variant)
  *
  * Creates a new instance of #GSignondSignonuiData.
  *
- * Returns: (transfer full): #GSignondSignonuiData object if successful,
- * NULL otherwise.
+ * Returns: a new #GSignondSignonuiData object.
  */
 GSignondSignonuiData *
 gsignond_signonui_data_new (void)
@@ -165,8 +164,8 @@ gsignond_signonui_data_new (void)
  *
  * Creates a copy of the dictionary session data.
  *
- * Returns: (transfer full): #GSignondSignonuiData object if the copy was successful,
- * NULL otherwise.
+ * Returns: (transfer full): a new #GSignondSignonuiData object copied from
+ * @other.
  */
 GSignondSignonuiData *
 gsignond_signonui_data_copy (GSignondSignonuiData *other)
@@ -202,7 +201,7 @@ gsignond_signonui_data_copy (GSignondSignonuiData *other)
  * 
  * A getter for the user's response to a captcha query.
  * 
- * Returns: (transfer none): the string entered by the user in response to a captcha query.
+ * Returns: (nullable): the string entered by the user in response to a captcha query.
  */
 const gchar*
 gsignond_signonui_data_get_captcha_response (GSignondSignonuiData *data) 
@@ -232,7 +231,7 @@ gsignond_signonui_data_set_captcha_response (GSignondSignonuiData *data,
  * 
  * A getter for the captcha URL.
  * 
- * Returns: (transfer none): the URL to the captcha image to be verified by user.
+ * Returns: (nullable): the URL to the captcha image to be verified by user.
  */
 const gchar*
 gsignond_signonui_data_get_captcha_url (GSignondSignonuiData *data)
@@ -263,7 +262,7 @@ gsignond_signonui_data_set_captcha_url (GSignondSignonuiData *data,
  * A getter for the caption string. Caption tells the user which 
  * application/credentials/provider is requestion authentication.
  * 
- * Returns: (transfer none)
+ * Returns: (nullable):
  */
 const gchar*
 gsignond_signonui_data_get_caption (GSignondSignonuiData *data)
@@ -335,7 +334,7 @@ gsignond_signonui_data_set_confirm (GSignondSignonuiData *data,
  * will close the window and return the full URL via url response property.
  * This is used by redirection-based authentication, such as OAuth.
  * 
- * Returns: (transfer none)
+ * Returns: (nullable):
  */
 const gchar*
 gsignond_signonui_data_get_final_url (GSignondSignonuiData *data)
@@ -370,7 +369,7 @@ gsignond_signonui_data_set_final_url (GSignondSignonuiData *data,
  * A getter for the forgot password string which is shown to the user as a link to
  * reset the password or remind him of the password.
  * 
- * Returns: (transfer none)
+ * Returns: (nullable):
  */
 const gchar*
 gsignond_signonui_data_get_forgot_password (GSignondSignonuiData *data)
@@ -403,7 +402,7 @@ gsignond_signonui_data_set_forgot_password (GSignondSignonuiData *data,
  * A getter for the forgot password URL, where the user can reset or request a 
  * reminder of the password.
  * 
- * Returns: (transfer none)
+ * Returns: (nullable):
  */
 const gchar*
 gsignond_signonui_data_get_forgot_password_url (GSignondSignonuiData *data)
@@ -435,7 +434,7 @@ gsignond_signonui_data_set_forgot_password_url (GSignondSignonuiData *data,
  * 
  * A getter for the message which is show to the user in the signon UI dialog.
  * 
- * Returns: (transfer none)
+ * Returns: (nullable):
  */
 const gchar*
 gsignond_signonui_data_get_message (GSignondSignonuiData *data)
@@ -466,7 +465,7 @@ gsignond_signonui_data_set_message (GSignondSignonuiData *data,
  * 
  * A getter for the URL that should be opened by signon UI.
  * 
- * Returns: (transfer none)
+ * Returns: (nullable):
  */
 const gchar*
 gsignond_signonui_data_get_open_url (GSignondSignonuiData *data)
@@ -497,7 +496,7 @@ gsignond_signonui_data_set_open_url (GSignondSignonuiData *data,
  * 
  * A getter for the password string.
  * 
- * Returns: (transfer none)
+ * Returns: (nullable):
  */
 const gchar*
 gsignond_signonui_data_get_password (GSignondSignonuiData *data)
@@ -671,7 +670,7 @@ gsignond_signonui_data_set_remember_password (GSignondSignonuiData *data,
  * A getter for the dialog request id. The id identifies the dialog so that it
  * can be refreshed or updated.
  * 
- * Returns: (transfer none)
+ * Returns: (nullable):
  */
 const gchar*
 gsignond_signonui_data_get_request_id (GSignondSignonuiData *data)
@@ -704,7 +703,7 @@ gsignond_signonui_data_set_request_id (GSignondSignonuiData *data,
  * A getter for the test reply values. It's used only by the signon ui 
  * implementations to test themselves.
  * 
- * Returns: (transfer none)
+ * Returns: (nullable):
  */
 const gchar*
 gsignond_signonui_data_get_test_reply (GSignondSignonuiData *data)
@@ -736,7 +735,7 @@ gsignond_signonui_data_set_test_reply (GSignondSignonuiData *data,
  * 
  * A getter for the UI dialog title.
  * 
- * Returns: (transfer none)
+ * Returns: (nullable):
  */
 const gchar*
 gsignond_signonui_data_get_title (GSignondSignonuiData *data)
@@ -769,7 +768,7 @@ gsignond_signonui_data_set_title (GSignondSignonuiData *data,
  * detects that it has been reached, then the full final URL is returned using
  * this property. This is used by redirection-based authentication such as OAauth.
  * 
- * Returns: (transfer none)
+ * Returns: (nullable):
  */
 const gchar*
 gsignond_signonui_data_get_url_response (GSignondSignonuiData *data)
@@ -803,7 +802,7 @@ gsignond_signonui_data_set_url_response (GSignondSignonuiData *data,
  * 
  * A getter for the username string.
  * 
- * Returns: (transfer none)
+ * Returns: (nullable):
  */
 const gchar*
 gsignond_signonui_data_get_username (GSignondSignonuiData *data)

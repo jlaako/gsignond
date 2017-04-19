@@ -256,8 +256,8 @@ gsignond_config_set_integer (GSignondConfig *self, const gchar *key,
  * 
  * Get a string configuration value.
  * 
- * Returns: (transfer none): the value corresponding to the key as string. If the key does not
- * exist, NULL is returned.
+ * Returns: (nullable): the value corresponding to the key as string. If the key
+ * does not exist, %NULL is returned.
  */
 const gchar *
 gsignond_config_get_string (GSignondConfig *self, const gchar *key)
@@ -275,7 +275,7 @@ gsignond_config_get_string (GSignondConfig *self, const gchar *key)
  * gsignond_config_set_string:
  * @self: an instance of #GSignondConfig
  * @key: the key name
- * @value: (transfer none): the value
+ * @value: the value
  * 
  * Sets the configuration value to the provided string.
  */
