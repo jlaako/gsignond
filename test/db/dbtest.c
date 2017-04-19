@@ -804,7 +804,7 @@ START_TEST (test_credentials_database)
 
     /* load_identities: matched with type */
     type_filter = gsignond_dictionary_new();
-    gsignond_dictionary_set_int32 (type_filter, "Type", 456);
+    gsignond_dictionary_set_uint32 (type_filter, "Type", 456);
     identities = gsignond_db_credentials_database_load_identities (
             credentials_db, type_filter);
     g_object_unref (type_filter);
@@ -815,7 +815,7 @@ START_TEST (test_credentials_database)
 
     /* load_identities: matched with type and caption */
     cap_type_filter = gsignond_dictionary_new();
-    gsignond_dictionary_set_int32 (cap_type_filter, "Type", 456);
+    gsignond_dictionary_set_uint32 (cap_type_filter, "Type", 456);
     gsignond_dictionary_set_string (cap_type_filter, "Caption", "CAP");
     identities = gsignond_db_credentials_database_load_identities (
             credentials_db, cap_type_filter);

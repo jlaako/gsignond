@@ -255,7 +255,7 @@ GVariant * _create_identity_info_with_data (const gchar *username,
 
     if(username) g_variant_builder_add (&builder, "{sv}", "UserName", g_variant_new_string (username));
     if(caption) g_variant_builder_add (&builder, "{sv}", "Caption", g_variant_new_string (caption));
-    if (type != 0) g_variant_builder_add (&builder, "{sv}", "Type", g_variant_new_int32(type));
+    if (type != 0) g_variant_builder_add (&builder, "{sv}", "Type", g_variant_new_uint32(type));
     if (methods && mechanisms) {
         GVariantBuilder method_builder;
         int i;
@@ -708,7 +708,7 @@ START_TEST(test_query_identities)
     /* query identities for app-context: app_context_B, Identity type : 2 */
     v_identities = NULL;
     filter = gsignond_dictionary_new();
-    gsignond_dictionary_set_int32 (filter, "Type", 2);
+    gsignond_dictionary_set_uint32 (filter, "Type", 2);
     res = gsignond_dbus_auth_service_call_query_identities_sync (auth_service,
             gsignond_dictionary_to_variant (filter),
             "app_context_B", &v_identities, NULL, &error);

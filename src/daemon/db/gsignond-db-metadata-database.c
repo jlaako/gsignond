@@ -1392,7 +1392,7 @@ gsignond_db_metadata_database_get_identities (
     if (filter) {
         GVariant *owner_var = NULL;
         const gchar *caption = NULL;
-        gint type = 0;
+        guint32 type = 0;
         gboolean append_where = TRUE;
 
         if ((owner_var = gsignond_dictionary_get (filter, "Owner"))) {
@@ -1413,8 +1413,8 @@ gsignond_db_metadata_database_get_identities (
     		append_where = FALSE;
     	}
 
-    	if (gsignond_dictionary_get_int32 (filter, "Type", &type)) {
-    		type_query = sqlite3_mprintf (" %s type = %d",
+    	if (gsignond_dictionary_get_uint32 (filter, "Type", &type)) {
+    		type_query = sqlite3_mprintf (" %s type = %u",
     				append_where ? "WHERE" : "AND", type);
     		append_where = FALSE;
     	}
