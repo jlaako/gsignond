@@ -68,21 +68,22 @@ static gchar* _get_executable_name()
 {
     gchar *procfname;
     char *path;
-    ssize_t res;
     pid_t pid = getpid();
+    GError *symlink_error = NULL;
 
     //valgrind does some magic with tasks, so we read the executable name of
     //the 'main' task, instead of the current task
     procfname = g_strdup_printf ("/proc/%d/task/%d/exe", pid, pid);
-    path = g_malloc0 (PATH_MAX + 1);
-    res = readlink (procfname, path, PATH_MAX);
+    path = g_file_read_link (procfname, &symlink_error);
     g_free (procfname);
 
-    if (res <= 0) {
-        WARN ("failed to follow link for pid %d", pid);
+    if (symlink_error != NULL) {
+        WARN ("failed to follow link for pid %d: %s", pid, symlink_error->message);
         g_free (path);
+        g_error_free (symlink_error);
         return NULL;
     }
+
     return path;
 }
 

@@ -134,7 +134,7 @@ _security_context_of_peer (GSignondAccessControlManager *self,
     pid_t remote_pid = 0;
     gchar *procfname;
     char *peerpath;
-    ssize_t res;
+    GError *symlink_error = NULL;
 
     (void) self;
 
@@ -201,12 +201,12 @@ _security_context_of_peer (GSignondAccessControlManager *self,
         return;
 
     procfname = g_strdup_printf ("/proc/%d/exe", remote_pid);
-    peerpath = g_malloc0 (PATH_MAX + 1);
-    res = readlink (procfname, peerpath, PATH_MAX);
+    peerpath = g_file_read_link (procfname, &symlink_error);
     g_free (procfname);
-    if (res <= 0) {
-        WARN ("failed to follow link for pid %d", remote_pid);
+    if (symlink_error != NULL) {
+        WARN ("failed to follow link for pid %d: %s", remote_pid, symlink_error->message);
         g_free (peerpath);
+        g_error_free (symlink_error);
         return;
     }
 
