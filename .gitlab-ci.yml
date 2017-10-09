@@ -43,6 +43,9 @@ test_amd64:
 pages:
     stage: deploy
     script:
+        - cd build
+        - ninja install
+        - cd ..
         - mkdir public
         - cp -a build/docs/reference/html/* public
     only:
