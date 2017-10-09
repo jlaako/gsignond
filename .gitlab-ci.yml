@@ -44,7 +44,7 @@ pages:
     stage: deploy
     script:
         - mkdir public
-        - cp -a build/docs/html/* public
+        - cp -a build/docs/reference/html/* public
     only:
         - tags
         - master@accounts-sso/gsignond
