@@ -40,11 +40,7 @@
 #include <trousers/tss.h>
 #include <trousers/trousers.h>
 
-#include "config.h"
-
 #include "ostro-storage-manager.h"
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-utils.h"
 
 #define EXTENSION_OSTRO_STORAGE_MANAGER_GET_PRIVATE(obj) \
     (G_TYPE_INSTANCE_GET_PRIVATE ((obj), \

@@ -24,10 +24,9 @@
  */
 #include <string.h>
 
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-credentials.h"
-#include "common/db/gsignond-db-error.h"
-#include "common/gsignond-identity-info-internal.h"
+#include <gsignond.h>
+#include "db/gsignond-db-error.h"
+#include "gsignond-identity-info-internal.h"
 #include "gsignond-db-credentials-database.h"
 
 #define GSIGNOND_DB_CREDENTIALS_DATABASE_GET_PRIVATE(obj) \

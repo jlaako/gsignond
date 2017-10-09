@@ -26,7 +26,6 @@
 #ifndef __GSIGNOND_DBUS_SERVER_H_
 #define __GSIGNOND_DBUS_SERVER_H_
 
-#include <config.h>
 #include <glib.h>
 #include <glib-object.h>
 

@@ -24,14 +24,10 @@
  */
 
 #include <string.h>
+#include <gsignond.h>
 
-#include "config.h"
-
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-error.h"
-#include "gsignond/gsignond-plugin-interface.h"
-#include "common/gsignond-pipe-stream.h"
-#include "daemon/dbus/gsignond-dbus.h"
+#include "gsignond-pipe-stream.h"
+#include "dbus/gsignond-dbus.h"
 #include "gsignond-plugin-remote-private.h"
 #include "gsignond-plugin-remote.h"
 

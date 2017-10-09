@@ -22,16 +22,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
  */
-#if HAVE_CONFIG_H
-#include "config.h"
-#endif
 #include <string.h>
 #include <sys/stat.h>
 
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-config.h"
-#include "common/db/gsignond-db-error.h"
-#include "common/gsignond-identity-info-internal.h"
+#include <gsignond.h>
+#include "db/gsignond-db-error.h"
+#include "gsignond-identity-info-internal.h"
 #include "gsignond-db-metadata-database.h"
 
 #define GSIGNOND_METADATA_DB_FILENAME   "metadata.db"

@@ -27,8 +27,8 @@
 #define __GSIGNOND_PLUGIN_PROXY_FACTORY_H__
 
 #include <glib-object.h>
+#include <gsignond.h>
 #include "gsignond-plugin-proxy.h"
-#include <gsignond/gsignond-config.h>
 
 #define GSIGNOND_TYPE_PLUGIN_PROXY_FACTORY             (gsignond_plugin_proxy_factory_get_type ())
 #define GSIGNOND_PLUGIN_PROXY_FACTORY(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GSIGNOND_TYPE_PLUGIN_PROXY_FACTORY, GSignondPluginProxyFactory))

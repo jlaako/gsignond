@@ -28,13 +28,11 @@
 #include <string.h>
 
 #include "gsignond-identity.h"
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-error.h"
-#include "gsignond/gsignond-config-dbus.h"
+#include <gsignond.h>
 #include "gsignond-daemon.h"
 #include "gsignond-identity-enum-types.h"
 #include "gsignond-auth-session.h"
-#include "common/gsignond-identity-info-internal.h"
+#include "gsignond-identity-info-internal.h"
 #include "plugins/gsignond-plugin-proxy-factory.h"
 
 enum 

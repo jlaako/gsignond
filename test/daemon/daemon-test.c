@@ -23,7 +23,6 @@
  * 02110-1301 USA
  */
 
-#include "config.h"
 #include <check.h>
 #include <error.h>
 #include <errno.h>
@@ -32,13 +31,13 @@
 #include <glib.h>
 #include <string.h>
 #include <unistd.h>
+#include <gsignond.h>
 
-#include "daemon/dbus/gsignond-dbus.h"
-#include "daemon/dbus/gsignond-dbus-auth-service-gen.h"
-#include "daemon/dbus/gsignond-dbus-identity-gen.h"
-#include "daemon/dbus/gsignond-dbus-auth-session-gen.h"
-#include "common/gsignond-identity-info.h"
-#include "gsignond/gsignond-log.h"
+#include "dbus/gsignond-dbus.h"
+#include "gsignond-dbus-auth-service-gen.h"
+#include "gsignond-dbus-identity-gen.h"
+#include "gsignond-dbus-auth-session-gen.h"
+#include "gsignond-identity-info.h"
 
 #ifdef USE_P2P
 #  ifdef GSIGNOND_SERVICE
@@ -58,11 +57,7 @@ struct IdentityData {
     { "StoreSecret", "b", (void *)TRUE}
 };
 
-#if HAVE_GTESTDBUS
 GTestDBus *dbus = NULL;
-#else
-GPid daemon_pid = 0;
-#endif
 
 static gchar* _get_executable_name()
 {
@@ -92,18 +87,22 @@ setup_daemon (void)
 {
     gchar* exe_name = _get_executable_name();
     fail_if(exe_name == NULL);
-    
-    fail_if (g_setenv ("GSIGNOND_CONFIG", "daemontest.conf", TRUE) == FALSE);
-    fail_if (g_setenv ("SSO_STORAGE_PATH", "/tmp/gsignond", TRUE) == FALSE);
+
     fail_if (g_setenv ("SSO_KEYCHAIN_SYSCTX", exe_name, TRUE) == FALSE);
 
     DBG ("Programe pid %d, name : %s\n", getpid(), exe_name);
     free(exe_name);
 
-    if (system("rm -rf /tmp/gsignond") != 0) {
-        DBG("Failed to clean db path : %s\n", strerror(errno));
+    const gchar *env_val = g_getenv("SSO_STORAGE_PATH");
+    if (env_val) {
+        char *cmd = g_strdup_printf ("rm -rf %s", env_val);
+        if (system(cmd) != 0) {
+            DBG("Failed to clean db path : %s\n", strerror(errno));
+        }
+
+        g_free (cmd);
     }
-#if HAVE_GTESTDBUS
+
     dbus = g_test_dbus_new (G_TEST_DBUS_NONE);
     fail_unless (dbus != NULL, "could not create test dbus");
 
@@ -111,98 +110,12 @@ setup_daemon (void)
 
     g_test_dbus_up (dbus);
     DBG ("Test dbus server address : %s\n", g_test_dbus_get_bus_address(dbus));
-#else
-    GError *error = NULL;
-#   ifdef USE_P2P
-    /* start daemon maually */
-    gchar *argv[2];
-    gchar *test_daemon_path = g_build_filename (g_getenv("SSO_BIN_DIR"),
-            "gsignond", NULL);
-    fail_if (test_daemon_path == NULL, "No SSO daemon path found");
-
-    argv[0] = test_daemon_path;
-    argv[1] = NULL;
-    g_spawn_async (NULL, argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL,
-            &daemon_pid, &error);
-    g_free (test_daemon_path);
-    fail_if (error != NULL, "Failed to span daemon : %s",
-            error ? error->message : "");
-    sleep (5); /* 5 seconds */
-#   else
-    /* session bus where no GTestBus support */
-    GIOChannel *channel = NULL;
-    gchar *bus_address = NULL;
-    gint tmp_fd = 0;
-    gint pipe_fd[2];
-    gchar *argv[] = {"dbus-daemon", "--config-file=<<conf-file>>", "--print-address=<<fd>>", NULL};
-    gsize len = 0;
-    const gchar *dbus_monitor = NULL;
-
-    argv[1] = g_strdup_printf ("--config-file=%s", "gsignond-dbus.conf");
-
-    if (pipe(pipe_fd)== -1) {
-        WARN("Failed to open temp file : %s", error->message);
-        argv[2] = g_strdup_printf ("--print-address=1");
-        g_spawn_async_with_pipes (NULL, argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, &daemon_pid, NULL, NULL, &tmp_fd, &error);
-    } else {
-        tmp_fd = pipe_fd[0];
-        argv[2] = g_strdup_printf ("--print-address=%d", pipe_fd[1]);
-        g_spawn_async(NULL, argv, NULL, G_SPAWN_SEARCH_PATH|G_SPAWN_LEAVE_DESCRIPTORS_OPEN, NULL, NULL, &daemon_pid, &error);
-    }
-    fail_if (error != NULL, "Failed to span daemon : %s", error ? error->message : "");
-    fail_if (daemon_pid == 0, "Failed to get daemon pid");
-    g_free (argv[1]);
-    g_free (argv[2]);
-    sleep (5); /* 5 seconds */
-
-    channel = g_io_channel_unix_new (tmp_fd);
-    g_io_channel_read_line (channel, &bus_address, NULL, &len, &error);
-    fail_if (error != NULL, "Failed to daemon address : %s", error ? error->message : "");
-    g_io_channel_unref (channel);
-    
-    if (pipe_fd[0]) close (pipe_fd[0]);
-    if (pipe_fd[1]) close (pipe_fd[1]);
-
-    if (bus_address) bus_address[len] = '\0';
-    fail_if(bus_address == NULL || strlen(bus_address) == 0);
-
-    if (GSIGNOND_BUS_TYPE == G_BUS_TYPE_SYSTEM)
-        fail_if (g_setenv("DBUS_SYSTEM_BUS_ADDRESS", bus_address, TRUE) == FALSE);
-    else
-        fail_if (g_setenv("DBUS_SESSION_BUS_ADDRESS", bus_address, TRUE) == FALSE);
-
-    DBG ("Daemon Address : %s\n", bus_address);
-    g_free (bus_address);
-
-    if ((dbus_monitor = g_getenv("SSO_DBUS_DEBUG")) != NULL && g_strcmp0 (dbus_monitor, "0")) {
-    	/* start dbus-monitor */
-    	char *argv[] = {"dbus-monitor", "<<bus_type>>", NULL };
-        argv[1] = GSIGNOND_BUS_TYPE == G_BUS_TYPE_SYSTEM ? "--system" : "--session" ;
-    	g_spawn_async (NULL, argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, &error);
-    	if (error) {
-    		DBG ("Error while running dbus-monitor : %s", error->message);
-    		g_error_free (error);
-    	}
-    }
-#   endif
-
-    DBG ("Daemon PID = %d\n", daemon_pid);
-#endif
 }
 
 static void
 teardown_daemon (void)
 {
-#if HAVE_GTESTDBUS
     g_test_dbus_down (dbus);
-#else
-    if (daemon_pid) kill (daemon_pid, SIGTERM);
-#endif
-
-    g_unsetenv ("SSO_IDENTITY_TIMEOUT");
-    g_unsetenv ("SSO_DAEMON_TIMEOUT");
-    g_unsetenv ("SSO_AUTH_SESSION_TIMEOUT");
-    g_unsetenv ("SSO_STORAGE_PATH");
     g_unsetenv ("SSO_KEYCHAIN_SYSCTX");
 }
 

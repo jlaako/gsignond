@@ -26,11 +26,11 @@
 #ifndef __GSIGNOND_IDENTITY_ADAPTER_H_
 #define __GSIGNOND_IDENTITY_ADAPTER_H_
 
-#include <config.h>
 #include <glib.h>
-#include <daemon/gsignond-identity.h>
-#include "common/gsignond-disposable.h"
+#include <gsignond.h>
+#include "gsignond-identity.h"
 #include "gsignond-dbus-identity-gen.h"
+#include "gsignond-disposable.h"
 
 G_BEGIN_DECLS
 

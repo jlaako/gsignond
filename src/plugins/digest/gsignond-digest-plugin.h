@@ -27,6 +27,7 @@
 #define __GSIGNOND_DIGEST_PLUGIN_H__
 
 #include <glib-object.h>
+#include <gsignond.h>
 
 #define GSIGNOND_TYPE_DIGEST_PLUGIN         (gsignond_digest_plugin_get_type ())
 #define GSIGNOND_DIGEST_PLUGIN(obj)         \

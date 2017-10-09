@@ -24,7 +24,7 @@
  */
 
 
-#include "gsignond/gsignond-plugin-interface.h"
+#include "gsignond-plugin-interface.h"
 #include "gsignond-plugin-enum-types.h"
 
 /**

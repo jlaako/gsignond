@@ -13,7 +13,7 @@
 #Extension = default
 #
 # Base path where user specific database directories will be located.
-@BASE_STORAGE_DIR@
+@BASE_STORAGE_DIR@!
 #
 # Timeout for unloading cached plugin instances.
 #PluginTimeout = 0

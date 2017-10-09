@@ -24,7 +24,7 @@
  */
 
 #include "gsignond-disposable.h"
-#include "gsignond/gsignond-log.h"
+#include "gsignond-log.h"
 
 struct _GSignondDisposablePrivate
 {

@@ -29,7 +29,6 @@
 #include <glib.h>
 #include <gio/gio.h>
 
-#include "gsignond/gsignond-log.h"
 #include "tizen-access-control-manager.h"
 
 #define EXTENSION_TIZEN_ACCESS_CONTROL_MANAGER_GET_PRIVATE(obj) \

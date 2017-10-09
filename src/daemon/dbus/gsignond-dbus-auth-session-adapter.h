@@ -26,11 +26,11 @@
 #ifndef __GSIGNOND_DBUS_AUTH_SESSION_ADAPTER_H_
 #define __GSIGNOND_DBUS_AUTH_SESSION_ADAPTER_H_
 
-#include <config.h>
 #include <glib.h>
-#include <daemon/gsignond-auth-session.h>
-#include "common/gsignond-disposable.h"
+#include <gsignond.h>
+#include "gsignond-auth-session.h"
 #include "gsignond-dbus-auth-session-gen.h"
+#include "gsignond-disposable.h"
 
 G_BEGIN_DECLS
 

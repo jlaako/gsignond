@@ -28,13 +28,11 @@
 #include <unistd.h>
 #include <glib/gstdio.h>
 
-#include "config.h"
-
-#include "gsignond/gsignond-config.h"
-#include "gsignond/gsignond-config-general.h"
-#include "gsignond/gsignond-config-dbus.h"
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-dictionary.h"
+#include "gsignond-config.h"
+#include "gsignond-config-general.h"
+#include "gsignond-config-dbus.h"
+#include "gsignond-log.h"
+#include "gsignond-dictionary.h"
 
 /**
  * SECTION:gsignond-config

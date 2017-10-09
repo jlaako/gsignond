@@ -28,11 +28,9 @@
 #include <glib-object.h>
 #include <string.h>
 
-#include "gsignond-plugin-proxy.h"
-#include "gsignond-plugin-proxy-factory.h"
-#include "gsignond-plugin-remote.h"
-#include "gsignond/gsignond-error.h"
-#include "gsignond/gsignond-log.h"
+#include "plugins/gsignond-plugin-proxy.h"
+#include "plugins/gsignond-plugin-proxy-factory.h"
+#include "plugins/gsignond-plugin-remote.h"
 
 static GMainLoop *main_loop = NULL;
 

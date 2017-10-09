@@ -28,11 +28,9 @@
 
 #include <glib/gstdio.h>
 
-#include "config.h"
-
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-storage-manager.h"
-#include "gsignond/gsignond-utils.h"
+#include "gsignond-log.h"
+#include "gsignond-storage-manager.h"
+#include "gsignond-utils.h"
 
 /**
  * SECTION:gsignond-storage-manager

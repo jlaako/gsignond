@@ -24,7 +24,7 @@
  */
 
 #include "gsignond-dbus-signonui-adapter.h"
-#include "gsignond/gsignond-log.h"
+#include <gsignond.h>
 #include "gsignond-dbus.h"
 
 struct _GSignondDbusSignonuiAdapterPrivate

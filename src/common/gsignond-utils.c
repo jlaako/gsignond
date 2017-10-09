@@ -30,8 +30,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "gsignond/gsignond-utils.h"
-#include "gsignond/gsignond-log.h"
+#include "gsignond-utils.h"
+#include "gsignond-log.h"
 
 /**
  * SECTION:gsignond-utils

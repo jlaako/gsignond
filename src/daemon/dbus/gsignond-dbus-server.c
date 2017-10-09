@@ -25,14 +25,12 @@
 #include <errno.h>
 #include <string.h>
 #include <glib/gstdio.h>
-
-#include "config.h"
+#include <gsignond.h>
 
 #include "gsignond-dbus-server.h"
 #include "gsignond-dbus-auth-service-adapter.h"
 #include "gsignond-dbus.h"
-#include "gsignond/gsignond-log.h"
-#include <daemon/gsignond-daemon.h>
+#include "gsignond-daemon.h"
 
 enum
 {

@@ -23,9 +23,7 @@
  * 02110-1301 USA
  */
 
-#include <gsignond/gsignond-plugin-interface.h>
-#include <gsignond/gsignond-error.h>
-#include <gsignond/gsignond-log.h>
+#include <gsignond.h>
 
 #include "gsignond-ssotest-plugin.h"
 

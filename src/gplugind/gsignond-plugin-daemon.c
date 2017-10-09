@@ -23,13 +23,11 @@
  * 02110-1301 USA
  */
 
-#include "gsignond/gsignond-plugin-interface.h"
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-error.h"
+#include <gsignond.h>
 #include "gsignond-plugin-loader.h"
-#include "common/gsignond-pipe-stream.h"
-#include "daemon/dbus/gsignond-dbus-remote-plugin-gen.h"
-#include "daemon/dbus/gsignond-dbus.h"
+#include "gsignond-pipe-stream.h"
+#include "gsignond-dbus-remote-plugin-gen.h"
+#include "dbus/gsignond-dbus.h"
 #include "gsignond-plugin-daemon.h"
 
 struct _GSignondPluginDaemonPrivate

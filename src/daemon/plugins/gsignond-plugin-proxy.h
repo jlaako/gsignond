@@ -27,11 +27,10 @@
 #define __GSIGNOND_PLUGIN_PROXY_H__
 
 #include <glib-object.h>
+#include <gsignond.h>
 
-#include "common/gsignond-disposable.h"
-#include "daemon/gsignond-types.h"
-#include <gsignond/gsignond-plugin-interface.h>
-#include <gsignond/gsignond-config.h>
+#include "gsignond-disposable.h"
+#include "gsignond-types.h"
 
 #define GSIGNOND_TYPE_PLUGIN_PROXY \
     (gsignond_plugin_proxy_get_type ())

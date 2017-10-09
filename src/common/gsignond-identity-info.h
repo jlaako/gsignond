@@ -28,8 +28,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include <gsignond/gsignond-security-context.h>
-#include <gsignond/gsignond-dictionary.h>
+#include <gsignond-security-context.h>
+#include <gsignond-dictionary.h>
 
 G_BEGIN_DECLS
 

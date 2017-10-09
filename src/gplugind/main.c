@@ -23,7 +23,6 @@
  * 02110-1301 USA
  */
 
-#include <config.h>
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
@@ -33,8 +32,8 @@
 #include <gio/gio.h>
 #include <sys/prctl.h>
 
-#include "gsignond/gsignond-log.h"
-#include "daemon/dbus/gsignond-dbus.h"
+#include <gsignond.h>
+#include "dbus/gsignond-dbus.h"
 #include "gsignond-plugin-daemon.h"
 
 static GSignondPluginDaemon *_daemon = NULL;

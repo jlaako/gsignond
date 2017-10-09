@@ -27,7 +27,7 @@
 #define _TIZEN_EXTENSION_H_
 
 #include <glib-object.h>
-#include <gsignond/gsignond-extension-interface.h>
+#include <gsignond.h>
 
 G_BEGIN_DECLS
 

@@ -27,14 +27,10 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#include "daemon/gsignond-types.h"
-#include "gsignond-plugin-remote-private.h"
-#include "gsignond-plugin-remote.h"
-#include "gplugind/gsignond-plugin-daemon.h"
-#include <gsignond/gsignond-plugin-interface.h>
-#include <gsignond/gsignond-error.h>
-#include <gsignond/gsignond-config.h>
-#include <gsignond/gsignond-log.h>
+#include "gsignond-types.h"
+#include "plugins/gsignond-plugin-remote-private.h"
+#include "plugins/gsignond-plugin-remote.h"
+#include "gsignond-plugin-daemon.h"
 
 static GMainLoop *main_loop = NULL;
 guint child_watch_id = 0;

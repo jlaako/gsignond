@@ -23,10 +23,6 @@
  * 02110-1301 USA
  */
 
-#include "config.h"
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-utils.h"
-#include "gsignond/gsignond-error.h"
 #include "gsignond-dbus-auth-session-adapter.h"
 #include "gsignond-dbus.h"
 

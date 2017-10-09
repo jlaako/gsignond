@@ -23,8 +23,8 @@
  * 02110-1301 USA
  */
 
-#include <gsignond/gsignond-dictionary.h>
-#include <gsignond/gsignond-log.h>
+#include "gsignond-dictionary.h"
+#include "gsignond-log.h"
 
 /**
  * SECTION:gsignond-dictionary

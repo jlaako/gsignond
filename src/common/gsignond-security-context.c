@@ -23,7 +23,7 @@
  * 02110-1301 USA
  */
 
-#include "gsignond/gsignond-security-context.h"
+#include "gsignond-security-context.h"
 
 
 /**

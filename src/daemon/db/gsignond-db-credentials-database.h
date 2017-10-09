@@ -28,9 +28,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include "common/gsignond-identity-info.h"
-#include <gsignond/gsignond-config.h>
-#include <gsignond/gsignond-secret-storage.h>
+#include <gsignond.h>
+#include "gsignond-identity-info.h"
 
 #include "gsignond-db-metadata-database.h"
 
