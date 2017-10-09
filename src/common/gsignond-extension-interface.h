@@ -30,7 +30,7 @@
 
 #include <gsignond-config.h>
 #include <gsignond-storage-manager.h>
-#include <db/gsignond-secret-storage.h>
+#include <gsignond-secret-storage.h>
 #include <gsignond-access-control-manager.h>
 
 G_BEGIN_DECLS

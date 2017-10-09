@@ -307,7 +307,7 @@ gsignond_session_data_set_renew_token (GSignondSessionData *data,
 /**
  * gsignond_session_data_get_ui_policy:
  * @data: a #GSignondDictionary structure
- * @ui_policy: the value for the parameter is written here
+ * @ui_policy: (out): the value for the parameter is written here
  * 
  * A getter for UI policy setting associated with the authentication session.
  * The UI policy indicates how the authentication plugin should interact with the user.
