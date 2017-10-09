@@ -1,5 +1,5 @@
 
-daemon_files = files([
+daemon_files = files(
     'db/gsignond-db-credentials-database.c',
     'db/gsignond-db-credentials-database.h',
     'db/gsignond-db-metadata-database.c',
@@ -24,9 +24,9 @@ daemon_files = files([
     'gsignond-signonui-proxy.c',
     'gsignond-signonui-proxy.h',
     'gsignond-types.h'
-])
+)
 
-daemon_plugins_files = files([
+daemon_plugins_files = files(
     'plugins/gsignond-plugin-proxy.c',
     'plugins/gsignond-plugin-proxy.h',
     'plugins/gsignond-plugin-proxy-factory.c',
@@ -34,7 +34,7 @@ daemon_plugins_files = files([
     'plugins/gsignond-plugin-remote.c',
     'plugins/gsignond-plugin-remote.h',
     'plugins/gsignond-plugin-remote-private.h',
-])
+)
 
 daemon_files += daemon_plugins_files
 

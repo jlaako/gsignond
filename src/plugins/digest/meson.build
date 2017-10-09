@@ -1,7 +1,7 @@
-digest_files = files([
+digest_files = files(
     'gsignond-digest-plugin.c',
     'gsignond-digest-plugin.h'
-])
+)
 
 digest_dir = include_directories('.')
 

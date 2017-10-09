@@ -1,5 +1,5 @@
 
-internal_files = files([
+internal_files = files(
     'gsignond-identity-info.h',
     'gsignond-identity-info-internal.h',
     'gsignond-identity-info.c',
@@ -15,9 +15,9 @@ internal_files = files([
     'db/gsignond-db-sql-database.c',
     'db/gsignond-db-sql-database.h',
     'db/gsignond-db-sql-database-private.h'
-])
+)
 
-common_files = files([
+common_files = files(
     'gsignond-access-control-manager.c',
     'gsignond-credentials.c',
     'gsignond-config.c',
@@ -31,9 +31,9 @@ common_files = files([
     'gsignond-storage-manager.c',
     'gsignond-utils.c',
     'db/gsignond-secret-storage.c'
-])
+)
 
-common_headers = files([
+common_headers = files(
     'gsignond.h',
     'gsignond-access-control-manager.h',
     'gsignond-config.h',
@@ -51,7 +51,7 @@ common_headers = files([
     'gsignond-signonui-data.h',
     'gsignond-storage-manager.h',
     'gsignond-utils.h'
-])
+)
 
 common_files += gnome.mkenums('gsignond-plugin-enum-types',
     sources: 'gsignond-plugin-interface.h',

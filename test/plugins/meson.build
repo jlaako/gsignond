@@ -1,7 +1,7 @@
 # Digest plugin test
-test_digest_files = files ([
+test_digest_files = files (
     'digestplugintest.c'
-])
+)
 
 test_digest_files += digest_files
 
@@ -18,9 +18,9 @@ test('test-plugin-digest',
 )
 
 # Password plugin test
-test_password_files = files ([
+test_password_files = files (
     'passwordplugintest.c'
-])
+)
 
 test_password_files += password_files
 
@@ -40,9 +40,9 @@ test_password_environment = environment_test
 test_password_environment.set ('SSO_GPLUGINS_DIR', join_paths(meson.build_root(), 'src', 'plugins', 'password'))
 
 # Remote test
-test_remote_files = files([
+test_remote_files = files(
     'pluginremotetest.c'
-])
+)
 
 test_remoteplugin = executable(
     'remoteplugintest',
@@ -57,9 +57,9 @@ test('test-remote-plugin',
 )
 
 # Proxy test
-test_proxy_files = files([
+test_proxy_files = files(
     'pluginproxytest.c'
-])
+)
 
 test_proxyplugin = executable(
     'proxyplugintest',

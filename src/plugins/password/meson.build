@@ -1,7 +1,7 @@
-password_files = files([
+password_files = files(
     'gsignond-password-plugin.c',
     'gsignond-password-plugin.h'
-])
+)
 
 password_dir = include_directories('.')
 

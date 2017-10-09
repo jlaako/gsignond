@@ -1,10 +1,10 @@
 
-gplugind_embedded_files = files([
+gplugind_embedded_files = files(
     'gsignond-plugin-daemon.c',
     'gsignond-plugin-daemon.h',
     'gsignond-plugin-loader.c',
     'gsignond-plugin-loader.h'
-])
+)
 
 gplugind_files = gplugind_embedded_files + files('main.c')
 
@@ -24,7 +24,7 @@ if enable_debug == true
 
     gsignond_embedded_gplugind_library = static_library(
         'gsignond-embedded-gplugind',
-        [gplugind_embedded_files],
+        gplugind_embedded_files,
         dependencies : gplugind_dependencies
     )
 

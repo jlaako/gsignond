@@ -3,7 +3,7 @@ libecryptfs = dependency('libecryptfs')
 libsmack = dependency('libsmack')
 tspi = meson.get_compiler('c').find_library('tspi')
 
-ostro_files = files([
+ostro_files = files(
     'ostro-access-control-manager.h',
     'ostro-access-control-manager.c',
     'ostro-extension.h',
@@ -12,7 +12,7 @@ ostro_files = files([
     'ostro-secret-storage.c',
     'ostro-storage-manager.h',
     'ostro-storage-manager.c'
-])
+)
 
 ostro_plugin = shared_module('extension-ostro',
     ostro_files,

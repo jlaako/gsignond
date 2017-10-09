@@ -2,7 +2,7 @@
 libecryptfs = dependency('libecryptfs')
 libsmack = dependency('libsmack')
 
-tizen_files = files([
+tizen_files = files(
     'tizen-access-control-manager.h',
     'tizen-access-control-manager.c',
     'tizen-extension.h',
@@ -11,7 +11,7 @@ tizen_files = files([
     'tizen-secret-storage.c',
     'tizen-storage-manager.h',
     'tizen-storage-manager.c'
-])
+)
 
 tizen_plugin = shared_module('extension-tizen',
     tizen_files,
