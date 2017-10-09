@@ -25,7 +25,7 @@
 
 #include "gsignond-identity-info.h"
 #include "gsignond-identity-info-internal.h"
-#include "gsignond/gsignond-utils.h"
+#include "gsignond-utils.h"
 
 G_DEFINE_BOXED_TYPE(GSignondIdentityInfo,
                     gsignond_identity_info,

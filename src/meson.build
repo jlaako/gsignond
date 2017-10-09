@@ -1,0 +1,5 @@
+subdir('common')
+subdir('daemon')
+subdir('gplugind')
+subdir('extensions')
+subdir('plugins')

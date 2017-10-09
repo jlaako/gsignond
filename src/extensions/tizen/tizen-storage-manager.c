@@ -33,11 +33,7 @@
 #include <mntent.h>
 #include <ecryptfs.h>
 
-#include "config.h"
-
 #include "tizen-storage-manager.h"
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-utils.h"
 
 #define EXTENSION_TIZEN_STORAGE_MANAGER_GET_PRIVATE(obj) \
     (G_TYPE_INSTANCE_GET_PRIVATE ((obj), \

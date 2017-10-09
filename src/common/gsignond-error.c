@@ -23,7 +23,7 @@
  * 02110-1301 USA
  */
 
-#include "gsignond/gsignond-error.h"
+#include "gsignond-error.h"
 #include <string.h>
 #include <gio/gio.h>
 

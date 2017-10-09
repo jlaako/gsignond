@@ -23,10 +23,8 @@
  * 02110-1301 USA
  */
 
-#include "gsignond/gsignond-error.h"
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-config.h"
-#include "daemon/gsignond-auth-session.h"
+#include <gsignond.h>
+#include "gsignond-auth-session.h"
 #include "gsignond-plugin-proxy.h"
 #include "gsignond-plugin-remote.h"
 

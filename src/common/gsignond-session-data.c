@@ -23,8 +23,8 @@
  * 02110-1301 USA
  */
 
-#include "gsignond/gsignond-session-data.h"
-#include "gsignond/gsignond-utils.h"
+#include "gsignond-session-data.h"
+#include "gsignond-utils.h"
 
 
 /**

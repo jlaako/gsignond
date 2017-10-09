@@ -33,7 +33,6 @@
 #include <glib.h>
 #include <gio/gio.h>
 
-#include "gsignond/gsignond-log.h"
 #include "ostro-access-control-manager.h"
 
 #define EXTENSION_OSTRO_ACCESS_CONTROL_MANAGER_GET_PRIVATE(obj) \

@@ -23,11 +23,11 @@
  * 02110-1301 USA
  */
 
-#include "gsignond-db-secret-database.h"
-#include "gsignond-db-error.h"
+#include "db/gsignond-db-secret-database.h"
+#include "db/gsignond-db-error.h"
 
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-secret-storage.h"
+#include "gsignond-log.h"
+#include "gsignond-secret-storage.h"
 
 #define GSIGNOND_SECRET_DB_FILENAME     "secret.db"
 

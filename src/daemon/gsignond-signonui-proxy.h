@@ -27,7 +27,7 @@
 #define __GSIGNOND_SIGNONUI_PROXY_H__
 
 #include <glib-object.h>
-#include <gsignond/gsignond-signonui-data.h>
+#include <gsignond.h>
 
 #define GSIGNOND_TYPE_SIGNONUI_PROXY             (gsignond_signonui_proxy_get_type ())
 #define GSIGNOND_SIGNONUI_PROXY(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GSIGNOND_TYPE_SIGNONUI_PROXY, GSignondSignonuiProxy))

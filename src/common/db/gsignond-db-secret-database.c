@@ -25,11 +25,11 @@
 #include <sqlite3.h>
 #include <string.h>
 
-#include "gsignond/gsignond-log.h"
-#include "gsignond-db-error.h"
-#include "gsignond-db-defines.h"
-#include "gsignond-db-secret-database.h"
-#include "gsignond-db-sql-database-private.h"
+#include "gsignond-log.h"
+#include "db/gsignond-db-error.h"
+#include "db/gsignond-db-defines.h"
+#include "db/gsignond-db-secret-database.h"
+#include "db/gsignond-db-sql-database-private.h"
 
 #define RETURN_IF_NOT_OPEN(obj, retval) \
     if (gsignond_db_sql_database_is_open ( \

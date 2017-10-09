@@ -26,10 +26,10 @@
 #ifndef __GSIGNOND_DBUS_AUTH_SERVICE_ADAPTER_H_
 #define __GSIGNOND_DBUS_AUTH_SERVICE_ADAPTER_H_
 
-#include <config.h>
 #include <glib.h>
-#include <daemon/gsignond-daemon.h>
-#include "common/gsignond-disposable.h"
+#include <gsignond.h>
+#include "gsignond-disposable.h"
+#include "gsignond-daemon.h"
 #include "gsignond-dbus-auth-service-gen.h"
 
 G_BEGIN_DECLS

@@ -30,10 +30,8 @@
 
 #include <gio/gio.h>
 
-#include "config.h"
-
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-access-control-manager.h"
+#include "gsignond-log.h"
+#include "gsignond-access-control-manager.h"
 
 /**
  * SECTION:gsignond-access-control-manager

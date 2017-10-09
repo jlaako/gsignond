@@ -23,7 +23,7 @@
  * 02110-1301 USA
  */
 
-#include <gsignond/gsignond-signonui-data.h>
+#include "gsignond-signonui-data.h"
 
 /**
  * SECTION:gsignond-signonui-data

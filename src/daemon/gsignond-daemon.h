@@ -29,8 +29,8 @@
 #include <glib-object.h>
 
 #include "gsignond-types.h"
-#include <gsignond/gsignond-access-control-manager.h>
-#include "common/gsignond-identity-info.h"
+#include <gsignond.h>
+#include "gsignond-identity-info.h"
 #include "gsignond-signonui-proxy.h"
 #include "plugins/gsignond-plugin-proxy-factory.h"
 

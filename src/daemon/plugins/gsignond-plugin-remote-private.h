@@ -27,8 +27,8 @@
 #define __GSIGNOND_PLUGIN_REMOTE_PRIVATE_H__
 
 #include <glib.h>
-#include <daemon/dbus/gsignond-dbus-remote-plugin-gen.h>
-#include "daemon/dbus/gsignond-dbus.h"
+#include "gsignond-dbus-remote-plugin-gen.h"
+#include "dbus/gsignond-dbus.h"
 
 G_BEGIN_DECLS
 

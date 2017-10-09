@@ -23,8 +23,8 @@
  * 02110-1301 USA
  */
 
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-credentials.h"
+#include "gsignond-log.h"
+#include "gsignond-credentials.h"
 
 /**
  * SECTION:gsignond-credentials

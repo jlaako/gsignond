@@ -23,7 +23,7 @@
  * 02110-1301 USA
  */
 
-#include "gsignond/gsignond-extension-interface.h"
+#include "gsignond-extension-interface.h"
 
 /**
  * SECTION:gsignond-extension-interface

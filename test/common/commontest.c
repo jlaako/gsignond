@@ -29,13 +29,11 @@
 #include <fcntl.h>
 #include <glib.h>
 #include <glib-unix.h>
-#include "gsignond/gsignond-session-data.h"
-#include "gsignond/gsignond-error.h"
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-utils.h"
-#include "common/gsignond-identity-info.h"
-#include "common/gsignond-pipe-stream.h"
-#include "gplugind/gsignond-plugin-loader.h"
+#include <gsignond.h>
+
+#include "gsignond-identity-info.h"
+#include "gsignond-pipe-stream.h"
+#include "gsignond-plugin-loader.h"
 
 static GSequence*
 _sequence_new (gchar *data)

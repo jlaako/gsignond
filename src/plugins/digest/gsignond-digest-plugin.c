@@ -26,11 +26,7 @@
 #include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <gsignond/gsignond-plugin-interface.h>
 #include "gsignond-digest-plugin.h"
-#include <gsignond/gsignond-error.h>
-#include <gsignond/gsignond-log.h>
-#include <gsignond/gsignond-utils.h>
 
 /**
  * SECTION:gsignond-digest-plugin

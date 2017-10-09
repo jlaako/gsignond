@@ -26,8 +26,7 @@
 #ifndef _GSIGNOND_PLUGIN_LOADER_H_
 #define _GSIGNOND_PLUGIN_LOADER_H_
 
-#include <gsignond/gsignond-plugin-interface.h>
-#include <gsignond/gsignond-config.h>
+#include <gsignond.h>
 
 G_BEGIN_DECLS
 

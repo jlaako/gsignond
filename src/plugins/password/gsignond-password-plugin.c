@@ -23,9 +23,7 @@
  * 02110-1301 USA
  */
 
-#include <gsignond/gsignond-plugin-interface.h>
 #include "gsignond-password-plugin.h"
-#include <gsignond/gsignond-error.h>
 
 /**
  * SECTION:gsignond-password-plugin

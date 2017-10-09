@@ -27,6 +27,7 @@
 #define __GSIGNOND_PASSWORD_PLUGIN_H__
 
 #include <glib-object.h>
+#include <gsignond.h>
 
 #define GSIGNOND_TYPE_PASSWORD_PLUGIN             (gsignond_password_plugin_get_type ())
 #define GSIGNOND_PASSWORD_PLUGIN(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GSIGNOND_TYPE_PASSWORD_PLUGIN, GSignondPasswordPlugin))

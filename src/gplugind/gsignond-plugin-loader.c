@@ -25,10 +25,8 @@
 
 
 #include <gmodule.h>
+#include <gsignond.h>
 
-#include "config.h"
-
-#include "gsignond/gsignond-log.h"
 #include "gsignond-plugin-loader.h"
 
 GSignondPlugin *

@@ -24,18 +24,11 @@
  */
 
 #include <gmodule.h>
-
-#include "config.h"
+#include <gsignond.h>
 
 #include "gsignond-daemon.h"
-
-#include "gsignond/gsignond-config.h"
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-error.h"
-#include "gsignond/gsignond-extension-interface.h"
-#include "gsignond/gsignond-utils.h"
-#include "daemon/gsignond-identity.h"
-#include "daemon/db/gsignond-db-credentials-database.h"
+#include "gsignond-identity.h"
+#include "db/gsignond-db-credentials-database.h"
 
 struct _GSignondDaemonPrivate
 {
@@ -280,7 +273,7 @@ _init_storage (GSignondDaemon *self)
     if (storage_location == NULL)
         return FALSE;
     gsignond_config_set_string (self->priv->config, 
-        GSIGNOND_CONFIG_GENERAL_SECURE_DIR, storage_location);                                                 
+        GSIGNOND_CONFIG_GENERAL_SECURE_DIR, storage_location);
 
     return (storage_location != NULL);
 }

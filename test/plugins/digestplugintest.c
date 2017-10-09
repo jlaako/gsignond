@@ -26,12 +26,6 @@
 #include <check.h>
 #include <stdlib.h>
 #include "gsignond-digest-plugin.h"
-#include "gsignond/gsignond-session-data.h"
-#include "gsignond/gsignond-plugin-interface.h"
-#include "gsignond/gsignond-error.h"
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-config.h"
-#include "gsignond/gsignond-utils.h"
 
 static const gchar *realm_list[] = { "realm1", "realm2", "realm3", NULL };
 

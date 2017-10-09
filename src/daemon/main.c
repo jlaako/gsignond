@@ -23,8 +23,6 @@
  * 02110-1301 USA
  */
 
-#include "config.h"
-
 #include <errno.h>
 #include <signal.h>
 #include <string.h>
@@ -33,10 +31,10 @@
 #include <glib-unix.h>
 #include <glib.h>
 #include <gio/gio.h>
+#include <gsignond.h>
 
-#include "gsignond/gsignond-log.h"
-#include "daemon/dbus/gsignond-dbus.h"
-#include "daemon/dbus/gsignond-dbus-server.h"
+#include "dbus/gsignond-dbus.h"
+#include "dbus/gsignond-dbus-server.h"
 
 static GSignondDbusServer *_server = NULL;
 static guint           _sig_source_id[3];

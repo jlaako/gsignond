@@ -27,17 +27,15 @@
 #include <string.h>
 #include <sqlite3.h>
 #include <glib/gstdio.h>
+#include <gsignond.h>
 
-#include "gsignond/gsignond-config.h"
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-credentials.h"
-#include "gsignond/gsignond-secret-storage.h"
-#include "common/db/gsignond-db-error.h"
-#include "common/db/gsignond-db-secret-database.h"
-#include "common/db/gsignond-db-sql-database.h"
-#include "daemon/gsignond-daemon.h"
-#include "daemon/db/gsignond-db-metadata-database.h"
-#include "daemon/db/gsignond-db-credentials-database.h"
+#include "db/gsignond-db-error.h"
+#include "db/gsignond-db-secret-database.h"
+#include "db/gsignond-db-sql-database.h"
+
+#include "gsignond-daemon.h"
+#include "db/gsignond-db-metadata-database.h"
+#include "db/gsignond-db-credentials-database.h"
 
 static GSequence*
 _sequence_new (gchar *data)
@@ -138,7 +136,7 @@ _get_filled_identity_info_2 (
     if (add_owner) {
         gsignond_identity_info_set_owner (identity, ctx1);
     }
-    g_list_free_full (ctx_list, gsignond_security_context_free);
+    g_list_free_full (ctx_list, (GDestroyNotify)gsignond_security_context_free);
 
     gsignond_identity_info_set_validated (identity, FALSE);
     gsignond_identity_info_set_identity_type (identity, type);
@@ -180,7 +178,6 @@ START_TEST (test_sql_database)
 {
     GSignondDbSecretDatabase *database = NULL;
     gchar *filename = NULL;
-    const gchar *dir = NULL;
     GSignondCredentials *creds = NULL;
     guint32 id = 1, method = 2;
     GSignondDictionary *data = NULL;
@@ -214,9 +211,8 @@ START_TEST (test_sql_database)
     fail_unless (gsignond_db_secret_database_remove_data (
             database, 1, 2) == FALSE);
 
-    dir = "/tmp/gsignond";
-    g_mkdir_with_parents (dir, S_IRWXU);
-    filename = g_build_filename (dir, "sql_db_test.db", NULL);
+    g_mkdir_with_parents (GSIGNOND_TEST_DB_DIR, S_IRWXU);
+    filename = g_build_filename (GSIGNOND_TEST_DB_DIR, "sql_db_test.db", NULL);
     fail_unless (gsignond_db_sql_database_open (sqldb, filename,
             SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE) == TRUE);
     /* don't open the db again if its already open */
@@ -383,7 +379,7 @@ START_TEST (test_secret_storage)
     const gchar *dir = NULL;
 
     config = gsignond_config_new ();
-    gsignond_config_set_string (config, GSIGNOND_CONFIG_GENERAL_SECURE_DIR, "/tmp/gsignond");
+    gsignond_config_set_string (config, GSIGNOND_CONFIG_GENERAL_SECURE_DIR, GSIGNOND_TEST_DB_DIR);
     
     /* Secret Storage */
     storage = g_object_new (GSIGNOND_TYPE_SECRET_STORAGE,
@@ -484,7 +480,7 @@ START_TEST (test_metadata_database)
     GSignondSecurityContext *owner = NULL;
 
     config = gsignond_config_new ();
-    gsignond_config_set_string (config, GSIGNOND_CONFIG_GENERAL_SECURE_DIR, "/tmp/gsignond");
+    gsignond_config_set_string (config, GSIGNOND_CONFIG_GENERAL_SECURE_DIR, GSIGNOND_TEST_DB_DIR);
     GSignondDbMetadataDatabase* metadata_db = NULL;
     metadata_db = gsignond_db_metadata_database_new (config);
     g_object_unref(config);
@@ -659,7 +655,7 @@ START_TEST (test_credentials_database)
     GSignondDictionary *no_cap_filter = NULL;
 
     config = gsignond_config_new ();
-    gsignond_config_set_string (config, GSIGNOND_CONFIG_GENERAL_SECURE_DIR, "/tmp/gsignond");
+    gsignond_config_set_string (config, GSIGNOND_CONFIG_GENERAL_SECURE_DIR, GSIGNOND_TEST_DB_DIR);
     storage = g_object_new (GSIGNOND_TYPE_SECRET_STORAGE,
             "config", config, NULL);
     g_object_unref(config);

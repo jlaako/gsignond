@@ -24,9 +24,7 @@
  */
 
 #include "gsignond-auth-session.h"
-#include "gsignond/gsignond-error.h"
-#include "gsignond/gsignond-log.h"
-#include "gsignond/gsignond-session-data.h"
+#include <gsignond.h>
 #include "plugins/gsignond-plugin-proxy-factory.h"
 #include "gsignond-daemon.h"
 

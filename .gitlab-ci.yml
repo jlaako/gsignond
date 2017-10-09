@@ -1,5 +1,5 @@
 ---
-image: ubuntu:xenial
+image: ubuntu:artful
 
 cache:
     key: apt-cache
@@ -9,17 +9,21 @@ cache:
 before_script:
     - export APT_CACHE_DIR=`pwd`/apt-cache && mkdir -pv $APT_CACHE_DIR
     - apt-get update -yq && apt-get -o dir::cache::archives="$APT_CACHE_DIR"
-     install -y autotools-dev pkg-config libdbus-1-dev gtk-doc-tools
-     libsqlite3-dev libglib2.0-dev check
+     install -y meson pkg-config libdbus-1-dev gtk-doc-tools gobject-introspection
+     libsqlite3-dev libglib2.0-dev libgirepository1.0-dev check valac locales lcov
+    - echo "en_US UTF-8" > /etc/locale.gen
+    - locale-gen en_US.UTF-8
+    - export LANG=en_US.UTF-8
+    - export LANGUAGE=en_US:en
+    - export LC_ALL=en_US.UTF-8
+
 
 build_amd64:
     stage: build
     script:
-        - NOCONFIGURE=1 ./autogen.sh
-        - mkdir build
+        - meson build -Denable_debug=true -Denable_doc=true -Db_coverage=true
         - cd build
-        - ../configure --enable-gtk-doc --enable-coverage --enable-debug
-        - make -j 4
+        - ninja
     artifacts:
         paths:
             - ./
@@ -27,9 +31,9 @@ build_amd64:
 test_amd64:
     stage: test
     script:
-        - find build | xargs touch  # Avoid rebuilding
         - cd build
-        - make check
+        - ninja test
+        - ninja coverage-html
     dependencies:
         - build_amd64
     artifacts:
@@ -43,6 +47,7 @@ pages:
         - cp -a build/docs/html/* public
     only:
         - tags
+        - master@accounts-sso/gsignond
     dependencies:
         - test_amd64
     artifacts:

@@ -28,12 +28,9 @@
 
 #include <glib-object.h>
 
+#include <gsignond.h>
 #include "gsignond-types.h"
-#include <gsignond/gsignond-dictionary.h>
-#include "common/gsignond-identity-info.h"
-#include <gsignond/gsignond-signonui-data.h>
-#include <gsignond/gsignond-session-data.h>
-#include <gsignond/gsignond-access-control-manager.h>
+#include "gsignond-identity-info.h"
 
 G_BEGIN_DECLS
 

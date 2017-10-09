@@ -27,11 +27,10 @@
 
 #include <glib/gstdio.h>
 
-#include "gsignond/gsignond-log.h"
-#include "gsignond-db-error.h"
-#include "gsignond-db-sql-database.h"
-#include "gsignond-db-sql-database-private.h"
-#include "config.h"
+#include "gsignond-log.h"
+#include "db/gsignond-db-error.h"
+#include "db/gsignond-db-sql-database.h"
+#include "db/gsignond-db-sql-database-private.h"
 
 #define GSIGNOND_DB_SQL_DATABASE_GET_PRIVATE(obj) \
                                           (G_TYPE_INSTANCE_GET_PRIVATE ((obj),\
