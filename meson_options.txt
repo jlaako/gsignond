@@ -1,4 +1,4 @@
 option('bus_type', type : 'combo', choices : ['system', 'session', 'p2p'], value : 'session')
-option('extension', type : 'combo', choices : ['default', 'ostro', 'tizen'], value : 'default')
+option('extension', type : 'combo', choices : ['default', 'ostro', 'tizen', 'desktop'], value : 'default')
 option('enable_debug', type : 'boolean', value : false)
 option('enable_doc', type : 'boolean', value : true)

@@ -25,7 +25,7 @@ You can use `mesonconf -D option=value` to set the configuration values of your 
 The different options on this project are:
 
 - bus_type : specify the DBus type used. accepted values are `session`, `system` and `p2p`.
-- extension : select the extension to build. existing extensions are `default`, `ostro` and `tizen`.
+- extension : select the extension to build. existing extensions are `default`, `ostro`, `tizen` and `desktop`.
 - enable_debug : enable debugging related options.
 - enable_doc : build and install the documentation.
 
