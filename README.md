@@ -28,6 +28,8 @@ The different options on this project are:
 - extension : select the extension to build. existing extensions are `default`, `ostro`, `tizen` and `desktop`.
 - enable_debug : enable debugging related options.
 - enable_doc : build and install the documentation.
+- enable_keychain : system context of the keychain.
+- enable_storagedir : path for user specific storage directories.
 
 License
 -------

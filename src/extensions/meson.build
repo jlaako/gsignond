@@ -1,5 +1,3 @@
-
-extension = get_option('extension')
 if extension == 'ostro'
     subdir('ostro')
 elif extension == 'tizen'

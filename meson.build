@@ -15,9 +15,12 @@ version_revision = '5'
 version_compact = '@0@.@1@'.format (version_major, version_minor)
 version_full = '@0@.@1@'.format (version_compact, version_revision)
 
+keychain = '"@0@"'.format (get_option('enable_keychain'))
+extension = get_option('extension')
+
 gplugins_dir = join_paths(get_option('prefix'), get_option('libdir'), meson.project_name(), 'gplugins')
 sysconf_dir = '/etc'
-base_storage_dir = '/var/db'
+base_storage_dir = get_option('enable_storagedir')
 extension_dir = join_paths(get_option('prefix'), get_option('libdir'), meson.project_name(), 'extensions')
 plugin_loaders_dir = join_paths(get_option('prefix'), get_option('libdir'), meson.project_name(), 'pluginloaders')
 
@@ -26,6 +29,7 @@ add_project_arguments('-DGSIGNOND_EXTENSIONS_DIR="@0@"'.format(extension_dir), l
 add_project_arguments('-DGSIGNOND_GPLUGINS_DIR="@0@"'.format(gplugins_dir), language : 'c')
 add_project_arguments('-DGSIGNOND_SYSCONF_DIR="@0@"'.format(sysconf_dir), language : 'c')
 add_project_arguments('-DBASE_STORAGE_DIR="@0@"'.format(base_storage_dir), language : 'c')
+add_project_arguments('-DKEYCHAIN_SYSCTX="@0@"'.format(keychain), language : 'c')
 add_project_arguments('-D_GNU_SOURCE=1', language : 'c')
 
 bus_type = get_option('bus_type')
@@ -55,3 +59,23 @@ if enable_debug == true
     subdir('test')
 endif
 
+conf_data = configuration_data()
+conf_data.set('EXTENSION', 'Extension = @0@'.format(extension))
+conf_data.set('BASE_STORAGE_DIR', 'StoragePath = @0@'.format(base_storage_dir))
+conf_data.set('KEYCHAIN_SYSCTX', 'KeychainSystemContext = @0@'.format(keychain))
+# Disable default settings
+if extension == 'default'
+    conf_data.set('EXTENSION', '#@0@'.format(conf_data.get('EXTENSION')))
+endif
+if base_storage_dir == '/var/db'
+    conf_data.set('BASE_STORAGE_DIR', '#@0@'.format(conf_data.get('BASE_STORAGE_DIR')))
+endif
+if keychain == '""'
+    conf_data.set('KEYCHAIN_SYSCTX', '#@0@'.format(conf_data.get('KEYCHAIN_SYSCTX')))
+endif
+configure_file(
+    input: 'gsignond.conf.in',
+    configuration: conf_data,
+    install_dir: sysconf_dir,
+    output: 'gsignond.conf'
+)
