@@ -33,7 +33,6 @@
 #include <gio/gio.h>
 #include <gsignond.h>
 
-#include "dbus/gsignond-dbus.h"
 #include "dbus/gsignond-dbus-server.h"
 
 static GSignondDbusServer *_server = NULL;

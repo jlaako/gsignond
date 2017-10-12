@@ -27,7 +27,7 @@
 #include <gsignond.h>
 
 #include "gsignond-pipe-stream.h"
-#include "dbus/gsignond-dbus.h"
+#include "gsignond-dbus.h"
 #include "gsignond-plugin-remote-private.h"
 #include "gsignond-plugin-remote.h"
 

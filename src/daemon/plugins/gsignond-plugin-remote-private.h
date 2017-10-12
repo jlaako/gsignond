@@ -28,7 +28,7 @@
 
 #include <glib.h>
 #include "gsignond-dbus-remote-plugin-gen.h"
-#include "dbus/gsignond-dbus.h"
+#include "gsignond-dbus.h"
 
 G_BEGIN_DECLS
 

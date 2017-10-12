@@ -4,7 +4,6 @@ daemon_files = files(
     'db/gsignond-db-credentials-database.h',
     'db/gsignond-db-metadata-database.c',
     'db/gsignond-db-metadata-database.h',
-    'dbus/gsignond-dbus.h',
     'dbus/gsignond-dbus-auth-service-adapter.c',
     'dbus/gsignond-dbus-auth-service-adapter.h',
     'dbus/gsignond-dbus-auth-session-adapter.c',
@@ -38,31 +37,6 @@ daemon_plugins_files = files(
 
 daemon_files += daemon_plugins_files
 
-dbus_files = []
-dbus_files += gnome.gdbus_codegen('gsignond-dbus-auth-service-gen',
-    'dbus/interfaces/com.google.code.AccountsSSO.gSingleSignOn.AuthService.xml',
-    interface_prefix: 'com.google.code.AccountsSSO.gSingleSignOn.',
-    namespace: 'GSignondDbus'
-)
-
-dbus_files += gnome.gdbus_codegen('gsignond-dbus-auth-session-gen',
-    'dbus/interfaces/com.google.code.AccountsSSO.gSingleSignOn.AuthSession.xml',
-    interface_prefix: 'com.google.code.AccountsSSO.gSingleSignOn.',
-    namespace: 'GSignondDbus'
-)
-
-dbus_files += gnome.gdbus_codegen('gsignond-dbus-identity-gen',
-    'dbus/interfaces/com.google.code.AccountsSSO.gSingleSignOn.Identity.xml',
-    interface_prefix: 'com.google.code.AccountsSSO.gSingleSignOn.',
-    namespace: 'GSignondDbus'
-)
-
-dbus_files += gnome.gdbus_codegen('gsignond-dbus-remote-plugin-gen',
-    'dbus/interfaces/com.google.code.AccountsSSO.gSingleSignOn.RemotePlugin.xml',
-    interface_prefix: 'com.google.code.AccountsSSO.gSingleSignOn.',
-    namespace: 'GSignondDbus'
-)
-
 daemon_files += gnome.mkenums('gsignond-identity-enum-types',
     sources: 'gsignond-identity.h',
     h_template: 'gsignond-identity-enum-types.h.template',
@@ -72,37 +46,21 @@ daemon_files += gnome.mkenums('gsignond-identity-enum-types',
     identifier_prefix: 'GSignond'
 )
 
-daemon_dir = include_directories('.')
+daemon_dependencies = [glib, gio, gio_unix, sqlite, gmodule, gsignond_common, gsignond_dbus]
 
-# We need a fake static library to share the DBus objects with the other plugins
-gsignond_dbus_library = static_library('gsignond-dbus',
-    dbus_files,
-    include_directories: [daemon_dir, root_dir],
-    dependencies : [glib, gio, gio_unix]
+gsignon_daemon = declare_dependency(
+    sources: daemon_plugins_files,
+    dependencies: daemon_dependencies,
+    include_directories: include_directories('.')
 )
-
-gsignond_dbus = declare_dependency(
-    include_directories: [daemon_dir, root_dir],
-    link_with: gsignond_dbus_library,
-    sources: dbus_files,
-    dependencies : [glib, gio, gio_unix]
-)
-
-#
-if enable_debug == true
-    gsignond_db_library = static_library('gsignond-db', [daemon_files], dependencies : [glib, gio, gio_unix, sqlite, gmodule, gsignond_common, gsignond_dbus])
-    gsignond_db = declare_dependency(
-        include_directories: daemon_dir,
-        link_with: gsignond_db_library,
-        sources: daemon_files,
-        dependencies : [glib, gio, gio_unix, sqlite, gmodule, gsignond_common, gsignond_dbus]
-    )
-endif
 
 executable('gsignond',
     daemon_files,
+    dbus_auth_service_gen,
+    dbus_auth_session_gen,
+    dbus_identity_gen,
+    dbus_remote_plugin_gen,
     'main.c',
-    dependencies : [glib, gio, gio_unix, sqlite, gmodule, gsignond_common, gsignond_dbus],
-    include_directories: root_dir,
+    dependencies : daemon_dependencies,
     install: true
 )

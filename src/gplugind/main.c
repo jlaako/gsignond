@@ -33,7 +33,7 @@
 #include <sys/prctl.h>
 
 #include <gsignond.h>
-#include "dbus/gsignond-dbus.h"
+#include "gsignond-dbus.h"
 #include "gsignond-plugin-daemon.h"
 
 static GSignondPluginDaemon *_daemon = NULL;
