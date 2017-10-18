@@ -20,16 +20,16 @@ sudo ninja install
 Configuration
 -------------
 
-You can use `mesonconf -D option=value` to set the configuration values of your choice.
+You can use `meson configure -Doption=value` to set the configuration values of your choice.
 
 The different options on this project are:
 
 - bus_type : specify the DBus type used. accepted values are `session`, `system` and `p2p`.
 - extension : select the extension to build. existing extensions are `default`, `ostro`, `tizen` and `desktop`.
-- enable_debug : enable debugging related options.
-- enable_doc : build and install the documentation.
-- enable_keychain : system context of the keychain.
-- enable_storagedir : path for user specific storage directories.
+- debug : enable debugging related options.
+- documentation : build and install the documentation.
+- keychain : system context of the keychain.
+- storagedir : path for user specific storage directories.
 
 License
 -------

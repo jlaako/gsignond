@@ -1,6 +1,8 @@
 
-test_common = executable('commontest', 'commontest.c',
-    dependencies: [glib, check, gsignond_embedded_gplugind],
+test_common = executable(
+    'commontest',
+    'commontest.c',
+    dependencies: [check, gplugind],
 )
 
 common_environment = environment_test

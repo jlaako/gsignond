@@ -33,7 +33,7 @@
 #include <unistd.h>
 #include <gsignond.h>
 
-#include "dbus/gsignond-dbus.h"
+#include "gsignond-dbus.h"
 #include "gsignond-dbus-auth-service-gen.h"
 #include "gsignond-dbus-identity-gen.h"
 #include "gsignond-dbus-auth-session-gen.h"

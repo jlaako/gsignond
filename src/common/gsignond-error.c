@@ -37,9 +37,9 @@
  * When creating an error, use #GSIGNOND_ERROR for the error domain and errors 
  * from #GSignondError for the error code.
  * 
- * |[    GError* err = g_error_new(GSIGNOND_ERROR, GSIGNOND_ERROR_MISSING_DATA,
- *     "Not enough data");
- * ]| 
+ * |[<!-- language="C" -->
+ * GError* err = g_error_new(GSIGNOND_ERROR, GSIGNOND_ERROR_MISSING_DATA, "Not enough data");
+ * ]|
  */
 
 /**

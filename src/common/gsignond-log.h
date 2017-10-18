@@ -41,7 +41,9 @@
  * that plugins and extensions should use for debugging and tracing.
  * 
  * For example:
- * |[    INFO("Plugin %s initialized", plugin_mechanism); ]|
+ * |[<!-- language="C" -->
+ * INFO("Plugin %s initialized", plugin_mechanism);
+ * ]|
  */
 
 /**

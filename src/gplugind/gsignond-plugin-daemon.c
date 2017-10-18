@@ -27,7 +27,7 @@
 #include "gsignond-plugin-loader.h"
 #include "gsignond-pipe-stream.h"
 #include "gsignond-dbus-remote-plugin-gen.h"
-#include "dbus/gsignond-dbus.h"
+#include "gsignond-dbus.h"
 #include "gsignond-plugin-daemon.h"
 
 struct _GSignondPluginDaemonPrivate

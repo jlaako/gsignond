@@ -15,12 +15,12 @@ version_revision = '5'
 version_compact = '@0@.@1@'.format (version_major, version_minor)
 version_full = '@0@.@1@'.format (version_compact, version_revision)
 
-keychain = '"@0@"'.format (get_option('enable_keychain'))
+keychain = '"@0@"'.format (get_option('keychain'))
 extension = get_option('extension')
 
 gplugins_dir = join_paths(get_option('prefix'), get_option('libdir'), meson.project_name(), 'gplugins')
 sysconf_dir = '/etc'
-base_storage_dir = get_option('enable_storagedir')
+base_storage_dir = get_option('storagedir')
 extension_dir = join_paths(get_option('prefix'), get_option('libdir'), meson.project_name(), 'extensions')
 plugin_loaders_dir = join_paths(get_option('prefix'), get_option('libdir'), meson.project_name(), 'pluginloaders')
 
@@ -41,15 +41,22 @@ else
     add_project_arguments('-DGSIGNOND_BUS_TYPE=G_BUS_TYPE_SESSION', language : 'c')
 endif
 
-enable_debug = get_option('enable_debug')
+enable_debug = get_option('debug')
+enable_sql_log = get_option('sql_log')
 if enable_debug == true
     add_project_arguments('-DENABLE_DEBUG=1', language : 'c')
+
+    if enable_sql_log == true
+        add_project_arguments('-DENABLE_SQL_LOG=1', language : 'c')
+    endif
+elif enable_sql_log == true
+    error('To enable SQL logs, you have to set -Ddebug=true')
 endif
 
-root_dir = include_directories('.')
+subdir('dbus')
 subdir('src')
 
-enable_doc = get_option('enable_doc')
+enable_doc = get_option('documentation')
 if enable_doc == true
     subdir('docs')
 endif

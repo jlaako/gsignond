@@ -21,7 +21,7 @@ before_script:
 build_amd64:
     stage: build
     script:
-        - meson build -Denable_debug=true -Denable_doc=true -Db_coverage=true
+        - meson build -Ddebug=true -Ddocumentation=true -Db_coverage=true
         - cd build
         - ninja
     artifacts:

@@ -61,9 +61,10 @@ common_files += gnome.mkenums('gsignond-plugin-enum-types',
     ftail: '\nG_END_DECLS\n\n#endif\n',
     identifier_prefix: 'GSignond')
 
+db_include = include_directories('./db')
 gsignond_library = shared_library('gsignond-common',
     common_files, common_headers, internal_files,
-    include_directories: include_directories('./db'),
+    include_directories: db_include,
     dependencies : [glib, gio, gio_unix, sqlite],
     soversion: version_major,
     version: version_full,
@@ -88,9 +89,8 @@ pkg.generate(
 )
 
 gsignond_common = declare_dependency(
-    include_directories: [include_directories('.'), include_directories('./db')],
+    include_directories: [include_directories('.'), db_include],
     link_with: gsignond_library,
-    sources: common_headers,
     dependencies : [glib, gio, gio_unix, sqlite]
 )
 
