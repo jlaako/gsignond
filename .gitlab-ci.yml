@@ -1,24 +1,23 @@
----
-image: ubuntu:artful
+image: fedora:26
 
 cache:
-    key: apt-cache
+    key: dnf-cache
     paths:
-        - apt-cache/
+        - dnf-cache/
+
+variables:
+    BUILDTOOLS_PKGS: "meson gcc redhat-rpm-config vala-tools"
+    GLIB2_PKGS: "pkgconfig(glib-2.0) pkgconfig(gio-2.0) pkgconfig(gio-unix-2.0) pkgconfig(gmodule-2.0)"
+    SQLITE_PKG: "pkgconfig(sqlite3)"
+    DOCGEN_PKGS: "pkgconfig(gtk-doc)"
+    GIR_PKGS: "pkgconfig(gobject-introspection-1.0)"
+    CI_PKGS: "pkgconfig(check) lcov"
+    LOCALE_PKGS: "langpacks-en"
 
 before_script:
-    - export APT_CACHE_DIR=`pwd`/apt-cache && mkdir -pv $APT_CACHE_DIR
-    - apt-get update -yq && apt-get -o dir::cache::archives="$APT_CACHE_DIR"
-     install -y meson pkg-config libdbus-1-dev gtk-doc-tools gobject-introspection
-     libsqlite3-dev libglib2.0-dev libgirepository1.0-dev check valac locales lcov
-    - echo "en_US UTF-8" > /etc/locale.gen
-    - locale-gen en_US.UTF-8
-    - export LANG=en_US.UTF-8
-    - export LANGUAGE=en_US:en
-    - export LC_ALL=en_US.UTF-8
+    - dnf --setopt=cachedir=`pwd`/dnf-cache --quiet --refresh --assumeyes install $BUILDTOOLS_PKGS $GLIB2_PKGS $SQLITE_PKG $DOCGEN_PKGS $GIR_PKGS $CI_PKGS $LOCALE_PKGS
 
-
-build_amd64:
+build_x86-64:
     stage: build
     script:
         - meson build -Ddebug=true -Ddocumentation=true -Db_coverage=true
@@ -28,14 +27,14 @@ build_amd64:
         paths:
             - ./
 
-test_amd64:
+test_x86-64:
     stage: test
     script:
         - cd build
         - ninja test
         - ninja coverage-html
     dependencies:
-        - build_amd64
+        - build_x86-64
     artifacts:
         paths:
             - ./
@@ -52,7 +51,7 @@ pages:
         - tags
         - master@accounts-sso/gsignond
     dependencies:
-        - test_amd64
+        - test_x86-64
     artifacts:
         paths:
             - public
