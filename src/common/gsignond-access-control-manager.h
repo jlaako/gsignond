@@ -91,7 +91,7 @@ struct _GSignondAccessControlManagerClass
                             GSignondAccessControlManager *self);
 };
 
-GType gsignond_access_control_manager_get_type ();
+GType gsignond_access_control_manager_get_type (void);
 
 void
 gsignond_access_control_manager_security_context_of_peer (

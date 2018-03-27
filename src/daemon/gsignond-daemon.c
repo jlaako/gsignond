@@ -180,7 +180,8 @@ _on_extension_dispose (gpointer data, GObject *object)
     if (data) *(GSignondExtension **)data = NULL;
 }
 
-static GSignondExtension * _default_extension_init ()
+static GSignondExtension *
+_default_extension_init (void)
 {
     static GSignondExtension *default_extension = NULL;
 
@@ -702,7 +703,7 @@ gsignond_daemon_clear (GSignondDaemon *self,
  * Returns: (transfer full): newly created object of type #GSignondDaemon
  */
 GSignondDaemon *
-gsignond_daemon_new ()
+gsignond_daemon_new (void)
 {
     return  GSIGNOND_DAEMON(g_object_new (GSIGNOND_TYPE_DAEMON, NULL));
 }
@@ -792,19 +793,19 @@ gsignond_daemon_cancel_dialog (GSignondDaemon *self,
 }
 
 GSignondAccessControlManager *
-gsignond_get_access_control_manager ()
+gsignond_get_access_control_manager (void)
 {
     return gsignond_daemon_get_access_control_manager(GSIGNOND_DAEMON(self));
 }
 
 GSignondPluginProxyFactory *
-gsignond_get_plugin_proxy_factory ()
+gsignond_get_plugin_proxy_factory (void)
 {
     return gsignond_daemon_get_plugin_proxy_factory(GSIGNOND_DAEMON(self));
 }
 
 GSignondConfig *
-gsignond_get_config ()
+gsignond_get_config (void)
 {
     return gsignond_daemon_get_config(GSIGNOND_DAEMON(self));
 }

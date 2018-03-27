@@ -80,7 +80,7 @@ struct _GSignondExtensionClass
                                                     GSignondConfig *config);
 };
 
-GType gsignond_extension_get_type ();
+GType gsignond_extension_get_type (void);
 
 const gchar *
 gsignond_extension_get_name (GSignondExtension *self);

@@ -65,7 +65,7 @@ struct _ExtensionTestSecretStorageClass
     GSignondSecretStorageClass parent_class;
 };
 
-GType extension_test_secret_storage_get_type ();
+GType extension_test_secret_storage_get_type (void);
 
 G_END_DECLS
 

@@ -71,7 +71,7 @@ struct _ExtensionOstroAccessControlManagerClass
     GSignondAccessControlManagerClass parent_class;
 };
 
-GType extension_ostro_access_control_manager_get_type ();
+GType extension_ostro_access_control_manager_get_type (void);
 
 void
 extension_ostro_access_control_manager_security_context_of_peer (

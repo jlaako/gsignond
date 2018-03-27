@@ -90,7 +90,7 @@ _install_sighandlers (GMainLoop *main_loop)
         WARN ("failed to set parent death signal");
 }
 
-static const gchar* _plugin_path()
+static const gchar* _plugin_path(void)
 {
     const gchar *plugin_path = GSIGNOND_GPLUGINS_DIR;
 #   ifdef ENABLE_DEBUG
@@ -101,7 +101,7 @@ static const gchar* _plugin_path()
     return plugin_path;
 }
 
-static void _list_plugins()
+static void _list_plugins(void)
 {
     GDir* plugin_dir = g_dir_open(_plugin_path(), 0, NULL);
     if (plugin_dir == NULL) {
@@ -123,7 +123,7 @@ static void _list_plugins()
     g_dir_close(plugin_dir);
 }
 
-static void _list_watch_path()
+static void _list_watch_path(void)
 {
     g_print("%s", _plugin_path());
 }

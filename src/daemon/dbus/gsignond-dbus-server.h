@@ -55,7 +55,7 @@ struct _GSignondDbusServerClass
     GObjectClass parent_class;
 };
 
-GType gsignond_dbus_server_get_type();
+GType gsignond_dbus_server_get_type(void);
 
 #ifdef USE_P2P
 GSignondDbusServer * gsignond_dbus_server_new_with_address (const gchar *address);
@@ -64,6 +64,6 @@ const gchar *
 gsignond_dbus_server_get_address (GSignondDbusServer *server) G_GNUC_CONST;
 
 #endif
-GSignondDbusServer * gsignond_dbus_server_new ();
+GSignondDbusServer * gsignond_dbus_server_new (void);
 
 #endif /* __GSIGNOND_DBUS_SERVER_H_ */

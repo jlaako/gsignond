@@ -37,7 +37,7 @@ gboolean
 gsignond_wipe_directory (const gchar *dirname);
 
 gchar *
-gsignond_generate_nonce ();
+gsignond_generate_nonce (void);
 
 GVariant *
 gsignond_sequence_to_variant (GSequence *seq);

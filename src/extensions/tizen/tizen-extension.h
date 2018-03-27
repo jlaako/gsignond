@@ -62,9 +62,9 @@ struct _ExtensionTizenClass
     GSignondExtensionClass parent_class;
 };
 
-GType extension_tizen_get_type ();
+GType extension_tizen_get_type (void);
 
-GSignondExtension * tizen_extension_init ();
+GSignondExtension * tizen_extension_init (void);
 
 G_END_DECLS
 

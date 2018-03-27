@@ -107,7 +107,7 @@ gsignond_credentials_init (GSignondCredentials *self)
  * Returns: the #GSignondCredentials object
  */
 GSignondCredentials *
-gsignond_credentials_new ()
+gsignond_credentials_new (void)
 {
     return GSIGNOND_CREDENTIALS (
             g_object_new (GSIGNOND_TYPE_CREDENTIALS, NULL));

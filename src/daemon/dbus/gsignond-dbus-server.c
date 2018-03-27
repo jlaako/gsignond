@@ -357,7 +357,7 @@ GSignondDbusServer * gsignond_dbus_server_new_with_address (const gchar *address
     return server;
 }
 
-GSignondDbusServer * gsignond_dbus_server_new () {
+GSignondDbusServer * gsignond_dbus_server_new (void) {
 	GSignondDbusServer *server = NULL;
 	gchar *address = g_strdup_printf (GSIGNOND_DBUS_ADDRESS, g_get_user_runtime_dir());
 

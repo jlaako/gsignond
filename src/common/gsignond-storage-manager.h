@@ -73,7 +73,7 @@ struct _GSignondStorageManagerClass
     gboolean (*filesystem_is_mounted) (GSignondStorageManager *self);
 };
 
-GType gsignond_storage_manager_get_type ();
+GType gsignond_storage_manager_get_type (void) G_GNUC_CONST;
 
 gboolean
 gsignond_storage_manager_initialize_storage (GSignondStorageManager *self);

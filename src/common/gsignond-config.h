@@ -61,7 +61,7 @@ struct _GSignondConfigClass
 
 GType gsignond_config_get_type (void) G_GNUC_CONST;
 
-GSignondConfig * gsignond_config_new ();
+GSignondConfig * gsignond_config_new (void);
 
 gint
 gsignond_config_get_integer (GSignondConfig *self, const gchar *key);

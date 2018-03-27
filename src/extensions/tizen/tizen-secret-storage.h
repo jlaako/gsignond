@@ -65,7 +65,7 @@ struct _ExtensionTizenSecretStorageClass
     GSignondSecretStorageClass parent_class;
 };
 
-GType extension_tizen_secret_storage_get_type ();
+GType extension_tizen_secret_storage_get_type (void);
 
 G_END_DECLS
 

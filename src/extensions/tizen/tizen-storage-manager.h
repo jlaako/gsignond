@@ -65,7 +65,7 @@ struct _ExtensionTizenStorageManagerClass
     GSignondStorageManagerClass parent_class;
 };
 
-GType extension_tizen_storage_manager_get_type ();
+GType extension_tizen_storage_manager_get_type (void);
 
 G_END_DECLS
 

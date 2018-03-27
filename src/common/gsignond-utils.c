@@ -198,7 +198,7 @@ _dir_exit:
 }
 
 static gboolean
-_init_nonce_gen ()
+_init_nonce_gen (void)
 {
     if (G_LIKELY(_nonce_ctx.initialized))
         return TRUE;
@@ -234,7 +234,7 @@ init_exit:
  * Returns: (transfer full): the nonce in lowercase hexadecimal format, 40 bytes long.
  */
 gchar *
-gsignond_generate_nonce ()
+gsignond_generate_nonce (void)
 {
     GHmac *hmac;
     gchar *nonce = NULL;

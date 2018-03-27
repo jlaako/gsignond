@@ -60,7 +60,7 @@ struct _GSignondDesktopStorageManagerClass
     GSignondStorageManagerClass parent_class;
 };
 
-GType gsignond_desktop_storage_manager_get_type ();
+GType gsignond_desktop_storage_manager_get_type (void);
 
 G_END_DECLS
 

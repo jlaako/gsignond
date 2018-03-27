@@ -42,7 +42,7 @@ GType
 gsignond_security_context_get_type (void);
 
 GSignondSecurityContext *
-gsignond_security_context_new ();
+gsignond_security_context_new (void);
 
 GSignondSecurityContext *
 gsignond_security_context_new_from_values (const gchar *system_context,

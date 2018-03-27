@@ -60,7 +60,7 @@ struct _GSignondDaemonClass
 
 GType gsignond_daemon_get_type (void) G_GNUC_CONST;
 
-GSignondDaemon * gsignond_daemon_new ();
+GSignondDaemon * gsignond_daemon_new (void);
 
 GSignondIdentity *
 gsignond_daemon_register_new_identity (GSignondDaemon *daemon,
@@ -153,13 +153,13 @@ gsignond_daemon_cancel_dialog (GSignondDaemon *self,
                                gpointer userdata);
 
 GSignondAccessControlManager *
-gsignond_get_access_control_manager ();
+gsignond_get_access_control_manager (void);
 
 GSignondPluginProxyFactory *
-gsignond_get_plugin_proxy_factory ();
+gsignond_get_plugin_proxy_factory (void);
 
 GSignondConfig *
-gsignond_get_config ();
+gsignond_get_config (void);
 
 G_END_DECLS
 

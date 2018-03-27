@@ -65,7 +65,7 @@ struct _GSignondDesktopSecretStorageClass
     GSignondSecretStorageClass parent_class;
 };
 
-GType gsignond_desktop_secret_storage_get_type ();
+GType gsignond_desktop_secret_storage_get_type (void);
 
 const SecretSchema * _desktop_secret_storage_get_schema (void) G_GNUC_CONST;
 

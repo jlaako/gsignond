@@ -61,7 +61,7 @@ struct _GSignondSignonuiProxyClass
 GType gsignond_signonui_proxy_get_type (void);
 
 GSignondSignonuiProxy *
-gsignond_signonui_proxy_new ();
+gsignond_signonui_proxy_new (void);
 
 gboolean
 gsignond_signonui_proxy_query_dialog (GSignondSignonuiProxy *proxy,

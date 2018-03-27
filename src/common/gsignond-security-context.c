@@ -56,7 +56,7 @@
  * Returns: (transfer full): allocated #GSignondSecurityContext.
  */
 GSignondSecurityContext *
-gsignond_security_context_new ()
+gsignond_security_context_new (void)
 {
     GSignondSecurityContext *ctx;
 

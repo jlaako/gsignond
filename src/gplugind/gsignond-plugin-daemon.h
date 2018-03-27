@@ -60,7 +60,7 @@ struct _GSignondPluginDaemonClass
     GObjectClass parent_class;
 };
 
-GType gsignond_plugin_daemon_get_type();
+GType gsignond_plugin_daemon_get_type (void);
 
 GSignondPluginDaemon *
 gsignond_plugin_daemon_new (

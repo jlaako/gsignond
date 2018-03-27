@@ -61,7 +61,7 @@ struct _GSignondDbusSignonuiAdapterClass
 
 GType gsignond_dbus_signonui_adapter_get_type (void) G_GNUC_CONST;
 
-GSignondDbusSignonuiAdapter * gsignond_dbus_signonui_adapter_new ();
+GSignondDbusSignonuiAdapter * gsignond_dbus_signonui_adapter_new (void);
 
 gboolean
 gsignond_dbus_signonui_adapter_query_dialog (GSignondDbusSignonuiAdapter *adapter,

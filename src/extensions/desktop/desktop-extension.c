@@ -130,7 +130,7 @@ _on_object_dispose (gpointer data, GObject *object)
 }
 
 GSignondExtension *
-desktop_extension_init ()
+desktop_extension_init (void)
 {
     static GSignondExtension *desktop_extension  = NULL;
 
