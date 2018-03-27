@@ -53,6 +53,14 @@ elif enable_sql_log == true
     error('To enable SQL logs, you have to set -Ddebug=true')
 endif
 
+add_project_arguments(
+    '-Werror=strict-prototypes',
+    '-Werror=incompatible-pointer-types',
+    '-Werror=format-security',
+    '-Werror=format=2',
+    language : 'c'
+)
+
 subdir('dbus')
 subdir('src')
 

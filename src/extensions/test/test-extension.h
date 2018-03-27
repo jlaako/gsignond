@@ -62,9 +62,9 @@ struct _ExtensionTestClass
     GSignondExtensionClass parent_class;
 };
 
-GType extension_test_get_type ();
+GType extension_test_get_type (void);
 
-GSignondExtension * test_extension_init ();
+GSignondExtension * test_extension_init (void);
 
 G_END_DECLS
 

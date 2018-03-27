@@ -157,7 +157,7 @@ _on_object_dispose (gpointer data, GObject *object)
 }
 
 GSignondExtension *
-ostro_extension_init ()
+ostro_extension_init (void)
 {
     static GSignondExtension *ostro_extension  = NULL;
 

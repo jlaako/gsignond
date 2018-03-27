@@ -151,7 +151,7 @@ _on_object_dispose (gpointer data, GObject *object)
 }
 
 GSignondExtension *
-tizen_extension_init ()
+tizen_extension_init (void)
 {
     static GSignondExtension *tizen_extension  = NULL;
 

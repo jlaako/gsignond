@@ -62,7 +62,7 @@ struct _GSignondDesktopExtensionClass
     GSignondExtensionClass parent_class;
 };
 
-GType gsignond_desktop_extension_get_type ();
+GType gsignond_desktop_extension_get_type (void);
 
 G_END_DECLS
 

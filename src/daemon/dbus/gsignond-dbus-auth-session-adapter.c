@@ -321,8 +321,7 @@ _on_process_done (GSignondSessionData *reply, const GError *error, gpointer user
 
         if (error) {
             DBG("ERROR : %s(%d)", error->message, error->code);
-            GError *dbus_err = gsignond_get_gerror_for_id (error->code, error->message, NULL);
-            g_dbus_method_invocation_take_error (info->invocation, dbus_err);
+            g_dbus_method_invocation_take_error (info->invocation, g_error_copy (error));
         }
         else {
             GVariant *result = gsignond_dictionary_to_variant ((GSignondDictionary *)reply); 

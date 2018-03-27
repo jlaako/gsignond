@@ -62,9 +62,9 @@ struct _ExtensionOstroClass
     GSignondExtensionClass parent_class;
 };
 
-GType extension_ostro_get_type ();
+GType extension_ostro_get_type (void);
 
-GSignondExtension * ostro_extension_init ();
+GSignondExtension * ostro_extension_init (void);
 
 G_END_DECLS
 

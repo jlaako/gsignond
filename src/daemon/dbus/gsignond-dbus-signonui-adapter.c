@@ -376,7 +376,7 @@ gsignond_dbus_signonui_adapter_cancel_request (GSignondDbusSignonuiAdapter *adap
  * Retrurns: (transfer full) new instance of #GSignondDbusSignonuiAdapter
  */
 GSignondDbusSignonuiAdapter * 
-gsignond_dbus_signonui_adapter_new ()
+gsignond_dbus_signonui_adapter_new (void)
 {
     GSignondDbusSignonuiAdapter *adapter = GSIGNOND_DBUS_SIGNONUI_ADAPTER (
         g_object_new (GSIGNOND_TYPE_DBUS_SIGNONUI_ADAPTER, NULL));

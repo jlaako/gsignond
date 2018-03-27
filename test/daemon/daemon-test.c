@@ -59,7 +59,7 @@ struct IdentityData {
 
 GTestDBus *dbus = NULL;
 
-static gchar* _get_executable_name()
+static gchar* _get_executable_name (void)
 {
     gchar *procfname;
     char *path;
@@ -137,7 +137,7 @@ gboolean _validate_identity_info (GVariant *identity_info)
     return TRUE;
 }
 
-GVariant * _get_test_identity_data()
+GVariant * _get_test_identity_data (void)
 {
     GVariantBuilder builder, method_builder;
     const gchar *mechanisms[] = {"mech1","mech2", NULL };

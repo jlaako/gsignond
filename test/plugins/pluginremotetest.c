@@ -48,7 +48,7 @@ struct _GSignondAuthSessionClass
 G_DEFINE_TYPE (GSignondAuthSession, gsignond_auth_session, G_TYPE_OBJECT);
 
 static void
-_stop_mainloop ()
+_stop_mainloop (void)
 {
     if (main_loop) {
         g_main_loop_quit (main_loop);
@@ -56,13 +56,13 @@ _stop_mainloop ()
 }
 
 static void
-_run_mainloop ()
+_run_mainloop (void)
 {
     g_main_loop_run (main_loop);
 }
 
 static void
-_setup ()
+_setup (void)
 {
 #if !GLIB_CHECK_VERSION (2, 36, 0)
     g_type_init ();
@@ -74,7 +74,7 @@ _setup ()
 }
 
 static void
-_teardown ()
+_teardown (void)
 {
     if (main_loop) {
         _stop_mainloop ();

@@ -65,7 +65,7 @@ struct _ExtensionTestStorageManagerClass
     GSignondStorageManagerClass parent_class;
 };
 
-GType extension_test_storage_manager_get_type ();
+GType extension_test_storage_manager_get_type (void);
 
 G_END_DECLS
 
