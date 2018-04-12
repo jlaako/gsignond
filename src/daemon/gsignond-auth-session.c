@@ -536,7 +536,7 @@ gsignond_auth_session_notify_store (GSignondAuthSession *self,
     /* cache token data */
     if (self->priv->token_data)
         g_object_unref (self->priv->token_data);
-    self->priv->token_data = g_object_ref (token_data);
+    self->priv->token_data = GSIGNOND_DICTIONARY(g_object_ref (token_data));
 
     g_signal_emit (self, signals[SIG_PROCESS_STORE], 0, token_data);
 }
