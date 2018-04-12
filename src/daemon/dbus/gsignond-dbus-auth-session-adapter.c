@@ -84,8 +84,8 @@ gsignond_dbus_auth_session_adapter_set_property (GObject *object,
 
     switch (property_id) {
         case PROP_SESSION: {
-            gpointer object = g_value_get_object (value);
-            self->priv->session = GSIGNOND_AUTH_SESSION ((object));
+            GSignondAuthSession *session_object = GSIGNOND_AUTH_SESSION (g_value_get_object (value));
+            self->priv->session = session_object;
             break;
         }
         case PROP_CONNECTION: {

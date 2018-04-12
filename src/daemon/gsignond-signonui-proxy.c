@@ -356,10 +356,10 @@ gsignond_signonui_proxy_cancel_request (GSignondSignonuiProxy *proxy,
 
     /* cancel active request */
     if (proxy->priv->active_request->caller == caller) {
-        _UICancelRequest *req = _ui_cancel_request_new (cb, userdata);
+        _UICancelRequest *new_req = _ui_cancel_request_new (cb, userdata);
         if (!gsignond_dbus_signonui_adapter_cancel_request (proxy->priv->signonui,
-            G_OBJECT_TYPE_NAME (caller), _cancel_request_cb, req)) {
-            g_free (req);
+            G_OBJECT_TYPE_NAME (caller), _cancel_request_cb, new_req)) {
+            g_free (new_req);
             return FALSE;
         }
         _ui_query_request_free (proxy->priv->active_request);

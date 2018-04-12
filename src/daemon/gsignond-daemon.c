@@ -49,7 +49,7 @@ G_DEFINE_TYPE (GSignondDaemon, gsignond_daemon, G_TYPE_OBJECT)
 
 #define GSIGNOND_DAEMON_PRIV(obj) G_TYPE_INSTANCE_GET_PRIVATE ((obj), GSIGNOND_TYPE_DAEMON, GSignondDaemonPrivate)
 
-static GObject *self = 0;
+static GObject *_daemon_self = 0;
 
 static GObject*
 _constructor (GType type,
@@ -59,16 +59,16 @@ _constructor (GType type,
     /*
      * Signleton daemon
      */
-    if (!self) {
-        self = G_OBJECT_CLASS (gsignond_daemon_parent_class)->constructor (
+    if (!_daemon_self) {
+        _daemon_self = G_OBJECT_CLASS (gsignond_daemon_parent_class)->constructor (
                   type, n_construct_params, construct_params);
-        g_object_add_weak_pointer (self, (gpointer) &self);
+        g_object_add_weak_pointer (_daemon_self, (gpointer) &_daemon_self);
     }
     else {
-        g_object_ref (self);
+        g_object_ref (_daemon_self);
     }
 
-    return self;
+    return _daemon_self;
 }
 
 void
@@ -795,17 +795,17 @@ gsignond_daemon_cancel_dialog (GSignondDaemon *self,
 GSignondAccessControlManager *
 gsignond_get_access_control_manager (void)
 {
-    return gsignond_daemon_get_access_control_manager(GSIGNOND_DAEMON(self));
+    return gsignond_daemon_get_access_control_manager(GSIGNOND_DAEMON(_daemon_self));
 }
 
 GSignondPluginProxyFactory *
 gsignond_get_plugin_proxy_factory (void)
 {
-    return gsignond_daemon_get_plugin_proxy_factory(GSIGNOND_DAEMON(self));
+    return gsignond_daemon_get_plugin_proxy_factory(GSIGNOND_DAEMON(_daemon_self));
 }
 
 GSignondConfig *
 gsignond_get_config (void)
 {
-    return gsignond_daemon_get_config(GSIGNOND_DAEMON(self));
+    return gsignond_daemon_get_config(GSIGNOND_DAEMON(_daemon_self));
 }

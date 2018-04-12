@@ -165,15 +165,15 @@ _load_config (GSignondConfig *self)
     groups = g_key_file_get_groups (settings, &n_groups);
 
     for (i = 0; i < n_groups; i++) {
-        GError *err = NULL;
+        GError *group_err = NULL;
         gsize n_keys =0;
         gchar **keys = g_key_file_get_keys (settings,
                                             groups[i],
                                             &n_keys,
-                                            &err);
-        if (err) {
-            WARN ("fail to read group '%s': %s", groups[i], err->message);
-            g_error_free (err);
+                                            &group_err);
+        if (group_err) {
+            WARN ("fail to read group '%s': %s", groups[i], group_err->message);
+            g_error_free (group_err);
             continue;
         }
 
@@ -182,10 +182,10 @@ _load_config (GSignondConfig *self)
             gchar *value = g_key_file_get_value (settings,
                                                  groups[i],
                                                  keys[j],
-                                                 &err);
-            if (err) {
-                WARN ("fail to read key '%s/%s': %s", groups[i], keys[j], err->message);
-                g_error_free (err);
+                                                 &group_err);
+            if (group_err) {
+                WARN ("fail to read key '%s/%s': %s", groups[i], keys[j], group_err->message);
+                g_error_free (group_err);
                 continue;
             }
 

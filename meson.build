@@ -54,10 +54,14 @@ elif enable_sql_log == true
 endif
 
 add_project_arguments(
+    '-Wredundant-decls',
+    '-Wuninitialized',
+    '-Wformat-nonliteral',
     '-Werror=strict-prototypes',
     '-Werror=incompatible-pointer-types',
     '-Werror=format-security',
     '-Werror=format=2',
+    '-Werror=shadow',
     language : 'c'
 )
 

@@ -183,9 +183,6 @@ gsignond_identity_info_compare (
         GSignondIdentityInfo *info,
         GSignondIdentityInfo *other);
 
-GVariant *
-gsignond_identity_info_to_variant (GSignondIdentityInfo *info);
-
 void
 gsignond_identity_info_list_free (GSignondIdentityInfoList *list);
 

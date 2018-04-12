@@ -360,10 +360,10 @@ _on_user_action_completed (GSignondSignonuiData *reply, GError *error, gpointer 
               error->message,
               gsignond_identity_info_get_id (priv->info));
         if (cb_data->session) {
-            GSignondSignonuiData *reply = gsignond_signonui_data_new();
-            gsignond_signonui_data_set_query_error (reply, SIGNONUI_ERROR_GENERAL);
-            gsignond_auth_session_user_action_finished (cb_data->session, reply);
-            g_object_unref(reply);
+            GSignondSignonuiData *new_reply = gsignond_signonui_data_new ();
+            gsignond_signonui_data_set_query_error (new_reply, SIGNONUI_ERROR_GENERAL);
+            gsignond_auth_session_user_action_finished (cb_data->session, new_reply);
+            g_object_unref (new_reply);
         }
         g_error_free (error);
         g_slice_free (GSignondIdentityCbData, cb_data);
@@ -387,9 +387,11 @@ _on_user_action_completed (GSignondSignonuiData *reply, GError *error, gpointer 
         gboolean remember = TRUE;
 
         /* and there was no opt-out? */
-        if (!gsignond_signonui_data_get_remember_password (reply, &remember))
+        if (!gsignond_signonui_data_get_remember_password (reply, &remember)) {
             DBG ("identity %d - don't remember password",
                  gsignond_identity_info_get_id (priv->info));
+        }
+
         if (remember && ui_error == SIGNONUI_ERROR_NONE) {
                 gsignond_identity_info_set_secret (priv->info,
                                                    gsignond_signonui_data_get_password (reply));
@@ -682,8 +684,8 @@ _on_user_verified (GSignondSignonuiData *reply, GError *error, gpointer user_dat
     else
     {
         GSignondSignonuiError err_id = SIGNONUI_ERROR_NONE;
-        gboolean res = gsignond_signonui_data_get_query_error (reply, &err_id);
-        if (!res) {
+        gboolean query_res = gsignond_signonui_data_get_query_error (reply, &err_id);
+        if (!query_res) {
             DBG ("No error code set by UI daemon, treating as ERROR_NONE");
         }
         if (err_id != SIGNONUI_ERROR_NONE) {
