@@ -447,7 +447,7 @@ static void _on_identity_updated (GSignondDbusIdentity *identity, gint change_ty
         *out = TRUE;
 }
 
-static void _on_sign_out_reply (GSignondDbusIdentity *sender, GAsyncResult *reply, gpointer data)
+static void _on_sign_out_reply (GSignondDbusIdentity *sender, GAsyncResult *reply, gpointer user_data)
 {
     GError *error = NULL;
 
@@ -458,8 +458,8 @@ static void _on_sign_out_reply (GSignondDbusIdentity *sender, GAsyncResult *repl
     fail_if (ret == FALSE, "failed to finish signout, %s", error ? error->message : "");
     fail_if (res == FALSE, "failed to call signout on identity : %s", error ? error->message : "");
 
-    g_main_loop_quit ((GMainLoop *)data);
-    g_main_loop_unref((GMainLoop *)data);
+    g_main_loop_quit ((GMainLoop *)user_data);
+    g_main_loop_unref((GMainLoop *)user_data);
 }
 
 START_TEST(test_identity_signout)
