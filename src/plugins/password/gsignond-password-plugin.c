@@ -84,17 +84,29 @@ static void gsignond_password_plugin_request_initial (
 {
     const gchar* username = gsignond_session_data_get_username(session_data);
     const gchar* secret = gsignond_session_data_get_secret(session_data);
-    
+    const gchar* display_name = gsignond_dictionary_get_string(GSIGNOND_DICTIONARY(session_data), "DisplayName");
+    const gchar* forgot_password_url = gsignond_dictionary_get_string(GSIGNOND_DICTIONARY(session_data), "ForgotPasswordUrl");
+    const gchar* sign_up_url = gsignond_dictionary_get_string(GSIGNOND_DICTIONARY(session_data), "SignUpURL");
+
     if (secret && secret[0]) {
         GSignondSessionData *response = gsignond_session_data_new();
         if (username && username[0])
             gsignond_session_data_set_username(response, username);
         gsignond_session_data_set_secret(response, secret);
+        if (display_name)
+            gsignond_dictionary_set_string(GSIGNOND_DICTIONARY(response), "DisplayName", display_name);
+
+        if (forgot_password_url)
+            gsignond_dictionary_set_string(GSIGNOND_DICTIONARY(response), "ForgotPasswordUrl", forgot_password_url);
+
+        if (sign_up_url)
+            gsignond_dictionary_set_string(GSIGNOND_DICTIONARY(response), "SignUpURL", sign_up_url);
+
         gsignond_plugin_response_final(self, response);
         g_object_unref(response);
         return;
     }
-    
+
     GSignondSignonuiData *user_action_data = gsignond_signonui_data_new();
     if (!username || !username[0])
         gsignond_signonui_data_set_query_username(user_action_data, TRUE);
@@ -102,7 +114,17 @@ static void gsignond_password_plugin_request_initial (
         gsignond_signonui_data_set_query_username(user_action_data, FALSE);
         gsignond_signonui_data_set_username(user_action_data, username);
     }
+
     gsignond_signonui_data_set_query_password(user_action_data, TRUE);
+    if (display_name)
+        gsignond_dictionary_set_string(GSIGNOND_DICTIONARY(user_action_data), "DisplayName", display_name);
+
+    if (forgot_password_url)
+        gsignond_signonui_data_set_forgot_password_url(user_action_data, forgot_password_url);
+
+    if (sign_up_url)
+        gsignond_dictionary_set_string(GSIGNOND_DICTIONARY(user_action_data), "SignUpURL", sign_up_url);
+
     gsignond_plugin_user_action_required(self, user_action_data);
     g_object_unref(user_action_data);
 }
