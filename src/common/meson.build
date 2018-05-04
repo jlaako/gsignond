@@ -67,7 +67,7 @@ gsignond_library = shared_library('gsignond-common',
     include_directories: db_include,
     dependencies : [glib, gio, gio_unix, sqlite],
     soversion: version_major,
-    version: version_full,
+    version: meson.project_version(),
     install: true)
 
 install_headers(common_headers, subdir : meson.project_name())
@@ -80,7 +80,7 @@ pkg.generate(
     libraries: gsignond_library,
     subdirs: meson.project_name(),
     requires: ['glib-2.0', 'gio-2.0', 'gio-unix-2.0', 'gmodule-2.0', 'sqlite3'],
-    version: version_full,
+    version: meson.project_version(),
     variables: [
         'gpluginsdir=' + gplugins_dir,
         'pluginloadersdir=' + plugin_loaders_dir,

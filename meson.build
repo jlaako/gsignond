@@ -1,4 +1,4 @@
-project('gsignond', 'c')
+project('gsignond', 'c', version: '1.0.6')
 
 gnome = import('gnome')
 pkg = import('pkgconfig')
@@ -8,12 +8,12 @@ gio_unix = dependency('gio-unix-2.0')
 gmodule = dependency('gmodule-2.0')
 sqlite = dependency('sqlite3')
 
-version_major = '1'
-version_minor = '0'
-version_revision = '5'
+version_part = meson.project_version ().split('.')
+version_major = version_part.get(0)
+version_minor = version_part.get(1)
+version_revision = version_part.get(2)
 
 version_compact = '@0@.@1@'.format (version_major, version_minor)
-version_full = '@0@.@1@'.format (version_compact, version_revision)
 
 keychain = '"@0@"'.format (get_option('keychain'))
 extension = get_option('extension')
