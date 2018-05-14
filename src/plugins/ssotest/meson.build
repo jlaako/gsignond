@@ -5,5 +5,7 @@ ssotest_files = files(
 
 ssotest_plugin = shared_module('ssotest',
     ssotest_files,
-    dependencies : [glib, gio, gio_unix, gmodule, gsignond_common]
+    dependencies : [glib, gio, gio_unix, gmodule, gsignond_common],
+    install: true,
+    install_dir : gplugins_dir
 )
