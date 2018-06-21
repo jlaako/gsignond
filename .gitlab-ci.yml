@@ -46,9 +46,9 @@ pages:
         - ninja install
         - cd ..
         - mkdir public
+        - cp -a build/meson-logs/coveragereport public/coverage
         - cp -a build/docs/reference/html/* public
     only:
-        - tags
         - master@accounts-sso/gsignond
     dependencies:
         - test_x86-64
