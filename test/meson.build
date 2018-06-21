@@ -1,7 +1,8 @@
 environment_test = environment()
 environment_test.set ('SSO_BIN_DIR', join_paths(meson.build_root(), 'src', 'gplugind'))
 environment_test.set ('SSO_GPLUGINS_DIR', join_paths(meson.build_root(), 'src', 'plugins'))
-environment_test.set ('GSIGNOND_CONFIG', join_paths(meson.current_source_dir(), 'daemon'))
+environment_test.set ('SSO_EXTENSIONS_DIR', join_paths(meson.build_root(), 'src', 'extensions', 'test'))
+environment_test.set ('GSIGNOND_CONFIG', join_paths(meson.current_build_dir(), 'daemon'))
 environment_test.set ('G_MESSAGES_DEBUG', 'all')
 
 subdir('common')
