@@ -32,6 +32,7 @@ gnome.gtkdoc(meson.project_name(),
         '--extra-dir=@0@'.format(join_paths(glib_docpath, 'gio'))
     ],
     ignore_headers: private_headers,
+    dependencies: gsignond_deps,
     scan_args: ['--rebuild-types'],
     install: true
 )

@@ -62,10 +62,17 @@ common_files += gnome.mkenums('gsignond-plugin-enum-types',
     identifier_prefix: 'GSignond')
 
 db_include = include_directories('./db')
+gsignond_deps = [
+    glib,
+    gio,
+    gio_unix,
+    sqlite
+]
+
 gsignond_library = shared_library('gsignond-common',
     common_files, common_headers, internal_files,
     include_directories: db_include,
-    dependencies : [glib, gio, gio_unix, sqlite],
+    dependencies : gsignond_deps,
     soversion: version_major,
     version: meson.project_version(),
     install: true)
@@ -91,7 +98,7 @@ pkg.generate(
 gsignond_common = declare_dependency(
     include_directories: [include_directories('.'), db_include],
     link_with: gsignond_library,
-    dependencies : [glib, gio, gio_unix, sqlite]
+    dependencies : gsignond_deps
 )
 
 gir_files = gnome.generate_gir(gsignond_library,
