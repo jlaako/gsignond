@@ -10,3 +10,8 @@ password_plugin = shared_module('password',
     dependencies : [glib, gio, gio_unix, gmodule, gsignond_common],
     install: true,
     install_dir : gplugins_dir)
+
+password_plugin_dep = declare_dependency(
+    sources: password_files,
+    dependencies : [glib, gio, gio_unix, gmodule, gsignond_common]
+)

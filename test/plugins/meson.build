@@ -27,8 +27,15 @@ test('test-plugin-password',
 )
 
 test_password_environment = environment_test
-test_password_environment.set ('SSO_GPLUGINS_DIR', join_paths(meson.build_root(), 'src', 'plugins', 'password'))
+test_password_environment.set ('SSO_GPLUGINS_DIR', join_paths(meson.current_build_dir()))
 test_password_environment.set ('SSO_STORAGE_PATH', join_paths(meson.current_build_dir(), 'tmp'))
+
+# gplugind can't search in subdirs so we recreate some plugins here
+
+passwordtest_plugin = shared_module('password',
+    dependencies: password_plugin_dep)
+ssotest_plugin = shared_module('ssotest',
+    dependencies: ssotest_plugin_dep)
 
 # Remote test
 test_remoteplugin = executable(
@@ -39,7 +46,8 @@ test_remoteplugin = executable(
 
 test('test-remote-plugin',
     test_remoteplugin,
-    env: test_password_environment
+    env: test_password_environment,
+    depends: [ passwordtest_plugin, ssotest_plugin ]
 )
 
 # Proxy test
@@ -50,9 +58,8 @@ test_proxyplugin = executable(
     dependencies: [check, gsignon_daemon]
 )
 
-# We need gplugind to search in subdirs
-
-#test('test-proxy-plugin',
-#    test_proxyplugin,
-#    env: test_password_environment
-#)
+test('test-proxy-plugin',
+    test_proxyplugin,
+    env: test_password_environment,
+    depends: [ passwordtest_plugin, ssotest_plugin ]
+)
