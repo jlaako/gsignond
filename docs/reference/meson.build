@@ -33,6 +33,5 @@ gnome.gtkdoc(meson.project_name(),
     ],
     ignore_headers: private_headers,
     dependencies: gsignond_deps,
-    scan_args: ['--rebuild-types'],
     install: true
 )
