@@ -59,7 +59,7 @@ dbus_header = configure_file(
 
 gsignond_dbus = declare_dependency(
     sources: dbus_header,
-    include_directories: include_directories('.')
+    include_directories: [include_directories('.'), root_dir]
 )
 
 # Install the .service file

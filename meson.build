@@ -65,6 +65,8 @@ add_project_arguments(
     language : 'c'
 )
 
+root_dir = include_directories('.')
+
 subdir('dbus')
 subdir('src')
 
