@@ -460,37 +460,19 @@ _handle_get_auth_session (GSignondDbusIdentityAdapter *self,
 {
     GSignondAuthSession *session = NULL;
     GError *error = NULL;
+    const gchar *path = NULL;
 
     g_return_val_if_fail (self && GSIGNOND_IS_DBUS_IDENTITY_ADAPTER (self), FALSE);
 
-    gsignond_disposable_set_auto_dispose (GSIGNOND_DISPOSABLE (self), FALSE);
-
-    PREPARE_SECURITY_CONTEXT (self, invocation);
-
-    session = gsignond_identity_get_auth_session (self->priv->identity, method, self->priv->sec_context, &error);
-
-    if (session) {
-        guint timeout =gsignond_identity_get_auth_session_timeout (self->priv->identity);
-        GSignondDbusAuthSessionAdapter *dbus_session = gsignond_dbus_auth_session_adapter_new_with_connection (
-            g_object_ref (self->priv->connection), session, self->priv->app_context, timeout);
-
-        if (g_list_length (self->priv->sessions) == 0)
-            gsignond_disposable_set_auto_dispose (GSIGNOND_DISPOSABLE (self), FALSE);
-
-        self->priv->sessions = g_list_append (self->priv->sessions, dbus_session);
-
-        g_object_weak_ref (G_OBJECT (dbus_session), _on_session_disposed, self);
-
+    path = gsignond_dbus_identity_adapter_get_auth_session (self, invocation, method, &error);
+    if (path) {
         gsignond_dbus_identity_complete_get_auth_session (
-            self->priv->dbus_identity, invocation, 
-            gsignond_dbus_auth_session_adapter_get_object_path (dbus_session));
+            self->priv->dbus_identity, invocation, path);
     }
     else {
         g_dbus_method_invocation_return_gerror (invocation, error);
         g_error_free (error);
     }
-
-    gsignond_disposable_set_auto_dispose (GSIGNOND_DISPOSABLE(self), TRUE);
 
     return TRUE;
 }
@@ -779,6 +761,42 @@ gsignond_dbus_identity_adapter_get_object_path(GSignondDbusIdentityAdapter *self
 
     return g_dbus_interface_skeleton_get_object_path (
                 G_DBUS_INTERFACE_SKELETON (self->priv->dbus_identity));
+}
+
+const gchar*
+gsignond_dbus_identity_adapter_get_auth_session (GSignondDbusIdentityAdapter *self,
+                                                 GDBusMethodInvocation *invocation,
+                                                 const gchar *method,
+                                                 GError **error)
+{
+    GSignondAuthSession *session = NULL;
+    const gchar *path = NULL;
+
+    g_return_val_if_fail (self && GSIGNOND_IS_DBUS_IDENTITY_ADAPTER (self), NULL);
+
+    gsignond_disposable_set_auto_dispose (GSIGNOND_DISPOSABLE (self), FALSE);
+
+    PREPARE_SECURITY_CONTEXT (self, invocation);
+
+    session = gsignond_identity_get_auth_session (self->priv->identity, method, self->priv->sec_context, error);
+
+    if (session) {
+        guint timeout =gsignond_identity_get_auth_session_timeout (self->priv->identity);
+        GSignondDbusAuthSessionAdapter *dbus_session = gsignond_dbus_auth_session_adapter_new_with_connection (
+            g_object_ref (self->priv->connection), session, self->priv->app_context, timeout);
+
+        if (g_list_length (self->priv->sessions) == 0)
+            gsignond_disposable_set_auto_dispose (GSIGNOND_DISPOSABLE (self), FALSE);
+
+        self->priv->sessions = g_list_append (self->priv->sessions, dbus_session);
+
+        g_object_weak_ref (G_OBJECT (dbus_session), _on_session_disposed, self);
+
+        path = gsignond_dbus_auth_session_adapter_get_object_path (dbus_session);
+    }
+
+    gsignond_disposable_set_auto_dispose (GSIGNOND_DISPOSABLE(self), TRUE);
+    return path;
 }
 
 GSignondDbusIdentityAdapter *

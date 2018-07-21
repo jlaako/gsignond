@@ -76,6 +76,12 @@ gsignond_dbus_identity_adapter_new (GSignondIdentity *identity,
 const gchar*
 gsignond_dbus_identity_adapter_get_object_path (GSignondDbusIdentityAdapter *self) G_GNUC_CONST;
 
+const gchar*
+gsignond_dbus_identity_adapter_get_auth_session (GSignondDbusIdentityAdapter *self,
+                                                 GDBusMethodInvocation *invocation,
+                                                 const gchar *method,
+                                                 GError **error);
+
 G_END_DECLS
 
 #endif /* __GSIGNOND_IDENTITY_ADAPTER_H_ */

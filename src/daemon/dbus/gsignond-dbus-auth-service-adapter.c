@@ -58,6 +58,9 @@ static gboolean _handle_register_new_identity (GSignondDbusAuthServiceAdapter *,
                                            const gchar *, gpointer);
 static gboolean _handle_get_identity (GSignondDbusAuthServiceAdapter *, GDBusMethodInvocation *, guint32, 
                                   const gchar *, gpointer);
+static gboolean _handle_get_auth_session_object_path (GSignondDbusAuthServiceAdapter *,
+                                  GDBusMethodInvocation *, guint,
+                                  const gchar *, const gchar *, gpointer);
 static gboolean _handle_query_methods (GSignondDbusAuthServiceAdapter *,
                                    GDBusMethodInvocation *,
                                    gpointer);
@@ -217,6 +220,8 @@ gsignond_dbus_auth_service_adapter_init (GSignondDbusAuthServiceAdapter *self)
         "handle-register-new-identity", G_CALLBACK (_handle_register_new_identity), self);
     g_signal_connect_swapped (self->priv->dbus_auth_service,
         "handle-get-identity", G_CALLBACK(_handle_get_identity), self);
+    g_signal_connect_swapped (self->priv->dbus_auth_service,
+        "handle-get-auth-session-object-path", G_CALLBACK(_handle_get_auth_session_object_path), self);
     g_signal_connect_swapped (self->priv->dbus_auth_service,
         "handle-query-methods", G_CALLBACK(_handle_query_methods), self);
     g_signal_connect_swapped (self->priv->dbus_auth_service,
@@ -402,6 +407,66 @@ _handle_get_identity (GSignondDbusAuthServiceAdapter *self,
         g_dbus_method_invocation_return_gerror (invocation, error);
         g_error_free (error);
     }
+    gsignond_security_context_free (sec_context);
+
+    gsignond_disposable_set_auto_dispose (GSIGNOND_DISPOSABLE (self), TRUE);
+
+    return TRUE;
+}
+
+static gboolean
+_handle_get_auth_session_object_path (GSignondDbusAuthServiceAdapter *self,
+                                      GDBusMethodInvocation *invocation,
+                                      guint id,
+                                      const gchar *app_context,
+                                      const gchar *method,
+                                      gpointer user_data)
+{
+    GSignondIdentity *identity = NULL;
+    GError *error = NULL;
+    GDBusConnection *connection = NULL;
+    const gchar *sender = NULL;
+    int fd = -1;
+    GSignondSecurityContext *sec_context = gsignond_security_context_new ();
+
+    g_return_val_if_fail (self && GSIGNOND_IS_DBUS_AUTH_SERVICE_ADAPTER(self), FALSE);
+
+    gsignond_disposable_set_auto_dispose (GSIGNOND_DISPOSABLE (self), FALSE);
+
+    connection = g_dbus_method_invocation_get_connection (invocation);
+#ifdef USE_P2P
+    fd = g_socket_get_fd (g_socket_connection_get_socket (G_SOCKET_CONNECTION (g_dbus_connection_get_stream(connection))));
+#else
+    sender = g_dbus_method_invocation_get_sender (invocation);
+#endif
+
+    gsignond_access_control_manager_security_context_of_peer(
+            gsignond_daemon_get_access_control_manager (self->priv->auth_service),
+            sec_context,
+            fd,
+            sender,
+            app_context);
+
+    identity = gsignond_daemon_register_new_identity (self->priv->auth_service, sec_context, &error);
+    if (identity) {
+        const gchar* auth_session_path = NULL;
+        GSignondDbusIdentityAdapter *dbus_identity = _create_and_cache_dbus_identity (self, identity, app_context, connection, sender);
+
+        auth_session_path = gsignond_dbus_identity_adapter_get_auth_session (dbus_identity, invocation, method, &error);
+        if (auth_session_path) {
+            gsignond_dbus_auth_service_complete_get_auth_session_object_path (
+                self->priv->dbus_auth_service, invocation, auth_session_path);
+        }
+        else {
+            g_dbus_method_invocation_return_gerror (invocation, error);
+            g_error_free (error);
+        }
+    }
+    else {
+        g_dbus_method_invocation_return_gerror (invocation, error);
+        g_error_free (error);
+    }
+
     gsignond_security_context_free (sec_context);
 
     gsignond_disposable_set_auto_dispose (GSIGNOND_DISPOSABLE (self), TRUE);
