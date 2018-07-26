@@ -1,4 +1,4 @@
-project('gsignond', 'c', version: '1.0.7')
+project('gsignond', 'c', version: '1.1.0')
 
 gnome = import('gnome')
 pkg = import('pkgconfig')
